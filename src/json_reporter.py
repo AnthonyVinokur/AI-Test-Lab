@@ -2,6 +2,10 @@ import json
 from pathlib import Path
 
 from src.models import EvaluationStatus, TestResult
+from datetime import datetime
+
+generated_at = datetime.now()
+generated_at.isoformat(timespec="seconds")
 
 
 class JsonReporter:
@@ -12,8 +16,12 @@ class JsonReporter:
 
     def write(self, results: list[TestResult]) -> None:
         self.report_path.parent.mkdir(parents=True, exist_ok=True)
+        generated_at = datetime.now().astimezone().isoformat(timespec="seconds")
+        model_name = results[0].model if results else "Unknown"
 
         report = {
+            "generated_at": generated_at,
+            "model": model_name,
             "summary": {
                 "passed": sum(r.status == EvaluationStatus.PASS for r in results),
                 "failed": sum(r.status == EvaluationStatus.FAIL for r in results),

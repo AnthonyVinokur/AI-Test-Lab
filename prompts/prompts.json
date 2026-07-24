@@ -26,7 +26,48 @@
     "prompt" : "What is the most annoing insects in florida? ",
     "assertion": {
       "type": "contains",
-      "expected" : " No-See-Ums "
+      "expected" : " Crocodilians "
+    }
+  },
+  {
+  "id": "intentional-failure",
+  "name": "Intentional failure",
+  "category": "validation",
+  "prompt": "Reply with the word blue.",
+  "assertion": {
+    "type": "contains",
+    "expected": "orange"
+  }
+  },
+  {
+    "id": "prefix-001",
+    "name": "Python definition prefix",
+    "category": "knowledge",
+    "prompt": "Start your response with the words: Python is",
+    "assertion": {
+      "type": "starts_with",
+      "expected": "Python is"
+    }
+  },
+  {
+    "id": "ending-001",
+    "name": "Sentence punctuation",
+    "category": "format",
+    "prompt": "Write one sentence about artificial intelligence and end it with a period.",
+    "assertion": {
+      "type": "ends_with",
+      "expected": "."
+    }
+  },
+  {
+    "id": "regex-001",
+    "name": "Three-digit number",
+    "category": "format",
+    "prompt": "Return only the number 123.",
+    "assertion": {
+      "type": "regex",
+      "expected": "^\\d{3}$"
     }
   }
+
 ]

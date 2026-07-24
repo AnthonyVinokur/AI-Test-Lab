@@ -21,10 +21,19 @@ class OllamaResponse(BaseModel):
     model: str
     metrics: OllamaMetrics
 
+# class AssertionType(StrEnum):
+#     CONTAINS = "contains"
+#     NOT_CONTAINS = "not_contains"
+#     EQUALS = "equals"
+
 class AssertionType(StrEnum):
     CONTAINS = "contains"
     NOT_CONTAINS = "not_contains"
     EQUALS = "equals"
+    ICONTAINS = "icontains"
+    STARTS_WITH = "starts_with"
+    ENDS_WITH = "ends_with"
+    REGEX = "regex"
 
 
 class EvaluationStatus(StrEnum):

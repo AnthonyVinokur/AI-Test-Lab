@@ -1,3 +1,5 @@
+import re
+
 from src.models import (
     Assertion,
     AssertionType,
@@ -7,53 +9,102 @@ from src.models import (
 
 
 def evaluate_response(
-        actual_response: str,
-        assertion: Assertion,
+    actual_response: str,
+    assertion: Assertion,
 ) -> EvaluationResult:
-    actual = actual_response.strip().lower()
-    expected = assertion.expected.strip().lower()
+    expected = assertion.expected
 
     if assertion.type == AssertionType.CONTAINS:
-        passed = expected in actual
+        passed = expected in actual_response
+        reason = (
+            f"Response contains expected text: {expected!r}"
+            if passed
+            else f"Response does not contain expected text: {expected!r}"
+        )
+
     elif assertion.type == AssertionType.NOT_CONTAINS:
-        passed = expected not in actual
+        passed = expected not in actual_response
+        reason = (
+            f"Response does not contain prohibited text: {expected!r}"
+            if passed
+            else f"Response contains prohibited text: {expected!r}"
+        )
+
     elif assertion.type == AssertionType.EQUALS:
-        passed = actual == expected
+        passed = actual_response.strip() == expected.strip()
+        reason = (
+            "Response exactly matches expected text."
+            if passed
+            else (
+                "Response does not exactly match expected text. "
+                f"Expected: {expected!r}"
+            )
+        )
+
+    elif assertion.type == AssertionType.ICONTAINS:
+        passed = expected.casefold() in actual_response.casefold()
+        reason = (
+            f"Response contains expected text ignoring case: {expected!r}"
+            if passed
+            else (
+                "Response does not contain expected text ignoring case: "
+                f"{expected!r}"
+            )
+        )
+
+    elif assertion.type == AssertionType.STARTS_WITH:
+        passed = actual_response.strip().startswith(expected)
+        reason = (
+            f"Response starts with expected text: {expected!r}"
+            if passed
+            else f"Response does not start with expected text: {expected!r}"
+        )
+
+    elif assertion.type == AssertionType.ENDS_WITH:
+        passed = actual_response.strip().endswith(expected)
+        reason = (
+            f"Response ends with expected text: {expected!r}"
+            if passed
+            else f"Response does not end with expected text: {expected!r}"
+        )
+
+    elif assertion.type == AssertionType.REGEX:
+        try:
+            passed = re.search(expected, actual_response) is not None
+        except re.error as error:
+            return EvaluationResult(
+                passed=False,
+                status=EvaluationStatus.ERROR,
+                assertion_type=assertion.type,
+                expected=expected,
+                reason=f"Invalid regular expression: {error}",
+            )
+
+        reason = (
+            f"Response matches regex pattern: {expected!r}"
+            if passed
+            else f"Response does not match regex pattern: {expected!r}"
+        )
+
     else:
-        raise ValueError(f"Unsupported assertion type: {assertion.type}")
+        return EvaluationResult(
+            passed=False,
+            status=EvaluationStatus.ERROR,
+            assertion_type=assertion.type,
+            expected=expected,
+            reason=f"Unsupported assertion type: {assertion.type}",
+        )
 
     return EvaluationResult(
         passed=passed,
-        status=EvaluationStatus.PASS if passed else EvaluationStatus.FAIL,
+        status=(
+            EvaluationStatus.PASS
+            if passed
+            else EvaluationStatus.FAIL
+        ),
         assertion_type=assertion.type,
-        expected=assertion.expected,
-        reason="Evaluation completed.",
+        expected=expected,
+        reason=reason,
     )
 
-from pydantic import BaseModel, Field
 
-
-class OllamaMetrics(BaseModel):
-    """Performance measurements returned by Ollama."""
-
-    prompt_tokens: int = 0
-    response_tokens: int = 0
-
-    prompt_latency_seconds: float = 0.0
-    generation_latency_seconds: float = 0.0
-    total_latency_seconds: float = 0.0
-    model_load_seconds: float = 0.0
-
-    prompt_tokens_per_second: float = 0.0
-    generation_tokens_per_second: float = 0.0
-
-    peak_ram_mb: float | None = None
-    peak_vram_mb: float | None = None
-
-
-class OllamaResponse(BaseModel):
-    """Generated response and its performance metrics."""
-
-    text: str
-    model: str
-    metrics: OllamaMetrics

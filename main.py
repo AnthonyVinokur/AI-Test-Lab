@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 
 from src.evaluator import evaluate_response
 from src.json_reporter import JsonReporter
@@ -9,6 +8,10 @@ from src.models import EvaluationStatus
 from src.ollama_client import OllamaClient
 from src.prompt_loader import load_prompt_tests
 from src.runner import TestRunner
+from pathlib import Path
+
+
+from src.html_reporter import HtmlReporter
 
 
 def parse_args() -> argparse.Namespace:
@@ -103,15 +106,20 @@ def main() -> int:
 
     results = runner.run_tests(test_cases)
 
-    reporter = JsonReporter(args.report)
-    reporter.write(results)
+    json_reporter = JsonReporter(args.report)
+    json_reporter.write(results)
+
+    html_reporter = HtmlReporter(
+        Path("results/latest_report.html")
+    )
+    html_reporter.write(results)
 
     _, failed, errors = print_results(results)
 
     print(f"\nJSON report: {args.report}")
+    print("HTML report: results/latest_report.html")
+
 
     return 0 if failed == 0 and errors == 0 else 1
-
-
 if __name__ == "__main__":
     raise SystemExit(main())
