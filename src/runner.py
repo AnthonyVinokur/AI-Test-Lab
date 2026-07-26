@@ -1,5 +1,9 @@
-from collections.abc import Callable
+
 from typing import Protocol
+from collections.abc import Callable
+
+from src.model_client import ModelClient
+from src.models import EvaluationResult, ModelResponse, PromptTest, TestResult
 
 from src.models import (
     Assertion,
@@ -24,12 +28,13 @@ class TestRunner:
     """Coordinates model execution and response evaluation."""
 
     def __init__(
-        self,
-        client: ModelClient,
-        evaluator: Evaluator,
+            self,
+            client: ModelClient,
+            evaluator: Callable[[PromptTest, ModelResponse], EvaluationResult],
     ) -> None:
-        self._client = client
-        self._evaluator = evaluator
+
+        self.client = client
+        self.evaluator = evaluator
 
     def run_tests(
         self,
@@ -41,9 +46,9 @@ class TestRunner:
         ]
 
     def run_test(self, test_case: PromptTest) -> TestResult:
-        model_response = self._client.generate(test_case.prompt)
+        model_response = self.client.generate(test_case.prompt)
 
-        evaluation = self._evaluator(
+        evaluation = self.evaluator(
             actual_response=model_response.content,
             assertion=test_case.assertion,
         )

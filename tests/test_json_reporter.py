@@ -8,7 +8,7 @@ from src.models import (
 )
 
 
-def test_json_reporter_creates_report(tmp_path):
+def test_json_reporter_creates_report(tmp_path) -> None:
     results = [
         ResultModel(
             test_id="greeting-001",
@@ -37,16 +37,34 @@ def test_json_reporter_creates_report(tmp_path):
         report_path.read_text(encoding="utf-8")
     )
 
+    assert "generated_at" in report_data
+
+    assert report_data["models"] == ["llama3.1"]
+
     assert report_data["summary"] == {
         "passed": 1,
         "failed": 0,
         "errors": 0,
         "total": 1,
+        "pass_rate_percent": 100.0,
     }
 
-    result = report_data["results"][0]
+    assert report_data["highlights"] == {
+        "highest_scoring_model": "llama3.1",
+        "fastest_model": "llama3.1",
+    }
 
-    assert result["test_id"] == "greeting-001"
-    assert result["status"] == "PASS"
-    assert result["actual_response"] == "Hello!"
-    assert result["passed"] is True
+    assert len(report_data["model_comparison"]) == 1
+
+    model_summary = report_data["model_comparison"][0]
+
+    assert model_summary["model"] == "llama3.1"
+    assert model_summary["passed"] == 1
+    assert model_summary["failed"] == 0
+    assert model_summary["errors"] == 0
+    assert model_summary["total"] == 1
+    assert model_summary["pass_rate_percent"] == 100.0
+    assert model_summary["average_response_time_seconds"] == 0.25
+
+    assert len(report_data["results"]) == 1
+    assert report_data["results"][0]["test_id"] == "greeting-001"

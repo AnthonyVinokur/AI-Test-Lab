@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import argparse
-
+from src.multi_model_runner import MultiModelRunner
 from src.evaluator import evaluate_response
 from src.json_reporter import JsonReporter
 from src.models import EvaluationStatus
@@ -17,12 +17,18 @@ from src.html_reporter import HtmlReporter
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="AI Test Lab")
 
-    parser.add_argument(
-        "--model",
-        default="llama3.1:latest",
-        help="Ollama model name",
-    )
+    # parser.add_argument(
+    #     "--model",
+    #     default="llama3.1:latest",
+    #     help="Ollama model name",
+    # )
 
+    parser.add_argument(
+        "--models",
+        nargs="+",
+        default=["llama3.1:latest"],
+        help="One or more Ollama model names",
+    )
     parser.add_argument(
         "--prompts",
         type=Path,
@@ -101,8 +107,14 @@ def main() -> int:
 
     test_cases = load_prompt_tests(args.prompts)
 
-    client = OllamaClient(model=args.model)
-    runner = TestRunner(client, evaluate_response)
+    # client = OllamaClient(model=args.model)
+    # runner = TestRunner(client, evaluate_response)
+    #
+    # results = runner.run_tests(test_cases)
+    runner = MultiModelRunner(
+        model_names=args.models,
+        evaluator=evaluate_response,
+    )
 
     results = runner.run_tests(test_cases)
 

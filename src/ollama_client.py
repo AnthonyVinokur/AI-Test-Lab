@@ -3,14 +3,14 @@ from typing import Any
 
 import ollama
 
-from src.models import OllamaMetrics, OllamaResponse
-from src.models import ModelResponse
+from src.model_client import ModelClient
+from src.models import ModelResponse, OllamaMetrics,OllamaResponse
 
 
 NANOSECONDS_PER_SECOND = 1_000_000_000
 
 
-class OllamaClient:
+class OllamaClient(ModelClient):
     """Sends prompts to an Ollama model and collects performance metrics."""
 
     def __init__(

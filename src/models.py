@@ -123,3 +123,29 @@ class TestResult(BaseModel):
 
     prompt_tokens_per_second: float = Field(default=0.0, ge=0.0)
     generation_tokens_per_second: float = Field(default=0.0, ge=0.0)
+
+class ModelSummary(BaseModel):
+    """Aggregated evaluation and performance results for one model."""
+
+    model: str
+
+    passed: int = Field(default=0, ge=0)
+    failed: int = Field(default=0, ge=0)
+    errors: int = Field(default=0, ge=0)
+    total: int = Field(default=0, ge=0)
+
+    pass_rate_percent: float = Field(default=0.0, ge=0.0, le=100.0)
+
+    average_response_time_seconds: float = Field(default=0.0, ge=0.0)
+    average_prompt_latency_seconds: float = Field(default=0.0, ge=0.0)
+    average_generation_latency_seconds: float = Field(default=0.0, ge=0.0)
+    average_model_load_seconds: float = Field(default=0.0, ge=0.0)
+
+    average_prompt_tokens: float = Field(default=0.0, ge=0.0)
+    average_output_tokens: float = Field(default=0.0, ge=0.0)
+
+    average_prompt_tokens_per_second: float = Field(default=0.0, ge=0.0)
+    average_generation_tokens_per_second: float = Field(
+        default=0.0,
+        ge=0.0,
+    )
