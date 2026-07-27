@@ -1,0 +1,45 @@
+{
+  "manifest": {
+    "id": "b1c478ed-ca1e-4aaa-9bb2-11defb399db3",
+    "name": "Core Regression",
+    "description": "Golden prompts for AI regression testing",
+    "status": "active",
+    "created_at": "2026-07-26T15:14:31.197717Z",
+    "updated_at": "2026-07-26T15:21:33.754030Z",
+    "latest_version": 2,
+    "tags": [
+      "regression"
+    ]
+  },
+  "versions": [
+    {
+      "version": 1,
+      "created_at": "2026-07-26T15:14:31.197795Z",
+      "created_by": "cli",
+      "change_summary": "Initial version",
+      "entries": [],
+      "checksum": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "version": 2,
+      "created_at": "2026-07-26T15:19:31.784393Z",
+      "created_by": "cli",
+      "change_summary": "Added entry: Basic greeting",
+      "entries": [
+        {
+          "id": "08713b50-2228-4de5-8151-4297aeba68f8",
+          "name": "Basic greeting",
+          "input": "Say hello",
+          "expected_output": "Hello",
+          "category": "functional",
+          "tags": [
+            "smoke"
+          ],
+          "metadata": {},
+          "enabled": true
+        }
+      ],
+      "checksum": "4c4a48f4424816caed10e4102455d9532e7102c33d4468cbc09406d6f41f30e6"
+    }
+  ]
+}

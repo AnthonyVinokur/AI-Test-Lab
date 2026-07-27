@@ -2,9 +2,6 @@
 from typing import Protocol
 from collections.abc import Callable
 
-from src.model_client import ModelClient
-from src.models import EvaluationResult, ModelResponse, PromptTest, TestResult
-
 from src.models import (
     Assertion,
     EvaluationResult,

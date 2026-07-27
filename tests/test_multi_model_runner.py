@@ -1,5 +1,4 @@
 from src.evaluator import evaluate_response
-from src.models import Assertion, AssertionType, PromptTest
 from src.multi_model_runner import MultiModelRunner
 
 

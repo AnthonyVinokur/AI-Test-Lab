@@ -4,8 +4,7 @@ from typing import Any
 import ollama
 
 from src.model_client import ModelClient
-from src.models import ModelResponse, OllamaMetrics,OllamaResponse
-
+from src.models import ModelResponse, OllamaMetrics
 
 NANOSECONDS_PER_SECOND = 1_000_000_000
 
