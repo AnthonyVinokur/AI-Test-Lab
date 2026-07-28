@@ -130,6 +130,17 @@ def _build_single_model_summary(
             result.generation_tokens_per_second
             for result in results
         ),
+
+        provider=results[0].provider,
+        total_estimated_cost_usd=round(
+            sum(result.estimated_cost_usd for result in results),
+            6,
+        ),
+        average_estimated_cost_usd=round(
+            sum(result.estimated_cost_usd for result in results)
+            / len(results),
+            6,
+        ),
     )
 
 

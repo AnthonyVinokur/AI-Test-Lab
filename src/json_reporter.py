@@ -42,6 +42,10 @@ class JsonReporter:
         )
 
         total = len(results)
+        total_estimated_cost_usd = round(
+            sum(result.estimated_cost_usd for result in results),
+            6,
+        )
         pass_rate_percent = (
             round(passed / total * 100, 2)
             if total
@@ -66,7 +70,9 @@ class JsonReporter:
                 "errors": errors,
                 "total": total,
                 "pass_rate_percent": pass_rate_percent,
+                "total_estimated_cost_usd": total_estimated_cost_usd,
             },
+
             "highlights": {
                 "highest_scoring_model": (
                     highest_scoring_model.model

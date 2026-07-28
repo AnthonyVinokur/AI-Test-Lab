@@ -27,7 +27,7 @@ class TestRunner:
     def __init__(
             self,
             client: ModelClient,
-            evaluator: Callable[[PromptTest, ModelResponse], EvaluationResult],
+            evaluator: Evaluator,
     ) -> None:
 
         self.client = client
@@ -46,8 +46,8 @@ class TestRunner:
         model_response = self.client.generate(test_case.prompt)
 
         evaluation = self.evaluator(
-            actual_response=model_response.content,
-            assertion=test_case.assertion,
+            model_response.content,
+            test_case.assertion,
         )
 
         return TestResult(
@@ -55,7 +55,11 @@ class TestRunner:
             name=test_case.name,
             category=test_case.category,
             prompt=test_case.prompt,
+
+            provider=model_response.provider,
             model=model_response.model,
+            estimated_cost_usd=model_response.estimated_cost_usd,
+
             actual_response=model_response.content,
             status=evaluation.status,
             passed=evaluation.passed,

@@ -21,10 +21,6 @@ class OllamaResponse(BaseModel):
     model: str
     metrics: OllamaMetrics
 
-# class AssertionType(StrEnum):
-#     CONTAINS = "contains"
-#     NOT_CONTAINS = "not_contains"
-#     EQUALS = "equals"
 
 class AssertionType(StrEnum):
     CONTAINS = "contains"
@@ -54,39 +50,27 @@ class PromptTest(BaseModel):
     prompt: str = Field(min_length=1)
     assertion: Assertion
 
+
 class ModelResponse(BaseModel):
     """Response returned by any supported LLM provider."""
 
+    provider: str = Field(default="unknown", min_length=1)
     content: str
     model: str
+
+    estimated_cost_usd: float = Field(default=0.0, ge=0.0)
 
     response_time_seconds: float = Field(default=0.0, ge=0.0)
 
     prompt_tokens: int = Field(default=0, ge=0)
     output_tokens: int = Field(default=0, ge=0)
 
-    prompt_latency_seconds: float = Field(
-        default=0.0,
-        ge=0.0,
-    )
-    generation_latency_seconds: float = Field(
-        default=0.0,
-        ge=0.0,
-    )
-    model_load_seconds: float = Field(
-        default=0.0,
-        ge=0.0,
-    )
+    prompt_latency_seconds: float = Field(default=0.0, ge=0.0)
+    generation_latency_seconds: float = Field(default=0.0, ge=0.0)
+    model_load_seconds: float = Field(default=0.0, ge=0.0)
 
-    prompt_tokens_per_second: float = Field(
-        default=0.0,
-        ge=0.0,
-    )
-    generation_tokens_per_second: float = Field(
-        default=0.0,
-        ge=0.0,
-    )
-
+    prompt_tokens_per_second: float = Field(default=0.0, ge=0.0)
+    generation_tokens_per_second: float = Field(default=0.0, ge=0.0)
 
 class EvaluationResult(BaseModel):
     passed: bool
@@ -101,6 +85,11 @@ class TestResult(BaseModel):
     name: str
     category: str
     prompt: str
+
+    provider: str = Field(default="unknown", min_length=1)
+    model: str
+
+    estimated_cost_usd: float = Field(default=0.0, ge=0.0)
 
     model: str
     actual_response: str
@@ -126,13 +115,18 @@ class TestResult(BaseModel):
 
 class ModelSummary(BaseModel):
     """Aggregated evaluation and performance results for one model."""
-
+    provider: str = Field(default="unknown", min_length=1)
     model: str
+
+    total_estimated_cost_usd: float = Field(default=0.0, ge=0.0)
+    average_estimated_cost_usd: float = Field(default=0.0, ge=0.0)
 
     passed: int = Field(default=0, ge=0)
     failed: int = Field(default=0, ge=0)
     errors: int = Field(default=0, ge=0)
     total: int = Field(default=0, ge=0)
+
+
 
     pass_rate_percent: float = Field(default=0.0, ge=0.0, le=100.0)
 

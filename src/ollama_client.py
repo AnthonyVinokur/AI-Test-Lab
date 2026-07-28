@@ -66,28 +66,21 @@ class OllamaClient(ModelClient):
             ),
         )
 
-        # return OllamaResponse(
-        #     text=response_text,
-        #     model=data.get("model", self.model),
-        #     metrics=metrics,
-        # )
+
         return ModelResponse(
+            provider="ollama",
             content=response_text,
             model=data.get("model", self.model),
+            estimated_cost_usd=0.0,
+
             response_time_seconds=metrics.total_latency_seconds,
             prompt_tokens=metrics.prompt_tokens,
             output_tokens=metrics.response_tokens,
             prompt_latency_seconds=metrics.prompt_latency_seconds,
-            generation_latency_seconds=(
-                metrics.generation_latency_seconds
-            ),
+            generation_latency_seconds=metrics.generation_latency_seconds,
             model_load_seconds=metrics.model_load_seconds,
-            prompt_tokens_per_second=(
-                metrics.prompt_tokens_per_second
-            ),
-            generation_tokens_per_second=(
-                metrics.generation_tokens_per_second
-            ),
+            prompt_tokens_per_second=metrics.prompt_tokens_per_second,
+            generation_tokens_per_second=metrics.generation_tokens_per_second,
         )
 
     @staticmethod

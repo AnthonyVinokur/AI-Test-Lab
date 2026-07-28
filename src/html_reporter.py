@@ -41,6 +41,11 @@ class HtmlReporter:
 
         total = len(results)
 
+        total_estimated_cost_usd = sum(
+            result.estimated_cost_usd
+            for result in results
+        )
+
         pass_rate_percent = (
             passed / total * 100
             if total
@@ -135,7 +140,7 @@ class HtmlReporter:
         
             
         .result-details {{
-        min - width: 140px;
+        min-width: 140px;
         }}
 
         .result-details summary{{
@@ -146,15 +151,15 @@ class HtmlReporter:
         }}
 
         .result-details summary:hover {{
-                text - decoration: underline;
+                text-decoration: underline;
         }}
 
         .result-details[open] {{
-                min - width: 520px;
+                min-width: 520px;
         }}
 
         .details-content {{
-                margin - top: 14px;
+                margin-top: 14px;
             padding: 18px;
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -163,11 +168,11 @@ class HtmlReporter:
         }}
 
         .detail-section {{
-                margin - bottom: 20px;
+                margin-bottom: 20px;
         }}
 
         .detail-section:last-child {{
-                margin - bottom: 0;
+                margin-bottom: 0;
         }}
 
         .detail-section h3 {{
@@ -193,7 +198,7 @@ class HtmlReporter:
         }}
 
         .detail-section pre {{
-                max - width: 700px;
+                max-width: 700px;
             max-height: 360px;
             margin: 0;
             padding: 14px;
@@ -216,7 +221,7 @@ class HtmlReporter:
         }}
 
         .metrics-grid {{
-                grid - template - columns:
+                grid-template-columns:
                 minmax(150px, 190px)
                 minmax(90px, 1fr)
                 minmax(150px, 190px)
@@ -242,7 +247,7 @@ class HtmlReporter:
         .summary {{
             display: grid;
             grid-template-columns: repeat(
-                5,
+                6,
                 minmax(140px, 1fr)
             );
             gap: 16px;
@@ -479,6 +484,13 @@ class HtmlReporter:
                     {pass_rate_percent:.1f}%
                 </span>
             </div>
+            <div class="summary-card">
+                <span class="summary-label">Total Estimated Cost</span>
+                <span class="summary-value">
+                    ${total_estimated_cost_usd:.6f}
+                </span>
+            </div>
+            
         </section>
 
         <section class="highlight-grid">
@@ -508,7 +520,8 @@ class HtmlReporter:
         <div class="table-wrapper">
             <table>
                 <thead>
-                    <tr>
+                   <tr>
+                        <th>Provider</th>
                         <th>Model</th>
                         <th class="numeric">Passed</th>
                         <th class="numeric">Failed</th>
@@ -519,6 +532,8 @@ class HtmlReporter:
                         <th class="numeric">Avg Generation</th>
                         <th class="numeric">Avg Speed</th>
                         <th class="numeric">Avg Output Tokens</th>
+                        <th class="numeric">Total Cost</th>
+                        <th class="numeric">Avg Cost</th>
                     </tr>
                 </thead>
 
@@ -535,9 +550,12 @@ class HtmlReporter:
                 <thead>
                     <tr>
                         <th>Test ID</th>
+                        <th>Provider</th>
                         <th>Model</th>
                         <th>Status</th>
                         <th class="numeric">Response Time</th>
+                        <th class="numeric">Estimated Cost</th>
+                        <th>Details</th>
                     </tr>
                 </thead>
 
@@ -591,11 +609,16 @@ class HtmlReporter:
         )
 
         return f"""
+
 <tr>
+    <td>{escape(summary.provider)}</td>
+    
     <td class="model-name">
         {escape(summary.model)}
         {badge_html}
     </td>
+
+
 
     <td class="numeric">{summary.passed}</td>
     <td class="numeric">{summary.failed}</td>
@@ -617,11 +640,20 @@ class HtmlReporter:
     <td class="numeric">
         {summary.average_generation_tokens_per_second:.2f} tok/s
     </td>
-
+    
     <td class="numeric">
         {summary.average_output_tokens:.1f}
     </td>
-</tr>
+        
+    <td class="numeric">
+        ${summary.total_estimated_cost_usd:.6f}
+    </td>
+        
+    <td class="numeric">
+        ${summary.average_estimated_cost_usd:.6f}
+    </td>
+</tr>               
+ 
 """
 
     @staticmethod
@@ -633,35 +665,6 @@ class HtmlReporter:
             return "pass-rate-medium"
 
         return "pass-rate-low"
-
-    #     @staticmethod
-    #     def _create_result_row(result: TestResult) -> str:
-    #         status_class = {
-    #             EvaluationStatus.PASS: "status-pass",
-    #             EvaluationStatus.FAIL: "status-fail",
-    #             EvaluationStatus.ERROR: "status-error",
-    #         }.get(
-    #             result.status,
-    #             "status-error",
-    #         )
-    #
-    #         return f"""
-    # <tr>
-    #     <td>{escape(str(result.test_id))}</td>
-    #
-    #     <td>{escape(result.model)}</td>
-    #
-    #     <td>
-    #         <span class="status {status_class}">
-    #             {escape(str(result.status.value))}
-    #         </span>
-    #     </td>
-    #
-    #     <td class="numeric">
-    #         {result.response_time_seconds:.3f} s
-    #     </td>
-    # </tr>
-    # """
 
     @staticmethod
     def _create_result_row(result: TestResult) -> str:
@@ -677,6 +680,8 @@ class HtmlReporter:
         return f"""
     <tr>
         <td>{escape(str(result.test_id))}</td>
+        
+        <td>{escape(result.provider)}</td>
     
         <td>{escape(result.model)}</td>
     
@@ -689,6 +694,10 @@ class HtmlReporter:
         <td class="numeric">
             {result.response_time_seconds:.3f} s
         </td>
+        
+        <td class="numeric">
+             ${result.estimated_cost_usd:.6f}
+        </td>
     
         <td>
             <details class="result-details">
@@ -699,7 +708,15 @@ class HtmlReporter:
                         <h3>Test Information</h3>
     
                         <dl class="detail-grid">
-                            <dt>Name</dt>
+                        <dt>Provider</dt>
+                            <dd>{escape(result.provider)}</dd>
+                            
+                            <dt>Model</dt>
+                            <dd>{escape(result.model)}</dd>
+                            
+                            <dt>Estimated cost</dt>
+                            <dd>${result.estimated_cost_usd:.6f}</dd>
+                        <dt>Name</dt>
                             <dd>{escape(result.name)}</dd>
     
                             <dt>Category</dt>

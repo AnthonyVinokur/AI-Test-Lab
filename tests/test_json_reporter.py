@@ -15,7 +15,9 @@ def test_json_reporter_creates_report(tmp_path) -> None:
             name="Basic greeting test",
             category="functional",
             prompt="Say hello.",
+            provider="ollama",
             model="llama3.1",
+            estimated_cost_usd=0.0,
             actual_response="Hello!",
             passed=True,
             status=EvaluationStatus.PASS,
@@ -47,6 +49,7 @@ def test_json_reporter_creates_report(tmp_path) -> None:
         "errors": 0,
         "total": 1,
         "pass_rate_percent": 100.0,
+        "total_estimated_cost_usd": 0.0,
     }
 
     assert report_data["highlights"] == {
@@ -68,3 +71,11 @@ def test_json_reporter_creates_report(tmp_path) -> None:
 
     assert len(report_data["results"]) == 1
     assert report_data["results"][0]["test_id"] == "greeting-001"
+    result = report_data["results"][0]
+    assert report_data["summary"]["total_estimated_cost_usd"] == 0.0
+    assert model_summary["provider"] == "ollama"
+    assert model_summary["total_estimated_cost_usd"] == 0.0
+    assert model_summary["average_estimated_cost_usd"] == 0.0
+
+    assert result["provider"] == "ollama"
+    assert result["estimated_cost_usd"] == 0.0
