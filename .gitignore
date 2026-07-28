@@ -20,3 +20,5 @@ results/
 # OS files
 .DS_Store
 Thumbs.db
+.env
+src/results.json
