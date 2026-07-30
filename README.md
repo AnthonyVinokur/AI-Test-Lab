@@ -28,3 +28,4 @@ A professional AI and LLM testing framework built with Python.
 ## Current Status
 
 Sprint 1
+Sprint 2
