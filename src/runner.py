@@ -52,12 +52,18 @@ class TestRunner:
         status = evaluation.status
         reason = evaluation.reason
 
-        if (
-                test_case.expected_to_fail
-                and evaluation.status == EvaluationStatus.FAIL
-        ):
-            status = EvaluationStatus.XFAIL
-            reason = f"Expected failure: {evaluation.reason}"
+        if test_case.expected_to_fail:
+            if evaluation.status == EvaluationStatus.FAIL:
+                status = EvaluationStatus.XFAIL
+                reason = f"Expected failure: {evaluation.reason}"
+
+            elif evaluation.status == EvaluationStatus.PASS:
+                status = EvaluationStatus.XPASS
+                reason = (
+                    "Unexpected pass: the test was marked as expected "
+                    "to fail, but the assertion passed."
+                )
+
 
         return TestResult(
             test_id=test_case.id,

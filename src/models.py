@@ -36,6 +36,7 @@ class EvaluationStatus(StrEnum):
     PASS = "PASS"
     FAIL = "FAIL"
     XFAIL = "XFAIL"
+    XPASS = "XPASS"
     ERROR = "ERROR"
 
 

@@ -42,13 +42,13 @@
   "expected_to_fail": true
  },
  {
-  "id": "prefix-001",
-  "name": "Python definition prefix",
-  "category": "knowledge",
+  "id": "unexpected-failure-demo",
+  "name": "Unexpected failure demonstration",
+  "category": "framework-validation",
   "prompt": "Start your response with the words: Python is",
   "assertion": {
     "type": "starts_with",
-    "expected": "Python is"
+    "expected": "This text should never match"
   }
  },
   {
