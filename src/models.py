@@ -52,6 +52,7 @@ class PromptTest(BaseModel):
     prompt: str = Field(min_length=1)
     assertion: Assertion
     expected_to_fail: bool = False
+    xfail_reason: str | None = None
 
 
 class ModelResponse(BaseModel):
