@@ -63,9 +63,13 @@ def test_json_reporter_creates_report(tmp_path) -> None:
 
     assert model_summary["model"] == "llama3.1"
     assert model_summary["passed"] == 1
-    assert model_summary["failed"] == 0
+
+    assert model_summary["expected_failures"] == 0
+    assert model_summary["unexpected_failures"] == 0
+
     assert model_summary["errors"] == 0
     assert model_summary["total"] == 1
+
     assert model_summary["pass_rate_percent"] == 100.0
     assert model_summary["average_response_time_seconds"] == 0.25
 

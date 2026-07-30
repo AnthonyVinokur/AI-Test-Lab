@@ -1,24 +1,61 @@
 ---
 title: Introduction
-description: Learn what AI Test Lab is and why it exists.
+description: Learn what AI Test Lab does, why AI systems need specialized testing, and how the framework is structured.
 ---
 
-# AI Test Lab
+# Introduction
 
-AI Test Lab is an open-source Python framework for testing and evaluating AI systems and large language models.
+AI Test Lab is an open-source Python framework for testing, evaluating, and benchmarking AI and large language model responses.
 
-## Current capabilities
+It applies familiar software-testing principles to systems whose behavior is probabilistic, variable, and difficult to validate with traditional assertions alone.
 
-- Prompt-based test execution
-- Ollama model integration
-- Deterministic assertions
-- JSON reports
-- HTML reports
-- Response latency metrics
-- Token usage metrics
+## Why AI systems need specialized testing
 
-## Project goal
+Traditional software is usually deterministic.
 
-AI Test Lab brings established software-testing practices to AI applications.
+Given the same input and the same application state, a function is expected to return the same output.
 
-Traditional software usually returns predictable results. Large language models may produce different responses for the same prompt. AI Test Lab provides a structured way to evaluate responses, measure performance, and identify regressions.
+Large language models behave differently. Their responses can vary in:
+
+- wording;
+- structure;
+- completeness;
+- factual accuracy;
+- safety;
+- tone;
+- latency;
+- token usage.
+
+This means AI testing cannot rely only on exact expected values.
+
+A useful AI evaluation framework must verify acceptable behavior while also recording enough evidence to explain why a result passed or failed.
+
+## What AI Test Lab does
+
+AI Test Lab separates the evaluation workflow into clear stages:
+
+1. Load structured prompt tests.
+2. Send each prompt to a selected model.
+3. Capture the model response and execution metrics.
+4. Evaluate the response using defined assertions.
+5. Assign a `PASS`, `FAIL`, or `ERROR` status.
+6. Generate structured JSON and HTML reports.
+
+## Core workflow
+
+```text
+Prompt test definition
+        ↓
+Prompt loader
+        ↓
+Test runner
+        ↓
+AI model client
+        ↓
+Model response
+        ↓
+Response evaluator
+        ↓
+Test result
+        ↓
+JSON and HTML reports

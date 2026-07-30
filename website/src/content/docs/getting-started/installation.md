@@ -1,43 +1,26 @@
 ---
 title: Installation
-description: Install and run AI Test Lab locally.
+description: Install AI Test Lab, configure the Python environment, and run your first evaluation.
 ---
 
 # Installation
 
+This guide explains how to install AI Test Lab locally and verify that the framework is working.
+
+## Requirements
+
+Before starting, install:
+
+- Python 3.13 or later
+- Git
+- Ollama
+- PyCharm or another Python IDE
+- Node.js only for the documentation website
+
+You should also have at least one Ollama model available locally.
+
 ## Clone the repository
 
-```bash
+```powershell
 git clone https://github.com/AnthonyVinokur/AI-Test-Lab.git
 cd AI-Test-Lab
-```
-
-## Create a virtual environment
-
-```bash
-python -m venv .venv
-```
-
-## Activate the environment on Windows
-
-```powershell
-.venv\Scripts\Activate.ps1
-```
-
-## Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-## Run the tests
-
-```bash
-python -m pytest -v
-```
-
-## Run AI Test Lab
-
-```bash
-python main.py
-```

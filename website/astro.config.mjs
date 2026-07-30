@@ -11,6 +11,8 @@ export default defineConfig({
       description:
         "An open-source framework for testing, evaluating, and benchmarking AI and large language models.",
 
+      customCss: ["./src/styles/custom.css"],
+
       social: [
         {
           icon: "github",
@@ -30,6 +32,15 @@ export default defineConfig({
             {
               label: "Installation",
               slug: "getting-started/installation",
+            },
+          ],
+        },
+        {
+          label: "Guides",
+          items: [
+            {
+              label: "Test Reports",
+              slug: "guides/reports",
             },
           ],
         },

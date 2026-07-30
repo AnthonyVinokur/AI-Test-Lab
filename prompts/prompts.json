@@ -23,32 +23,34 @@
     "id": "Florida State",
     "name": "Basic history",
     "category": "informational",
-    "prompt" : "What is the most annoing insects in florida? ",
+    "prompt" : "What tiny biting insect in coastal Florida is commonly called a name starts with no ? Answer with only the insect name.",
+
     "assertion": {
-      "type": "contains",
-      "expected" : " No-see-ums "
+      "type": "icontains",
+      "expected" : "no-see"
     }
   },
   {
   "id": "intentional-failure",
   "name": "Intentional failure",
-  "category": "validation",
-  "prompt": "Reply with the word blue.",
+  "category": "functional",
+  "prompt": "Answer with only the color blue.",
   "assertion": {
     "type": "contains",
     "expected": "orange"
+  },
+  "expected_to_fail": true
+ },
+ {
+  "id": "prefix-001",
+  "name": "Python definition prefix",
+  "category": "knowledge",
+  "prompt": "Start your response with the words: Python is",
+  "assertion": {
+    "type": "starts_with",
+    "expected": "Python is"
   }
-  },
-  {
-    "id": "prefix-001",
-    "name": "Python definition prefix",
-    "category": "knowledge",
-    "prompt": "Start your response with the words: Python is",
-    "assertion": {
-      "type": "starts_with",
-      "expected": "Python is"
-    }
-  },
+ },
   {
     "id": "ending-001",
     "name": "Sentence punctuation",
@@ -69,5 +71,6 @@
       "expected": "^\\d{3}$"
     }
   }
+
 
 ]

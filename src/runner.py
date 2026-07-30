@@ -7,7 +7,7 @@ from src.models import (
     EvaluationResult,
     ModelResponse,
     PromptTest,
-    TestResult,
+    TestResult, EvaluationStatus,
 )
 
 
@@ -48,7 +48,16 @@ class TestRunner:
         evaluation = self.evaluator(
             model_response.content,
             test_case.assertion,
-        )
+                )
+        status = evaluation.status
+        reason = evaluation.reason
+
+        if (
+                test_case.expected_to_fail
+                and evaluation.status == EvaluationStatus.FAIL
+        ):
+            status = EvaluationStatus.XFAIL
+            reason = f"Expected failure: {evaluation.reason}"
 
         return TestResult(
             test_id=test_case.id,
@@ -61,11 +70,12 @@ class TestRunner:
             estimated_cost_usd=model_response.estimated_cost_usd,
 
             actual_response=model_response.content,
-            status=evaluation.status,
+            status=status,
+            expected_to_fail=test_case.expected_to_fail,
             passed=evaluation.passed,
             assertion_type=evaluation.assertion_type,
             expected=evaluation.expected,
-            reason=evaluation.reason,
+            reason=reason,
 
             response_time_seconds=(
                 model_response.response_time_seconds

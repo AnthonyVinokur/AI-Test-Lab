@@ -76,10 +76,17 @@ def _build_single_model_summary(
         result.status == EvaluationStatus.PASS
         for result in results
     )
-    failed = sum(
+
+    expected_failures = sum(
+        result.status == EvaluationStatus.XFAIL
+        for result in results
+    )
+
+    unexpected_failures = sum(
         result.status == EvaluationStatus.FAIL
         for result in results
     )
+
     errors = sum(
         result.status == EvaluationStatus.ERROR
         for result in results
@@ -93,8 +100,10 @@ def _build_single_model_summary(
 
     return ModelSummary(
         model=model,
+        provider=results[0].provider,
         passed=passed,
-        failed=failed,
+        expected_failures=expected_failures,
+        unexpected_failures=unexpected_failures,
         errors=errors,
         total=total,
         pass_rate_percent=round(pass_rate_percent, 2),
@@ -130,12 +139,12 @@ def _build_single_model_summary(
             result.generation_tokens_per_second
             for result in results
         ),
-
-        provider=results[0].provider,
-        total_estimated_cost_usd=round(
-            sum(result.estimated_cost_usd for result in results),
-            6,
-        ),
+        #
+        # provider=results[0].provider,
+        # total_estimated_cost_usd=round(
+        #     sum(result.estimated_cost_usd for result in results),
+        #     6,
+        # ),
         average_estimated_cost_usd=round(
             sum(result.estimated_cost_usd for result in results)
             / len(results),

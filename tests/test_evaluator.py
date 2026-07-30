@@ -134,6 +134,7 @@ def test_regex_passes() -> None:
     assert result.status == EvaluationStatus.PASS
 
 
+
 def test_regex_fails() -> None:
     assertion = Assertion(
         type=AssertionType.REGEX,

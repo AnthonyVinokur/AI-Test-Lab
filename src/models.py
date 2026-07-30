@@ -35,6 +35,7 @@ class AssertionType(StrEnum):
 class EvaluationStatus(StrEnum):
     PASS = "PASS"
     FAIL = "FAIL"
+    XFAIL = "XFAIL"
     ERROR = "ERROR"
 
 
@@ -49,6 +50,7 @@ class PromptTest(BaseModel):
     category: str = Field(min_length=1)
     prompt: str = Field(min_length=1)
     assertion: Assertion
+    expected_to_fail: bool = False
 
 
 class ModelResponse(BaseModel):
@@ -97,6 +99,8 @@ class TestResult(BaseModel):
     passed: bool
     status: EvaluationStatus
 
+    expected_to_fail: bool = False
+
     assertion_type: AssertionType
     expected: str
     reason: str
@@ -120,9 +124,9 @@ class ModelSummary(BaseModel):
 
     total_estimated_cost_usd: float = Field(default=0.0, ge=0.0)
     average_estimated_cost_usd: float = Field(default=0.0, ge=0.0)
-
     passed: int = Field(default=0, ge=0)
-    failed: int = Field(default=0, ge=0)
+    expected_failures: int = Field(default=0, ge=0)
+    unexpected_failures: int = Field(default=0, ge=0)
     errors: int = Field(default=0, ge=0)
     total: int = Field(default=0, ge=0)
 

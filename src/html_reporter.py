@@ -30,10 +30,17 @@ class HtmlReporter:
             result.status == EvaluationStatus.PASS
             for result in results
         )
-        failed = sum(
+
+        expected_failures = sum(
+            result.status == EvaluationStatus.XFAIL
+            for result in results
+        )
+
+        unexpected_failures = sum(
             result.status == EvaluationStatus.FAIL
             for result in results
         )
+
         errors = sum(
             result.status == EvaluationStatus.ERROR
             for result in results
@@ -247,7 +254,7 @@ class HtmlReporter:
         .summary {{
             display: grid;
             grid-template-columns: repeat(
-                6,
+                7,
                 minmax(140px, 1fr)
             );
             gap: 16px;
@@ -272,6 +279,15 @@ class HtmlReporter:
             font-size: 28px;
             font-weight: bold;
         }}
+        
+        .xfail-value {{
+            color: #b45309;
+       }}
+       
+       .status-xfail {{
+           background-color: #fef3c7;
+            color: #92400e;
+       }}
 
         .passed-value {{
             color: #15803d;
@@ -465,9 +481,16 @@ class HtmlReporter:
             </div>
 
             <div class="summary-card">
-                <span class="summary-label">Failed</span>
+                <span class="summary-label">Expected Failures</span>
+                <span class="summary-value xfail-value">
+                    {expected_failures}
+                </span>
+            </div>
+            
+            <div class="summary-card">
+                <span class="summary-label">Unexpected Failures</span>
                 <span class="summary-value failed-value">
-                    {failed}
+                    {unexpected_failures}
                 </span>
             </div>
 
@@ -518,24 +541,25 @@ class HtmlReporter:
         <h2>Model Comparison</h2>
 
         <div class="table-wrapper">
-            <table>
-                <thead>
-                   <tr>
-                        <th>Provider</th>
-                        <th>Model</th>
-                        <th class="numeric">Passed</th>
-                        <th class="numeric">Failed</th>
-                        <th class="numeric">Errors</th>
-                        <th class="numeric">Total</th>
-                        <th class="numeric">Pass Rate</th>
-                        <th class="numeric">Avg Response</th>
-                        <th class="numeric">Avg Generation</th>
-                        <th class="numeric">Avg Speed</th>
-                        <th class="numeric">Avg Output Tokens</th>
-                        <th class="numeric">Total Cost</th>
-                        <th class="numeric">Avg Cost</th>
-                    </tr>
-                </thead>
+    <table>
+        <thead>
+            <tr>
+                <th>Provider</th>
+                <th>Model</th>
+                <th class="numeric">Passed</th>
+                <th class="numeric">Expected Failures</th>
+                <th class="numeric">Unexpected Failures</th>
+                <th class="numeric">Errors</th>
+                <th class="numeric">Total</th>
+                <th class="numeric">Pass Rate</th>
+                <th class="numeric">Avg Response</th>
+                <th class="numeric">Avg Generation</th>
+                <th class="numeric">Avg Speed</th>
+                <th class="numeric">Avg Output Tokens</th>
+                <th class="numeric">Total Cost</th>
+                <th class="numeric">Avg Cost</th>
+            </tr>
+        </thead>
 
                 <tbody>
                     {comparison_rows}
@@ -621,7 +645,8 @@ class HtmlReporter:
 
 
     <td class="numeric">{summary.passed}</td>
-    <td class="numeric">{summary.failed}</td>
+    <td class="numeric">{summary.expected_failures}</td>
+    <td class="numeric">{summary.unexpected_failures}</td>
     <td class="numeric">{summary.errors}</td>
     <td class="numeric">{summary.total}</td>
 

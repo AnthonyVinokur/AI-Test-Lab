@@ -77,7 +77,8 @@ def test_build_model_summaries_groups_results_by_model() -> None:
     )
 
     assert model_a.passed == 1
-    assert model_a.failed == 1
+    assert model_a.expected_failures == 0
+    assert model_a.unexpected_failures == 1
     assert model_a.errors == 0
     assert model_a.total == 2
     assert model_a.pass_rate_percent == 50.0

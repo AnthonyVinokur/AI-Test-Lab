@@ -49,30 +49,56 @@ def load_test_cases(args: argparse.Namespace) -> list:
     return test_cases
 
 
-def print_results(results: list) -> tuple[int, int, int]:
-    passed = failed = errors = 0
+def print_results(results: list) -> tuple[int, int, int, int]:
+    passed = 0
+    expected_failures = 0
+    unexpected_failures = 0
+    errors = 0
+
     print("\n========== RESULTS ==========\n")
+
     for result in results:
-        print(f"{result.test_id:<20}{result.status.value:<8}{result.reason}\n{'':20}Response: {result.actual_response}")
+        print(
+            f"{result.test_id:<20}"
+            f"{result.status.value:<8}"
+            f"{result.reason}\n"
+            f"{'':20}Response: {result.actual_response}"
+        )
         print(f"{'':20}Model: {result.model}")
         print(f"{'':20}Prompt tokens: {result.prompt_tokens}")
         print(f"{'':20}Output tokens: {result.output_tokens}")
         print(f"{'':20}Response time: {result.response_time_seconds:.3f} s")
         print(f"{'':20}Prompt latency: {result.prompt_latency_seconds:.3f} s")
-        print(f"{'':20}Generation latency: {result.generation_latency_seconds:.3f} s")
-        print(f"{'':20}Generation speed: {result.generation_tokens_per_second:.2f} tok/s")
+        print(
+            f"{'':20}Generation latency: "
+            f"{result.generation_latency_seconds:.3f} s"
+        )
+        print(
+            f"{'':20}Generation speed: "
+            f"{result.generation_tokens_per_second:.2f} tok/s"
+        )
         print(f"{'':20}Model load time: {result.model_load_seconds:.3f} s")
         print()
-        if result.status == EvaluationStatus.PASS: passed += 1
-        elif result.status == EvaluationStatus.FAIL: failed += 1
-        else: errors += 1
-    print("=============================")
-    print(f"Passed : {passed}")
-    print(f"Failed : {failed}")
-    print(f"Errors : {errors}")
-    print(f"Total  : {len(results)}")
-    return passed, failed, errors
 
+        if result.status == EvaluationStatus.PASS:
+            passed += 1
+        elif result.status == EvaluationStatus.XFAIL:
+            expected_failures += 1
+        elif result.status == EvaluationStatus.FAIL:
+            unexpected_failures += 1
+        elif result.status == EvaluationStatus.ERROR:
+            errors += 1
+
+    total = len(results)
+
+    print("=============================")
+    print(f"Passed              : {passed}")
+    print(f"Expected failures   : {expected_failures}")
+    print(f"Unexpected failures : {unexpected_failures}")
+    print(f"Errors              : {errors}")
+    print(f"Total               : {total}")
+
+    return passed, expected_failures, unexpected_failures, errors
 
 def main() -> int:
     args = parse_args()
@@ -85,10 +111,18 @@ def main() -> int:
     results = runner.run_tests(test_cases)
     JsonReporter(args.report).write(results)
     HtmlReporter(args.html_report).write(results)
-    _, failed, errors = print_results(results)
+
+    (
+        _,
+        expected_failures,
+        unexpected_failures,
+        errors,
+    ) = print_results(results)
+
     print(f"\nJSON report: {args.report}")
     print(f"HTML report: {args.html_report}")
-    return 0 if failed == 0 and errors == 0 else 1
+
+    return 0 if unexpected_failures == 0 and errors == 0 else 1
 
 
 if __name__ == "__main__":
