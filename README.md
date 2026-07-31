@@ -225,7 +225,7 @@ python main.py \
 
 A test defines the input, the evaluation rule, and the expected behavior. The runner captures the model response and operational metrics, while the evaluator converts the observation into a traceable test result.
 
-## Project structure
+## Project  structure
 
 ```text
 AI-Test-Lab/
