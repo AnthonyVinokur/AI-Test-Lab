@@ -1,26 +1,23 @@
-from collections.abc import Callable
 
-from src.models import Assertion, EvaluationResult, PromptTest, TestResult
+from src.evaluation_engines import EvaluationEngine
+from src.models import PromptTest, TestResult
 from src.ollama_client import OllamaClient
 from src.runner import TestRunner
 
 
-Evaluator = Callable[[str, Assertion], EvaluationResult]
-
-
 class MultiModelRunner:
-    """Runs the same prompt test suite against multiple Ollama models."""
+    """Runs the same test suite against multiple Ollama models."""
 
     def __init__(
         self,
         model_names: list[str],
-        evaluator: Evaluator,
+        evaluation_engine: EvaluationEngine,
     ) -> None:
         if not model_names:
             raise ValueError("At least one model name is required.")
 
         self._model_names = model_names
-        self._evaluator = evaluator
+        self._evaluation_engine = evaluation_engine
 
     def run_tests(
         self,
@@ -30,12 +27,12 @@ class MultiModelRunner:
 
         for model_name in self._model_names:
             client = OllamaClient(model=model_name)
+
             runner = TestRunner(
                 client=client,
-                evaluator=self._evaluator,
+                evaluation_engine=self._evaluation_engine,
             )
 
-            model_results = runner.run_tests(test_cases)
-            all_results.extend(model_results)
+            all_results.extend(runner.run_tests(test_cases))
 
         return all_results

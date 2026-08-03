@@ -1,5 +1,1 @@
-from src.cli.app import main
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+"""Command-line interface package for AI Test Lab."""

@@ -33,13 +33,23 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help=(
             "Path to a prompt JSON file. "
-            "Defaults to prompts/prompts.json when --dataset is omitted."
+            "Defaults to prompts/prompts.json when no dataset source "
+            "is supplied."
         ),
     )
 
     source_group.add_argument(
         "--dataset",
         help="ID of an active managed dataset.",
+    )
+
+    source_group.add_argument(
+        "--validate-dataset",
+        metavar="DATASET_ID",
+        help=(
+            "Validate a managed dataset without running model "
+            "evaluations."
+        ),
     )
 
     parser.add_argument(
@@ -53,7 +63,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--dataset-version",
         type=int,
         default=None,
-        help="Specific dataset version. The latest version is used by default.",
+        help=(
+            "Specific dataset version. "
+            "The latest version is used by default."
+        ),
     )
 
     parser.add_argument(
@@ -70,6 +83,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Destination path for the HTML report.",
     )
 
+    parser.add_argument(
+        "--engine",
+        choices=["builtin", "deepeval"],
+        default="builtin",
+        help="Evaluation engine to use.",
+    )
+
     return parser
 
 
@@ -81,7 +101,17 @@ def parse_args(
     parser = build_parser()
     args = parser.parse_args(argv)
 
-    if args.dataset_version is not None and args.dataset is None:
-        parser.error("--dataset-version requires --dataset")
+    if (
+        args.dataset_version is not None
+        and args.dataset is None
+        and args.validate_dataset is None
+    ):
+        parser.error(
+            "--dataset-version requires "
+            "--dataset or --validate-dataset"
+        )
+
+    if args.dataset_version is not None and args.dataset_version < 1:
+        parser.error("--dataset-version must be 1 or greater")
 
     return args

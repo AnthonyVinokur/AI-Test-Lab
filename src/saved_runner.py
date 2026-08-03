@@ -1,12 +1,13 @@
-from time import perf_counter
+from collections.abc import Callable
 from typing import Protocol
+from time import perf_counter
 
-from src.evaluation_engines import EvaluationEngine
 from src.models import (
-    EvaluationStatus,
+    Assertion,
+    EvaluationResult,
     ModelResponse,
     PromptTest,
-    TestResult,
+    TestResult, EvaluationStatus,
 )
 from src.result_classifier import classify_status
 
@@ -18,20 +19,24 @@ class ModelClient(Protocol):
         ...
 
 
+Evaluator = Callable[[str, Assertion], EvaluationResult]
+
+
 class TestRunner:
     """Coordinates model execution and response evaluation."""
 
     def __init__(
-        self,
-        client: ModelClient,
-        evaluation_engine: EvaluationEngine,
+            self,
+            client: ModelClient,
+            evaluator: Evaluator,
     ) -> None:
+
         self.client = client
-        self.evaluation_engine = evaluation_engine
+        self.evaluator = evaluator
 
     def run_tests(
-        self,
-        test_cases: list[PromptTest],
+            self,
+            test_cases: list[PromptTest],
     ) -> list[TestResult]:
         return [
             self.run_test(test_case)
@@ -45,15 +50,17 @@ class TestRunner:
 
         response_time_seconds = perf_counter() - start_time
 
-        evaluation = self.evaluation_engine.evaluate(
-            actual_response=model_response.content,
-            assertion=test_case.assertion,
+        evaluation = self.evaluator(
+            model_response.content,
+            test_case.assertion,
         )
 
         final_status = classify_status(
             prompt_test=test_case,
             assertion_passed=evaluation.passed,
         )
+
+        reason = evaluation.reason
 
         return TestResult(
             test_id=test_case.id,
@@ -72,21 +79,15 @@ class TestRunner:
 
             assertion_type=evaluation.assertion_type,
             expected=evaluation.expected,
-            reason=evaluation.reason,
+            reason=reason,
 
             response_time_seconds=response_time_seconds,
 
             prompt_tokens=model_response.prompt_tokens,
             output_tokens=model_response.output_tokens,
             prompt_latency_seconds=model_response.prompt_latency_seconds,
-            generation_latency_seconds=(
-                model_response.generation_latency_seconds
-            ),
+            generation_latency_seconds=model_response.generation_latency_seconds,
             model_load_seconds=model_response.model_load_seconds,
-            prompt_tokens_per_second=(
-                model_response.prompt_tokens_per_second
-            ),
-            generation_tokens_per_second=(
-                model_response.generation_tokens_per_second
-            ),
+            prompt_tokens_per_second=model_response.prompt_tokens_per_second,
+            generation_tokens_per_second=model_response.generation_tokens_per_second,
         )

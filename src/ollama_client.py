@@ -12,13 +12,20 @@ NANOSECONDS_PER_SECOND = 1_000_000_000
 class OllamaClient(ModelClient):
     """Sends prompts to an Ollama model and collects performance metrics."""
 
+    # def __init__(
+    #     self,
+    #     model: str = "llama3.1:latest",
+    #     chat_function: Callable[..., dict[str, Any]] | None = None,
+    # ) -> None:
+    #     self.model = model
+    #     self.chat_function = chat_function or ollama.chat
     def __init__(
-        self,
-        model: str = "llama3.1:latest",
-        chat_function: Callable[..., dict[str, Any]] | None = None,
+            self,
+            model: str = "llama3.1:latest",
+            chat_function=ollama.chat,
     ) -> None:
         self.model = model
-        self.chat_function = chat_function or ollama.chat
+        self.chat_function = chat_function
 
     def generate(self, prompt: str) -> ModelResponse:
         data = self.chat_function(
