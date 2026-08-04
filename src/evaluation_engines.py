@@ -5,29 +5,17 @@ from src.models import Assertion, EvaluationResult
 
 
 class EvaluationEngine(ABC):
-    """Base interface for all AI Test Lab evaluation engines."""
+    """Base interface for AI Test Lab evaluation engines."""
 
     @property
     @abstractmethod
     def name(self) -> str:
-        """Return the unique human-readable engine name."""
-
-    # @abstractmethod
-    # def evaluate(
-    #     self,
-    #     actual_response: str,
-    #     assertion: Assertion,
-    # ) -> EvaluationResult:
-    #     """Evaluate a model response against a test assertion."""
+        """Return the engine name."""
+        raise NotImplementedError
 
 
 class AssertionEvaluationEngine(EvaluationEngine):
-    """
-    Built-in deterministic evaluation engine.
-
-    Supports AI Test Lab assertion types such as contains, equals,
-    starts_with, ends_with, case-insensitive contains, and regex.
-    """
+    """Built-in deterministic assertion evaluation engine."""
 
     @property
     def name(self) -> str:
@@ -42,3 +30,4 @@ class AssertionEvaluationEngine(EvaluationEngine):
             actual_response=actual_response,
             assertion=assertion,
         )
+
