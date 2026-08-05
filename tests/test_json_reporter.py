@@ -6,6 +6,7 @@ from src.models import (
     EvaluationStatus,
     TestResult as ResultModel,
 )
+from src.evaluation_models import MetricResult
 
 
 def test_json_reporter_creates_report(tmp_path) -> None:
@@ -24,6 +25,27 @@ def test_json_reporter_creates_report(tmp_path) -> None:
             assertion_type=AssertionType.CONTAINS,
             expected="Hello",
             reason="The response contains the expected text.",
+            # evaluation_results=[
+            #     MetricResult(
+            #         engine="builtin",
+            #         metric_name="contains",
+            #         score=1.0,
+            #         threshold=1.0,
+            #         passed=True,
+            #         reason="The response contains the expected text.",
+            #     )
+            # ],
+
+            evaluation_results=[
+                MetricResult(
+                    engine="builtin",
+                    metric_name="contains",
+                    score=1.0,
+                    threshold=1.0,
+                    passed=True,
+                    reason="The response contains the expected text.",
+                )
+            ],
             response_time_seconds=0.25,
         )
     ]
@@ -76,6 +98,17 @@ def test_json_reporter_creates_report(tmp_path) -> None:
     assert len(report_data["results"]) == 1
     assert report_data["results"][0]["test_id"] == "greeting-001"
     result = report_data["results"][0]
+    evaluation = result["evaluation_results"][0]
+
+    assert evaluation["engine"] == "builtin"
+    assert evaluation["metric_name"] == "contains"
+    assert evaluation["score"] == 1.0
+    assert evaluation["threshold"] == 1.0
+    assert evaluation["passed"] is True
+    assert (
+            evaluation["reason"]
+            == "The response contains the expected text."
+    )
     assert report_data["summary"]["total_estimated_cost_usd"] == 0.0
     assert model_summary["provider"] == "ollama"
     assert model_summary["total_estimated_cost_usd"] == 0.0

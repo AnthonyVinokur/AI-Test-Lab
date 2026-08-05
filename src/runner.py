@@ -56,10 +56,18 @@ class TestRunner:
         )
 
         return TestResult(
+            # test_id=test_case.id,
+            # name=test_case.name,
+            # category=test_case.category,
+            # prompt=test_case.prompt,
+            # model=model_response.model,
+            # actual_response=model_response.content,
             test_id=test_case.id,
             name=test_case.name,
             category=test_case.category,
             prompt=test_case.prompt,
+
+            provider=model_response.provider,
             model=model_response.model,
             actual_response=model_response.content,
 
@@ -74,6 +82,8 @@ class TestRunner:
             expected=evaluation.expected,
             reason=evaluation.reason,
 
+            evaluation_results=evaluation.evaluation_results,
+
             response_time_seconds=response_time_seconds,
 
             prompt_tokens=model_response.prompt_tokens,
@@ -86,6 +96,7 @@ class TestRunner:
             prompt_tokens_per_second=(
                 model_response.prompt_tokens_per_second
             ),
+
             generation_tokens_per_second=(
                 model_response.generation_tokens_per_second
             ),

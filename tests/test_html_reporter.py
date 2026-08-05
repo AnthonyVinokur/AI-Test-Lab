@@ -1,3 +1,5 @@
+
+from src.evaluation_models import MetricResult
 from src.html_reporter import HtmlReporter
 from src.models import (
     AssertionType,
@@ -11,7 +13,23 @@ def create_result(
     model: str,
     status: EvaluationStatus,
     response_time: float,
+    engine: str = "builtin",
+    metric_name: str = "contains",
+    score: float = 1.0,
+    threshold: float = 1.0,
+    metric_reason: str = "Evaluation completed",
 ) -> ResultModel:
+
+    evaluation_results = [
+        MetricResult(
+            engine=engine,
+            metric_name=metric_name,
+            score=score,
+            threshold=threshold,
+            passed=score >= threshold,
+            reason=metric_reason,
+        )
+    ]
     return ResultModel(
         test_id="greeting-001",
         name="Greeting test",
@@ -24,6 +42,7 @@ def create_result(
         assertion_type=AssertionType.CONTAINS,
         expected="Hello",
         reason="Evaluation completed",
+        evaluation_results=evaluation_results,
         response_time_seconds=response_time,
         prompt_tokens=10,
         output_tokens=5,
@@ -32,6 +51,7 @@ def create_result(
         model_load_seconds=0.1,
         prompt_tokens_per_second=20.0,
         generation_tokens_per_second=6.25,
+
     )
 
 
@@ -75,6 +95,7 @@ def test_html_report_contains_model_comparison_table(
     assert "Avg Speed" in html
     assert "Avg Output Tokens" in html
 
+
 def test_html_report_contains_expandable_result_details(
     tmp_path,
 ) -> None:
@@ -83,6 +104,11 @@ def test_html_report_contains_expandable_result_details(
             model="model-a",
             status=EvaluationStatus.PASS,
             response_time=1.0,
+            engine="future-engine",
+            metric_name="custom_quality_metric",
+            score=0.734,
+            threshold=0.650,
+            metric_reason="Unique normalized metric reason.",
         )
     ]
 
@@ -97,6 +123,14 @@ def test_html_report_contains_expandable_result_details(
     assert "Test Information" in html
     assert "Actual Response" in html
     assert "Evaluation Reason" in html
+
     assert "Performance Metrics" in html
     assert "Prompt tokens" in html
     assert "Generation speed" in html
+
+    assert "Evaluation Metrics" in html
+    assert "future-engine" in html
+    assert "custom_quality_metric" in html
+    assert "0.734" in html
+    assert "0.650" in html
+    assert "Unique normalized metric reason." in html

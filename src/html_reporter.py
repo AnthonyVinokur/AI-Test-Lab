@@ -692,6 +692,41 @@ class HtmlReporter:
         return "pass-rate-low"
 
     @staticmethod
+    def _create_evaluation_metric_rows(
+            result: TestResult,
+    ) -> str:
+        if not result.evaluation_results:
+            return """
+            <tr>
+                <td colspan="6">
+                    No evaluation metrics recorded.
+                </td>
+            </tr>
+            """
+
+        return "\n".join(
+            f"""
+            <tr>
+                <td>{escape(metric.engine)}</td>
+                <td>{escape(metric.metric_name)}</td>
+                <td class="numeric">{metric.score:.3f}</td>
+                <td class="numeric">{metric.threshold:.3f}</td>
+                <td>
+                    <span class="status {
+            "status-pass"
+            if metric.passed
+            else "status-fail"
+            }">
+                        {"PASS" if metric.passed else "FAIL"}
+                    </span>
+                </td>
+                <td>{escape(metric.reason or "")}</td>
+            </tr>
+            """
+            for metric in result.evaluation_results
+        )
+
+    @staticmethod
     def _create_result_row(result: TestResult) -> str:
         status_class = {
             EvaluationStatus.PASS: "status-pass",
@@ -700,6 +735,9 @@ class HtmlReporter:
         }.get(
             result.status,
             "status-error",
+        )
+        evaluation_rows = HtmlReporter._create_evaluation_metric_rows(
+            result
         )
 
         return f"""
@@ -774,7 +812,30 @@ class HtmlReporter:
     
                         <p>{escape(result.reason)}</p>
                     </div>
-    
+                    
+                    <div class="detail-section">
+                        <h3>Evaluation Metrics</h3>
+                    
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Engine</th>
+                                        <th>Metric</th>
+                                        <th>Score</th>
+                                        <th>Threshold</th>
+                                        <th>Result</th>
+                                        <th>Reason</th>
+                                    </tr>
+                                </thead>
+                    
+                                <tbody>
+                                    {evaluation_rows}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                        
                     <div class="detail-section">
                         <h3>Performance Metrics</h3>
     

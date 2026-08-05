@@ -1,7 +1,11 @@
 
 from enum import StrEnum
 
+
 from pydantic import BaseModel, Field
+
+from src.evaluation_models import MetricResult
+
 
 class OllamaMetrics(BaseModel):
     prompt_tokens: int = Field(default=0, ge=0)
@@ -83,6 +87,10 @@ class EvaluationResult(BaseModel):
     expected: str
     reason: str
 
+    evaluation_results: list[MetricResult] = Field(
+        default_factory=list
+    )
+
 
 class TestResult(BaseModel):
     test_id: str
@@ -107,6 +115,11 @@ class TestResult(BaseModel):
     expected: str
     reason: str
 
+    evaluation_results: list[MetricResult] = Field(
+        default_factory=list
+    )
+
+
     response_time_seconds: float = Field(default=0.0, ge=0.0)
 
     prompt_tokens: int = Field(default=0, ge=0)
@@ -118,6 +131,8 @@ class TestResult(BaseModel):
 
     prompt_tokens_per_second: float = Field(default=0.0, ge=0.0)
     generation_tokens_per_second: float = Field(default=0.0, ge=0.0)
+
+
 
 class ModelSummary(BaseModel):
     """Aggregated evaluation and performance results for one model."""
