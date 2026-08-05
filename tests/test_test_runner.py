@@ -1,4 +1,4 @@
-from src.evaluation_engines import AssertionEvaluationEngine
+
 from src.models import (
     Assertion,
     AssertionType,
@@ -7,6 +7,7 @@ from src.models import (
 )
 from src.runner import TestRunner as Runner
 from tests.fakes import FakeModelClient
+from src.evaluation_pipeline import EvaluationPipeline
 
 
 def test_runner_executes_prompt_and_returns_test_result() -> None:
@@ -27,7 +28,7 @@ def test_runner_executes_prompt_and_returns_test_result() -> None:
 
     runner = Runner(
         client=client,
-        evaluation_engine=AssertionEvaluationEngine(),
+        evaluation_pipeline=EvaluationPipeline(),
     )
 
     result = runner.run_test(test_case)

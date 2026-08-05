@@ -1,7 +1,7 @@
 from time import perf_counter
 from typing import Protocol
+from src.evaluation_pipeline import EvaluationPipeline
 
-from src.evaluation_engines import EvaluationEngine
 from src.models import (
     EvaluationStatus,
     ModelResponse,
@@ -22,12 +22,12 @@ class TestRunner:
     """Coordinates model execution and response evaluation."""
 
     def __init__(
-        self,
-        client: ModelClient,
-        evaluation_engine: EvaluationEngine,
+            self,
+            client: ModelClient,
+            evaluation_pipeline: EvaluationPipeline,
     ) -> None:
         self.client = client
-        self.evaluation_engine = evaluation_engine
+        self.evaluation_pipeline = evaluation_pipeline
 
     def run_tests(
         self,
@@ -45,7 +45,8 @@ class TestRunner:
 
         response_time_seconds = perf_counter() - start_time
 
-        evaluation = self.evaluation_engine.evaluate(
+        evaluation = self.evaluation_pipeline.evaluate(
+            prompt=test_case.prompt,
             actual_response=model_response.content,
             assertion=test_case.assertion,
         )
@@ -56,12 +57,7 @@ class TestRunner:
         )
 
         return TestResult(
-            # test_id=test_case.id,
-            # name=test_case.name,
-            # category=test_case.category,
-            # prompt=test_case.prompt,
-            # model=model_response.model,
-            # actual_response=model_response.content,
+
             test_id=test_case.id,
             name=test_case.name,
             category=test_case.category,
