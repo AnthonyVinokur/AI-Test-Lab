@@ -48,29 +48,22 @@ AI Test Lab provides repeatable, automated evidence that an AI system continues 
 
 ## Architecture
 
-Dataset
-   │
-   ▼
-Prompt Runner
-   │
-   ▼
-LLM Provider
-   │
-   ▼
-Evaluation Pipeline
-   │
-   ├── DeepEval
-   ├── Ragas
-   ├── TruLens
-   └── Custom Engine
-          │
-          ▼
-Normalized Evaluation Result
-          │
-          ▼
-Report Manager
-     ├── JSON
-     └── HTML
+Dataset / Prompt
+        │
+        ▼
+ Model Provider
+        │
+        ▼
+ Built-in Assertions
+        │
+        ▼
+ External Evaluation Engines
+        │
+        ▼
+ Verdict Policy
+        │
+        ▼
+ JSON • HTML • Quality Gate
 
 ## Project Status
 
@@ -94,6 +87,16 @@ Sprint 10.7
 - Production evaluation pipeline
 - Multiple evaluation engines
 - CI quality gates
+- 
+### Evaluation Pipeline
+
+- Built-in deterministic assertions
+- Pluggable evaluation engine architecture
+- Configurable evaluation quality gates
+- Multiple verdict policies
+- Engine-agnostic evaluation pipeline
+- Structured evaluation metrics
+- 
 ## Documentation
 
 | Document | Description |
