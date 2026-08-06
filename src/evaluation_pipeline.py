@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Protocol
-
+from src.evaluation_plugins import ExternalEvaluationEngine
 from src.evaluation_engines import AssertionEvaluationEngine
 from src.evaluation_models import (
     EvaluationRequest,
@@ -16,18 +15,6 @@ from src.models import (
 )
 
 
-class ExternalEvaluationEngine(Protocol):
-    """Interface required from semantic evaluation engines."""
-
-    @property
-    def name(self) -> str:
-        ...
-
-    def evaluate(
-        self,
-        request: EvaluationRequest,
-    ) -> list[MetricResult]:
-        ...
 
 
 class EvaluationPipeline:
