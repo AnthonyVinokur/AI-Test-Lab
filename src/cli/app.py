@@ -14,12 +14,11 @@ from src.datasets import (
     JsonDatasetRepository,
     validate_dataset,
 )
-from src.evaluation_factory import create_engine
+from src.evaluation_config import EvaluationConfigError, load_evaluation_profile, create_pipeline_from_profile
+from src.evaluation_pipeline import EvaluationPipeline
 from src.html_reporter import HtmlReporter
 from src.json_reporter import JsonReporter
 from src.multi_model_runner import MultiModelRunner
-from src.evaluation_engines import AssertionEvaluationEngine
-
 
 INPUT_EXCEPTIONS = (
     DatasetNotFoundError,
@@ -28,6 +27,7 @@ INPUT_EXCEPTIONS = (
     EmptyDatasetError,
     FileNotFoundError,
     ValidationError,
+    EvaluationConfigError,
     ValueError,
 )
 
@@ -111,21 +111,39 @@ def main(argv: list[str] | None = None) -> int:
 
         test_cases = load_test_cases(args)
 
+        if args.evaluation_profile is not None:
+            profile = load_evaluation_profile(
+                args.evaluation_profile
+            )
+
+            pipeline = create_pipeline_from_profile(profile)
+
+            enabled_engines = [
+                engine.name
+                for engine in profile.engines
+                if engine.enabled
+            ]
+
+            print(
+                f"Loaded evaluation profile "
+                f"'{profile.name}' version {profile.version}."
+            )
+            print(
+                "Enabled evaluation engines: "
+                f"{', '.join(enabled_engines)}"
+            )
+
+        else:
+            pipeline = EvaluationPipeline()
+
     except INPUT_EXCEPTIONS as error:
         print(f"Input error: {error}", file=sys.stderr)
         return 2
 
-
-
-    # runner = MultiModelRunner(
-    #     model_names=args.models,
-    #     evaluation_engine=AssertionEvaluationEngine(),
-    # )
-    from src.evaluation_factory import create_engine
-
+    # This block must be outside the profile if/else.
     runner = MultiModelRunner(
         model_names=args.models,
-        evaluation_engine=create_engine(args.engine),
+        evaluation_pipeline=pipeline,
     )
 
     results = runner.run_tests(test_cases)

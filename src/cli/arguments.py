@@ -25,6 +25,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="One or more Ollama model names.",
     )
 
+    parser.add_argument(
+        "--evaluation-profile",
+        type=Path,
+        default=None,
+        help=(
+            "Path to a YAML or JSON evaluation profile containing "
+            "engine, metric, threshold, and quality-gate settings."
+        ),
+    )
+
     source_group = parser.add_mutually_exclusive_group()
 
     source_group.add_argument(

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+
 from src.evaluation_plugins import ExternalEvaluationEngine
 from src.evaluation_engines import AssertionEvaluationEngine
 from src.evaluation_models import (
@@ -15,8 +16,6 @@ from src.models import (
 )
 
 
-
-
 class EvaluationPipeline:
     """Runs deterministic and semantic evaluation engines."""
 
@@ -26,12 +25,21 @@ class EvaluationPipeline:
         assertion_engine: AssertionEvaluationEngine | None = None,
         external_engines: Iterable[ExternalEvaluationEngine] | None = None,
         verdict_policy: VerdictPolicy = VerdictPolicy.ASSERTION_ONLY,
+        default_metrics: tuple[str, ...] = (),
+        default_threshold: float = 0.7,
     ) -> None:
+        if not 0.0 <= default_threshold <= 1.0:
+            raise ValueError(
+                "Default evaluation threshold must be between 0.0 and 1.0."
+            )
+
         self.assertion_engine = (
             assertion_engine or AssertionEvaluationEngine()
         )
         self.external_engines = tuple(external_engines or ())
         self.verdict_policy = verdict_policy
+        self.default_metrics = default_metrics
+        self.default_threshold = default_threshold
 
     def evaluate(
         self,
@@ -39,17 +47,24 @@ class EvaluationPipeline:
         prompt: str,
         actual_response: str,
         assertion: Assertion,
-        metrics: tuple[str, ...] = (),
-        threshold: float = 0.7,
+        metrics: tuple[str, ...] | None = None,
+        threshold: float | None = None,
         expected_output: str | None = None,
         retrieval_context: tuple[str, ...] = (),
     ) -> EvaluationResult:
-        """
-        Evaluate one model response.
+        """Evaluate one model response."""
 
-        The built-in assertion always runs. External engines run only when
-        metric names are supplied.
-        """
+        selected_metrics = (
+            self.default_metrics
+            if metrics is None
+            else metrics
+        )
+
+        selected_threshold = (
+            self.default_threshold
+            if threshold is None
+            else threshold
+        )
 
         assertion_result = self.assertion_engine.evaluate(
             actual_response=actual_response,
@@ -58,12 +73,12 @@ class EvaluationPipeline:
 
         metric_results = list(assertion_result.evaluation_results)
 
-        if metrics:
+        if selected_metrics:
             request = EvaluationRequest(
                 input=prompt,
                 actual_output=actual_response,
-                metrics=metrics,
-                threshold=threshold,
+                metrics=selected_metrics,
+                threshold=selected_threshold,
                 expected_output=expected_output,
                 retrieval_context=retrieval_context,
             )

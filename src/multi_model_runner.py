@@ -1,5 +1,4 @@
-
-from src.evaluation_engines import EvaluationEngine
+from src.evaluation_pipeline import EvaluationPipeline
 from src.models import PromptTest, TestResult
 from src.ollama_client import OllamaClient
 from src.runner import TestRunner
@@ -11,13 +10,13 @@ class MultiModelRunner:
     def __init__(
         self,
         model_names: list[str],
-        evaluation_engine: EvaluationEngine,
+        evaluation_pipeline: EvaluationPipeline,
     ) -> None:
         if not model_names:
             raise ValueError("At least one model name is required.")
 
         self._model_names = model_names
-        self._evaluation_engine = evaluation_engine
+        self._evaluation_pipeline = evaluation_pipeline
 
     def run_tests(
         self,
@@ -30,7 +29,7 @@ class MultiModelRunner:
 
             runner = TestRunner(
                 client=client,
-                evaluation_engine=self._evaluation_engine,
+                evaluation_pipeline=self._evaluation_pipeline,
             )
 
             all_results.extend(runner.run_tests(test_cases))

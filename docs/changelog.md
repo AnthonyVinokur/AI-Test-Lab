@@ -1,5 +1,50 @@
 # Changelog
 
+## Sprint 10.9
+
+### Added
+
+- DeepEval integration package
+- DeepEval evaluation engine
+- DeepEval factory
+- DeepEval metric registry
+- DeepEval exception hierarchy
+- Plugin registry integration
+- End-to-end plugin workflow
+- Semantic evaluation support
+
+### Changed
+
+- AI Test Lab now supports external semantic evaluation through the plugin architecture.
+- External evaluation engines can now be instantiated from configuration through registered factories.
+
+### Validation
+
+- ✅ 118 automated tests passing
+- No regressions introduced
+
+## Sprint 10.8
+
+### Added
+
+- External evaluation plugin architecture
+- Evaluation engine registry
+- Plugin discovery mechanism
+- ExternalEvaluationEngine protocol
+- Plugin exception hierarchy
+- Plugin registration and validation
+- Comprehensive registry and discovery tests
+
+### Changed
+
+- Evaluation Pipeline now depends on a shared engine interface instead of concrete implementations.
+- External evaluation engines are now fully decoupled from the framework core.
+
+### Validation
+
+- ✅ 99 automated tests passing
+- No regressions introduced
+
 ## Sprint 10.5
 
 ### Added

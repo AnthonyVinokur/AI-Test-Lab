@@ -45,6 +45,13 @@ AI Test Lab provides repeatable, automated evidence that an AI system continues 
 - Performance metrics
 - CI/CD integration
 - Lightweight plugin architecture
+-  Prompt regression testing
+- Multiple model evaluation
+- Deterministic assertion engine
+- Engine-agnostic evaluation pipeline
+- External evaluation plugin architecture
+- HTML and JSON reporting
+- CI/CD friendly execution
 
 ## Architecture
 
