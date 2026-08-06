@@ -2,6 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from enum import StrEnum
+
+class VerdictPolicy(StrEnum):
+    """Controls how metric results affect the final evaluation verdict."""
+
+    ASSERTION_ONLY = "assertion_only"
+    ALL_METRICS = "all_metrics"
 
 @dataclass(frozen=True, slots=True)
 class EvaluationRequest:

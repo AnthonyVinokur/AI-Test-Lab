@@ -12,3 +12,6 @@
 ## Upcoming
 
 - Sprint 10.6
+- | Sprint | Status   | Description                                                                                       |
+| ------ | -------- | ------------------------------------------------------------------------------------------------- |
+| ✅ 10.6 | Complete | Introduced the evaluation framework, normalized evaluation results, and engine abstraction layer. |
