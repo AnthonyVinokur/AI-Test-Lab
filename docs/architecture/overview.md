@@ -77,26 +77,27 @@ AI Test Lab is designed around several core principles.
 AI Test Lab separates model execution, evaluation, reporting, and quality gates into independent components.
 
 ```
-Dataset
-    │
-    ▼
-Model Runner
-    │
-    ▼
-Evaluation Pipeline
-    │
-    ├── Assertion Engine
-    └── External Plugin Registry
-            ├── DeepEval
-            ├── Ragas
-            ├── TruLens
-            └── Future Plugins
-    │
-    ▼
-Quality Gate
-    │
-    ▼
-Reports
+                Prompt Dataset
+                      │
+                      ▼
+              MultiModelRunner
+                      │
+                      ▼
+               EvaluationPipeline
+                      ▲
+                      │
+          Evaluation Profile (YAML)
+                      │
+                      ▼
+             Pipeline Builder
+                      │
+          ┌───────────┴────────────┐
+          │                        │
+   Assertion Engine        External Engines
+                                    │
+          ┌─────────────────────────┼────────────────────┐
+          │                         │                    │
+      DeepEval                  Ragas             TruLens
 ```
 
 This modular architecture allows semantic evaluation engines to be added without modifying the core framework.

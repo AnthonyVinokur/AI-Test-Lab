@@ -1,5 +1,19 @@
 # Changelog
+## Sprint 11.0
 
+### Added
+
+- Configuration-driven evaluation profiles
+- YAML and JSON profile support
+- Profile validation
+- Evaluation pipeline builder
+- CLI support for evaluation profiles
+
+### Improved
+
+- Runtime evaluation configuration
+- Engine selection architecture
+- Foundation for enterprise evaluation policies
 ## Sprint 10.9
 
 ### Added

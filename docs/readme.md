@@ -52,6 +52,12 @@ AI Test Lab provides repeatable, automated evidence that an AI system continues 
 - External evaluation plugin architecture
 - HTML and JSON reporting
 - CI/CD friendly execution
+- - Prompt regression testing
+- Multi-model evaluation
+- External evaluation engine plugins
+- Configuration-driven evaluation profiles
+- JSON & HTML reporting
+- CI/CD quality gates
 
 ## Architecture
 

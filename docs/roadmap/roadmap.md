@@ -10,9 +10,24 @@
 - ✅ Sprint 10.7 — Configurable evaluation quality gate
 - ✅ Sprint 10.8 — External Evaluation Engine Plugin Architecture 
 - ✅ Sprint 10.9 — DeepEval Plugin Integration 
+- ✅ Sprint 11.0 — Configuration-Driven Evaluation Profiles 
 
 ---
+Sprint 11.0 — Configuration-Driven Evaluation Profiles 
 
+**Status:** Completed
+
+### Delivered
+
+- YAML and JSON evaluation profiles
+- Strict Pydantic configuration validation
+- Evaluation profile loader
+- Pipeline builder
+- CLI integration (`--evaluation-profile`)
+- Configurable evaluation engines
+- Configurable quality-gate settings
+- Full automated test coverage
+- 
 ## Completed
 
 - Sprint 10.6
