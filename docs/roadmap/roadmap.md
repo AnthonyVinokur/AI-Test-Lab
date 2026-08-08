@@ -11,7 +11,15 @@
 - ✅ Sprint 10.8 — External Evaluation Engine Plugin Architecture 
 - ✅ Sprint 10.9 — DeepEval Plugin Integration 
 - ✅ Sprint 11.0 — Configuration-Driven Evaluation Profiles 
+- ✅ Sprint 11.1 — Evaluation Profile Catalog
 
+
+- ✅ Sprint 11.1 — Evaluation Profile Catalog
+  - Built-in profile catalog
+  - Profile discovery
+  - Catalog name resolution
+  - CLI integration
+  - Regression coverage
 ---
 Sprint 11.0 — Configuration-Driven Evaluation Profiles 
 

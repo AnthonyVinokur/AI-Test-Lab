@@ -1,0 +1,40 @@
+# rag.yaml
+name: rag
+version: "1.0"
+
+description: >
+  Evaluation profile for retrieval-augmented generation
+  systems with RAG-specific quality metrics.
+
+engines:
+  - name: assertion
+    enabled: true
+
+  - name: ragas
+    enabled: true
+    metrics:
+      - name: faithfulness
+        enabled: true
+        threshold: 0.85
+
+      - name: answer_relevancy
+        enabled: true
+        threshold: 0.80
+
+      - name: context_precision
+        enabled: true
+        threshold: 0.80
+
+      - name: context_recall
+        enabled: true
+        threshold: 0.80
+
+quality_gate:
+  enabled: true
+  minimum_score: 0.80
+  fail_on_engine_error: true
+  require_all_engines: true
+
+metadata:
+  owner: AI Test Lab
+  environment: rag-validation

@@ -1,0 +1,24 @@
+# fast-ci.yaml
+name: fast-ci
+version: "1.0"
+
+description: >
+  Fast evaluation profile optimized for CI pipelines
+  and quick regression feedback.
+
+engines:
+  - name: assertion
+    enabled: true
+
+  - name: deepeval
+    enabled: false
+
+quality_gate:
+  enabled: true
+  minimum_score: 0.70
+  fail_on_engine_error: true
+  require_all_engines: false
+
+metadata:
+  owner: AI Test Lab
+  environment: ci

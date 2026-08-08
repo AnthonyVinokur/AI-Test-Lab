@@ -1,4 +1,15 @@
 # Changelog
+
+## Sprint 11.1 — Evaluation Profile Catalog
+
+- Added built-in evaluation profiles:
+  `default`, `fast-ci`, `deep-quality`, `rag`, and `enterprise`.
+- Added catalog discovery and profile-name resolution.
+- Integrated built-in profiles with the existing evaluation configuration loader.
+- Preserved explicit YAML, YML, and JSON profile paths.
+- Added catalog and loader tests.
+- Full regression suite: 133 passing tests.
+- 
 ## Sprint 11.0
 
 ### Added
