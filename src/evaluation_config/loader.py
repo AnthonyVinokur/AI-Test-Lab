@@ -1,4 +1,4 @@
-"""Load evaluation profiles from YAML or JSON files."""
+""""Load evaluation profiles from YAML or JSON files."""
 
 from __future__ import annotations
 
@@ -9,63 +9,12 @@ from typing import Any
 import yaml
 from pydantic import ValidationError
 
+from src.evaluation_config.catalog import resolve_profile_path, list_profiles
 from src.evaluation_config.errors import (
     EvaluationConfigFileError,
     EvaluationConfigValidationError,
 )
 from src.evaluation_config.models import EvaluationProfile
-
-#from src.evaluation_config.catalog import resolve_profile_path
-from pathlib import Path
-
-from src.evaluation_config.catalog import (
-    list_profiles,
-    profile_exists,
-    resolve_profile_path,
-)
-
-
-def test_list_profiles_returns_builtin_catalog():
-    profiles = list_profiles()
-
-    assert profiles == [
-        "deep-quality",
-        "default",
-        "enterprise",
-        "fast-ci",
-        "rag",
-    ]
-
-
-def test_profile_exists_returns_true_for_builtin_profile():
-    assert profile_exists("default") is True
-    assert profile_exists("rag") is True
-
-
-def test_profile_exists_returns_false_for_unknown_profile():
-    assert profile_exists("does-not-exist") is False
-
-
-def test_resolve_builtin_profile_name():
-    path = resolve_profile_path("fast-ci")
-
-    assert path.name == "fast-ci.yaml"
-    assert path.is_file()
-
-
-def test_resolve_existing_explicit_path(tmp_path):
-    profile_path = tmp_path / "custom.yaml"
-    profile_path.write_text("name: custom", encoding="utf-8")
-
-    resolved = resolve_profile_path(profile_path)
-
-    assert resolved == profile_path
-
-
-def test_unknown_profile_is_preserved():
-    resolved = resolve_profile_path("does-not-exist")
-
-    assert resolved == Path("does-not-exist")
 
 
 SUPPORTED_PROFILE_EXTENSIONS = {".yaml", ".yml", ".json"}
@@ -92,8 +41,23 @@ def load_evaluation_profile(
     profile_path = resolve_profile_path(path)
 
     if not profile_path.exists():
+        available_profiles = list_profiles()
+
+        if Path(path).suffix:
+            raise EvaluationConfigFileError(
+                f"Evaluation profile does not exist: {profile_path}"
+            )
+
+        available_text = "\n".join(
+            f"  {profile_name}"
+            for profile_name in available_profiles
+        )
+
         raise EvaluationConfigFileError(
-            f"Evaluation profile does not exist: {profile_path}"
+            f"Unknown evaluation profile '{path}'.\n\n"
+            f"Available built-in profiles:\n"
+            f"{available_text}\n\n"
+            "You may also provide a path to a YAML or JSON profile."
         )
 
     if not profile_path.is_file():

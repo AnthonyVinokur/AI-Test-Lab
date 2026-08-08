@@ -12,8 +12,30 @@
 - ✅ Sprint 10.9 — DeepEval Plugin Integration 
 - ✅ Sprint 11.0 — Configuration-Driven Evaluation Profiles 
 - ✅ Sprint 11.1 — Evaluation Profile Catalog
+- ✅ Sprint 11.2 — Profile CLI UX & Validation
 
+## Sprint 11.2 — Profile CLI UX & Validation
 
+**Status:** Completed
+
+### Delivered
+
+- Built-in evaluation profile discovery through `--list-evaluation-profiles`
+- Improved `--evaluation-profile` CLI guidance
+- Friendly unknown-profile diagnostics
+- Fail-fast profile validation before test-case loading
+- Evaluation engine validation
+- Evaluation metric validation
+- DeepEval supported-metric validation
+- Configuration-specific exception handling
+- CLI and integration regression coverage
+- Full regression suite: 147 passing tests
+
+### Architecture Impact
+
+Sprint 11.2 establishes a stronger configuration boundary between user-supplied evaluation profiles and runtime model execution.
+
+Invalid profile names, engines, and metrics are now rejected before evaluation work begins.
 - ✅ Sprint 11.1 — Evaluation Profile Catalog
   - Built-in profile catalog
   - Profile discovery

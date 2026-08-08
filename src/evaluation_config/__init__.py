@@ -12,10 +12,16 @@ from src.evaluation_config.models import (
     MetricConfig,
     QualityGateConfig,
 )
-from src.evaluation_config.validator import validate_registered_engines
+
+from src.evaluation_config.validator import (
+    validate_registered_engines,
+    validate_supported_metrics,
+)
+
 from src.evaluation_config.pipeline_builder import (
     create_pipeline_from_profile,
 )
+from src.evaluation_config.catalog import list_profiles
 
 __all__ = [
     "EngineConfig",
@@ -25,7 +31,9 @@ __all__ = [
     "EvaluationProfile",
     "MetricConfig",
     "QualityGateConfig",
+    "list_profiles",
     "load_evaluation_profile",
     "validate_registered_engines",
+    "validate_supported_metrics",
     "create_pipeline_from_profile",
 ]

@@ -35,3 +35,45 @@ def validate_registered_engines(
             "Evaluation profile references unregistered "
             f"engine(s): {missing_text}."
         )
+
+def validate_supported_metrics(
+    profile: EvaluationProfile,
+    supported_metrics_by_engine: dict[str, Iterable[str]],
+) -> None:
+    """Ensure enabled profile metrics are supported by their engine."""
+
+    normalized_supported = {
+        engine_name.casefold(): {
+            metric_name.casefold()
+            for metric_name in metric_names
+        }
+        for engine_name, metric_names in supported_metrics_by_engine.items()
+    }
+
+    for engine in profile.engines:
+        if not engine.enabled:
+            continue
+
+        supported = normalized_supported.get(
+            engine.name.casefold()
+        )
+
+        if supported is None:
+            continue
+
+        unsupported = sorted(
+            metric.name
+            for metric in engine.metrics
+            if metric.enabled
+            and metric.name.casefold() not in supported
+        )
+
+        if unsupported:
+            unsupported_text = ", ".join(unsupported)
+            supported_text = ", ".join(sorted(supported))
+
+            raise EvaluationConfigValidationError(
+                f"Evaluation engine '{engine.name}' does not support "
+                f"metric(s): {unsupported_text}. "
+                f"Supported metrics: {supported_text}."
+            )

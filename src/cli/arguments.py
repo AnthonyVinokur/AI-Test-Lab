@@ -30,9 +30,14 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=None,
         help=(
-            "Path to a YAML or JSON evaluation profile containing "
-            "engine, metric, threshold, and quality-gate settings."
+            "Built-in evaluation profile name or path to a YAML/JSON "
+            "evaluation profile."
         ),
+    )
+    parser.add_argument(
+        "--list-evaluation-profiles",
+        action="store_true",
+        help="List built-in evaluation profiles and exit.",
     )
 
     source_group = parser.add_mutually_exclusive_group()
