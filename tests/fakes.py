@@ -11,15 +11,18 @@ class FakeModelClient(ModelClient):
     """
 
     def __init__(
-        self,
-        response_text: str = "Hello from the fake model",
-        model: str = "fake-model",
+            self,
+            response_text: str = "Hello from the fake model",
+            model: str = "fake-model",
+            provider: str = "fake",
     ) -> None:
         self.response_text = response_text
         self.model = model
+        self.provider = provider
 
     def generate(self, prompt: str) -> ModelResponse:
         return ModelResponse(
+            provider=self.provider,
             content=self.response_text,
             model=self.model,
             metrics=OllamaMetrics(),

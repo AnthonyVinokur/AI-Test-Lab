@@ -1,0 +1,32 @@
+# deep-quality.yaml
+name: deep-quality
+version: "1.0"
+
+description: >
+  Comprehensive quality evaluation profile using
+  deterministic assertions and DeepEval metrics.
+
+engines:
+  - name: assertion
+    enabled: true
+
+  - name: deepeval
+    enabled: true
+    metrics:
+      - name: answer_relevancy
+        enabled: true
+        threshold: 0.80
+
+      - name: faithfulness
+        enabled: true
+        threshold: 0.85
+
+quality_gate:
+  enabled: true
+  minimum_score: 0.85
+  fail_on_engine_error: true
+  require_all_engines: true
+
+metadata:
+  owner: AI Test Lab
+  environment: validation

@@ -1,14 +1,12 @@
-from collections.abc import Callable
-from typing import Protocol
 from time import perf_counter
-from src.result_classifier import classify_status
+from typing import Protocol
+from src.evaluation_pipeline import EvaluationPipeline
 
 from src.models import (
-    Assertion,
-    EvaluationResult,
+    EvaluationStatus,
     ModelResponse,
     PromptTest,
-    TestResult, EvaluationStatus,
+    TestResult,
 )
 from src.result_classifier import classify_status
 
@@ -20,24 +18,20 @@ class ModelClient(Protocol):
         ...
 
 
-Evaluator = Callable[[str, Assertion], EvaluationResult]
-
-
 class TestRunner:
     """Coordinates model execution and response evaluation."""
 
     def __init__(
             self,
             client: ModelClient,
-            evaluator: Evaluator,
+            evaluation_pipeline: EvaluationPipeline,
     ) -> None:
-
         self.client = client
-        self.evaluator = evaluator
+        self.evaluation_pipeline = evaluation_pipeline
 
     def run_tests(
-            self,
-            test_cases: list[PromptTest],
+        self,
+        test_cases: list[PromptTest],
     ) -> list[TestResult]:
         return [
             self.run_test(test_case)
@@ -51,9 +45,10 @@ class TestRunner:
 
         response_time_seconds = perf_counter() - start_time
 
-        evaluation = self.evaluator(
-            model_response.content,
-            test_case.assertion,
+        evaluation = self.evaluation_pipeline.evaluate(
+            prompt=test_case.prompt,
+            actual_response=model_response.content,
+            assertion=test_case.assertion,
         )
 
         final_status = classify_status(
@@ -61,13 +56,14 @@ class TestRunner:
             assertion_passed=evaluation.passed,
         )
 
-        reason = evaluation.reason
-
         return TestResult(
+
             test_id=test_case.id,
             name=test_case.name,
             category=test_case.category,
             prompt=test_case.prompt,
+
+            provider=model_response.provider,
             model=model_response.model,
             actual_response=model_response.content,
 
@@ -80,15 +76,24 @@ class TestRunner:
 
             assertion_type=evaluation.assertion_type,
             expected=evaluation.expected,
-            reason=reason,
+            reason=evaluation.reason,
+
+            evaluation_results=evaluation.evaluation_results,
 
             response_time_seconds=response_time_seconds,
 
             prompt_tokens=model_response.prompt_tokens,
             output_tokens=model_response.output_tokens,
             prompt_latency_seconds=model_response.prompt_latency_seconds,
-            generation_latency_seconds=model_response.generation_latency_seconds,
+            generation_latency_seconds=(
+                model_response.generation_latency_seconds
+            ),
             model_load_seconds=model_response.model_load_seconds,
-            prompt_tokens_per_second=model_response.prompt_tokens_per_second,
-            generation_tokens_per_second=model_response.generation_tokens_per_second,
+            prompt_tokens_per_second=(
+                model_response.prompt_tokens_per_second
+            ),
+
+            generation_tokens_per_second=(
+                model_response.generation_tokens_per_second
+            ),
         )

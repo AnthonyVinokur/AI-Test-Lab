@@ -1,5 +1,6 @@
 import re
 
+from src.evaluation_models import MetricResult
 from src.models import (
     Assertion,
     AssertionType,
@@ -107,4 +108,30 @@ def evaluate_response(
         reason=reason,
     )
 
+def evaluate(
+    self,
+    actual_response: str,
+    assertion: Assertion,
+) -> EvaluationResult:
+    evaluation = evaluate_response(
+        actual_response=actual_response,
+        assertion=assertion,
+    )
 
+    metric_result = MetricResult(
+        engine=self.name,
+        metric_name=str(assertion.type.value),
+        score=1.0 if evaluation.passed else 0.0,
+        threshold=1.0,
+        passed=evaluation.passed,
+        reason=evaluation.reason,
+    )
+
+    return EvaluationResult(
+        passed=evaluation.passed,
+        status=evaluation.status,
+        assertion_type=evaluation.assertion_type,
+        expected=evaluation.expected,
+        reason=evaluation.reason,
+        evaluation_results=[metric_result],
+    )
