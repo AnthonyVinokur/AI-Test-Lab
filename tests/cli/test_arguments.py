@@ -15,6 +15,8 @@ def test_default_arguments() -> None:
     assert args.dataset_version is None
     assert args.report == Path("results/latest_results.json")
     assert args.html_report == Path("results/latest_report.html")
+    assert args.evaluation_profile is None
+    assert args.list_evaluation_profiles is False
 
 
 def test_multiple_models() -> None:
@@ -77,3 +79,23 @@ def test_prompts_and_dataset_are_mutually_exclusive() -> None:
         )
 
     assert error.value.code == 2
+
+def test_evaluation_profile_argument() -> None:
+    args = parse_args(
+        [
+            "--evaluation-profile",
+            "fast-ci",
+        ]
+    )
+
+    assert args.evaluation_profile == Path("fast-ci")
+
+
+def test_list_evaluation_profiles_argument() -> None:
+    args = parse_args(
+        [
+            "--list-evaluation-profiles",
+        ]
+    )
+
+    assert args.list_evaluation_profiles is True

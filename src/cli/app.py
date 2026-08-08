@@ -6,7 +6,10 @@ from pydantic import ValidationError
 
 from src.cli.arguments import parse_args
 from src.cli.execution import load_test_cases
-from src.cli.output import print_results
+from src.cli.output import (
+            print_evaluation_profiles,
+            print_results,
+        )
 from src.dataset_loader import DatasetNotActiveError, EmptyDatasetError
 from src.datasets import (
     DatasetNotFoundError,
@@ -14,7 +17,8 @@ from src.datasets import (
     JsonDatasetRepository,
     validate_dataset,
 )
-from src.evaluation_config import EvaluationConfigError, load_evaluation_profile, create_pipeline_from_profile
+from src.evaluation_config import EvaluationConfigError, load_evaluation_profile, create_pipeline_from_profile, \
+    list_profiles
 from src.evaluation_pipeline import EvaluationPipeline
 from src.html_reporter import HtmlReporter
 from src.json_reporter import JsonReporter
@@ -109,7 +113,9 @@ def main(argv: list[str] | None = None) -> int:
         if args.validate_dataset:
             return print_dataset_validation(args)
 
-        test_cases = load_test_cases(args)
+        if args.list_evaluation_profiles:
+            print_evaluation_profiles(list_profiles())
+            return 0
 
         if args.evaluation_profile is not None:
             profile = load_evaluation_profile(
@@ -135,6 +141,8 @@ def main(argv: list[str] | None = None) -> int:
 
         else:
             pipeline = EvaluationPipeline()
+
+        test_cases = load_test_cases(args)
 
     except INPUT_EXCEPTIONS as error:
         print(f"Input error: {error}", file=sys.stderr)

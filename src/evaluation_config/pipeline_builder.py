@@ -3,9 +3,20 @@
 from __future__ import annotations
 
 from src.evaluation.deepeval_engine import DeepEvalEngine
+from src.evaluation_config import EvaluationConfigValidationError
 from src.evaluation_config.models import EvaluationProfile
 from src.evaluation_models import VerdictPolicy
 from src.evaluation_pipeline import EvaluationPipeline
+
+from src.evaluation_config.validator import (
+    validate_supported_metrics,
+)
+from src.integrations.deepeval.metrics import (
+    supported_metric_names,
+)
+from src.evaluation_config.errors import (
+    EvaluationConfigValidationError,
+)
 
 
 def create_pipeline_from_profile(
@@ -28,6 +39,13 @@ def create_pipeline_from_profile(
             continue
 
         if normalized_name == "deepeval":
+            validate_supported_metrics(
+                profile,
+                {
+                    "deepeval": supported_metric_names(),
+                },
+            )
+
             judge_model = engine_config.options.get("judge_model")
 
             external_engines.append(
@@ -47,7 +65,7 @@ def create_pipeline_from_profile(
 
             continue
 
-        raise ValueError(
+        raise EvaluationConfigValidationError(
             f"Unsupported evaluation engine in profile: "
             f"{engine_config.name!r}"
         )

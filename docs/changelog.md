@@ -1,5 +1,41 @@
 # Changelog
 
+
+---
+
+## 2. Update `docs/changelog.md`
+
+Add this **directly below `# Changelog` and above Sprint 11.1**:
+
+```markdown
+## Sprint 11.2 — Profile CLI UX & Validation
+
+### Added
+
+- Added `--list-evaluation-profiles` CLI support.
+- Added built-in evaluation profile discovery from the command line.
+- Added semantic evaluation-engine validation.
+- Added evaluation metric validation.
+- Added DeepEval metric capability validation for:
+  - `answer_relevancy`
+  - `faithfulness`
+  - `hallucination`
+- Added CLI integration tests for profile discovery and invalid profile handling.
+
+### Improved
+
+- `--evaluation-profile` now clearly supports both built-in profile names and YAML/JSON file paths.
+- Unknown profile errors now display the available built-in profiles.
+- Profile validation now occurs before test-case loading.
+- Invalid metrics are rejected before model execution.
+- Unsupported evaluation engines are treated as configuration-validation failures.
+- Evaluation profile handling now follows a fail-fast execution model.
+
+### Validation
+
+- ✅ 147 automated tests passing
+- ✅ No regressions introduced
+
 ## Sprint 11.1 — Evaluation Profile Catalog
 
 - Added built-in evaluation profiles:

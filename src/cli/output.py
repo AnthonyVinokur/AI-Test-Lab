@@ -5,6 +5,18 @@ from collections.abc import Sequence
 from src.models import EvaluationStatus, TestResult
 
 
+def print_evaluation_profiles(
+    profile_names: Sequence[str],
+) -> None:
+    """Print available built-in evaluation profiles."""
+
+    print("Available evaluation profiles:")
+
+    for profile_name in profile_names:
+        print(f"  {profile_name}")
+
+
+
 def print_results(
     results: Sequence[TestResult],
 ) -> tuple[int, int, int, int]:

@@ -2,11 +2,14 @@ import pytest
 
 from src.evaluation_config import (
     EngineConfig,
+    EvaluationConfigValidationError,
     EvaluationProfile,
     MetricConfig,
     QualityGateConfig,
     create_pipeline_from_profile,
 )
+
+
 from src.evaluation_models import VerdictPolicy
 
 
@@ -76,8 +79,8 @@ def test_rejects_unknown_enabled_engine():
     )
 
     with pytest.raises(
-        ValueError,
-        match="Unsupported evaluation engine",
+            EvaluationConfigValidationError,
+            match="Unsupported evaluation engine",
     ):
         create_pipeline_from_profile(profile)
 
@@ -106,5 +109,28 @@ def test_rejects_different_metric_thresholds():
     with pytest.raises(
         ValueError,
         match="one shared metric threshold",
+    ):
+        create_pipeline_from_profile(profile)
+
+def test_rejects_unsupported_deepeval_metric():
+    profile = EvaluationProfile(
+        name="invalid-deepeval-metric",
+        engines=[
+            EngineConfig(
+                name="deepeval",
+                enabled=True,
+                metrics=[
+                    MetricConfig(
+                        name="totally_fake_metric",
+                        threshold=0.7,
+                    )
+                ],
+            )
+        ],
+    )
+
+    with pytest.raises(
+        EvaluationConfigValidationError,
+        match="totally_fake_metric",
     ):
         create_pipeline_from_profile(profile)
