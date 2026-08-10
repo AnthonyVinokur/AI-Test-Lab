@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from src.evaluation.deepeval_engine import DeepEvalEngine
-from src.evaluation_config import EvaluationConfigValidationError
 from src.evaluation_config.models import EvaluationProfile
 from src.evaluation_models import VerdictPolicy
 from src.evaluation_pipeline import EvaluationPipeline
