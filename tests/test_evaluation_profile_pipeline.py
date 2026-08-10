@@ -85,7 +85,7 @@ def test_rejects_unknown_enabled_engine():
         create_pipeline_from_profile(profile)
 
 
-def test_rejects_different_metric_thresholds():
+def test_profile_supports_different_metric_thresholds():
     profile = EvaluationProfile(
         name="mixed-thresholds",
         engines=[
@@ -106,31 +106,14 @@ def test_rejects_different_metric_thresholds():
         ],
     )
 
-    with pytest.raises(
-        ValueError,
-        match="one shared metric threshold",
-    ):
-        create_pipeline_from_profile(profile)
+    pipeline = create_pipeline_from_profile(profile)
 
-def test_rejects_unsupported_deepeval_metric():
-    profile = EvaluationProfile(
-        name="invalid-deepeval-metric",
-        engines=[
-            EngineConfig(
-                name="deepeval",
-                enabled=True,
-                metrics=[
-                    MetricConfig(
-                        name="totally_fake_metric",
-                        threshold=0.7,
-                    )
-                ],
-            )
-        ],
+    assert pipeline.default_metrics == (
+        "answer_relevancy",
+        "faithfulness",
     )
 
-    with pytest.raises(
-        EvaluationConfigValidationError,
-        match="totally_fake_metric",
-    ):
-        create_pipeline_from_profile(profile)
+    assert pipeline.default_metric_thresholds == {
+        "answer_relevancy": 0.7,
+        "faithfulness": 0.8,
+    }

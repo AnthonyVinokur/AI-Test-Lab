@@ -220,6 +220,54 @@ def test_multiple_metrics_are_executed() -> None:
         "answer_relevancy",
         "faithfulness",
     ]
+def test_multiple_metrics_use_per_metric_thresholds() -> None:
+    received_thresholds: dict[str, float] = {}
+
+    def metric_factory(
+        *,
+        metric_name: str,
+        threshold: float,
+        **_: Any,
+    ) -> FakeDeepEvalMetric:
+        received_thresholds[metric_name] = threshold
+
+        return FakeDeepEvalMetric(
+            score=0.9,
+            successful=None,
+        )
+
+    engine = DeepEvalEngine(
+        metric_factory=metric_factory
+    )
+
+    request = EvaluationRequest(
+        input="Who created Python?",
+        actual_output="Python was created by Guido van Rossum.",
+        metrics=(
+            "answer_relevancy",
+            "faithfulness",
+        ),
+        threshold=0.7,
+
+        metric_thresholds={
+            "answer_relevancy": 0.75,
+            "faithfulness": 0.85,
+        },
+        retrieval_context=(
+            "Python was created by Guido van Rossum.",
+        ),
+    )
+
+    results = engine.evaluate(request)
+
+    assert received_thresholds == {
+        "answer_relevancy": 0.75,
+        "faithfulness": 0.85,
+    }
+
+    assert results[0].threshold == pytest.approx(0.75)
+    assert results[1].threshold == pytest.approx(0.85)
+
 
 
 def test_faithfulness_requires_retrieval_context() -> None:
@@ -428,3 +476,26 @@ def test_deepeval_unavailable_raises_runtime_error(
         match="DeepEval is not installed",
     ):
         engine.evaluate(make_request())
+
+def test_metric_uses_shared_threshold_as_fallback() -> None:
+    received_thresholds: list[float] = []
+
+    def metric_factory(
+        *,
+        threshold: float,
+        **_: Any,
+    ) -> FakeDeepEvalMetric:
+        received_thresholds.append(threshold)
+        return FakeDeepEvalMetric()
+
+    engine = DeepEvalEngine(
+        metric_factory=metric_factory
+    )
+
+    engine.evaluate(
+        make_request(
+            threshold=0.82,
+        )
+    )
+
+    assert received_thresholds == [0.82]

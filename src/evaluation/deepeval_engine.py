@@ -97,9 +97,14 @@ class DeepEvalEngine(EvaluationEngine):
                 request=request,
             )
 
+            metric_threshold = request.metric_thresholds.get(
+                metric_name,
+                request.threshold,
+            )
+
             metric = self._create_metric(
                 metric_name=metric_name,
-                threshold=request.threshold,
+                threshold=metric_threshold,
             )
 
             self._measure_metric(
@@ -115,7 +120,7 @@ class DeepEvalEngine(EvaluationEngine):
             passed = self._resolve_passed(
                 metric=metric,
                 score=score,
-                threshold=request.threshold,
+                threshold=metric_threshold,
             )
 
             results.append(
@@ -123,7 +128,7 @@ class DeepEvalEngine(EvaluationEngine):
                     metric_name=metric_name,
                     score=score,
                     passed=passed,
-                    threshold=request.threshold,
+                    threshold=metric_threshold,
                     reason=getattr(metric, "reason", None),
                     engine=self.name,
                 )

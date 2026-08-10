@@ -20,13 +20,14 @@ class EvaluationPipeline:
     """Runs deterministic and semantic evaluation engines."""
 
     def __init__(
-        self,
-        *,
-        assertion_engine: AssertionEvaluationEngine | None = None,
-        external_engines: Iterable[ExternalEvaluationEngine] | None = None,
-        verdict_policy: VerdictPolicy = VerdictPolicy.ASSERTION_ONLY,
-        default_metrics: tuple[str, ...] = (),
-        default_threshold: float = 0.7,
+            self,
+            *,
+            assertion_engine: AssertionEvaluationEngine | None = None,
+            external_engines: Iterable[ExternalEvaluationEngine] | None = None,
+            verdict_policy: VerdictPolicy = VerdictPolicy.ASSERTION_ONLY,
+            default_metrics: tuple[str, ...] = (),
+            default_threshold: float = 0.7,
+            default_metric_thresholds: dict[str, float] | None = None,
     ) -> None:
         if not 0.0 <= default_threshold <= 1.0:
             raise ValueError(
@@ -40,17 +41,21 @@ class EvaluationPipeline:
         self.verdict_policy = verdict_policy
         self.default_metrics = default_metrics
         self.default_threshold = default_threshold
+        self.default_metric_thresholds = dict(
+            default_metric_thresholds or {}
+        )
 
     def evaluate(
-        self,
-        *,
-        prompt: str,
-        actual_response: str,
-        assertion: Assertion,
-        metrics: tuple[str, ...] | None = None,
-        threshold: float | None = None,
-        expected_output: str | None = None,
-        retrieval_context: tuple[str, ...] = (),
+            self,
+            *,
+            prompt: str,
+            actual_response: str,
+            assertion: Assertion,
+            metrics: tuple[str, ...] | None = None,
+            threshold: float | None = None,
+            metric_thresholds: dict[str, float] | None = None,
+            expected_output: str | None = None,
+            retrieval_context: tuple[str, ...] = (),
     ) -> EvaluationResult:
         """Evaluate one model response."""
 
@@ -66,11 +71,16 @@ class EvaluationPipeline:
             else threshold
         )
 
+        selected_metric_thresholds = (
+            self.default_metric_thresholds
+            if metric_thresholds is None
+            else metric_thresholds
+        )
+
         assertion_result = self.assertion_engine.evaluate(
             actual_response=actual_response,
             assertion=assertion,
         )
-
         metric_results = list(assertion_result.evaluation_results)
 
         if selected_metrics:
@@ -79,6 +89,7 @@ class EvaluationPipeline:
                 actual_output=actual_response,
                 metrics=selected_metrics,
                 threshold=selected_threshold,
+                metric_thresholds=selected_metric_thresholds,
                 expected_output=expected_output,
                 retrieval_context=retrieval_context,
             )

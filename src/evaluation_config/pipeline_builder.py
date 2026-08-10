@@ -25,7 +25,7 @@ def create_pipeline_from_profile(
 
     external_engines = []
     selected_metrics: list[str] = []
-    metric_thresholds: list[float] = []
+    metric_thresholds: dict[str, float] = {}
 
     for engine_config in profile.engines:
         if not engine_config.enabled:
@@ -57,10 +57,17 @@ def create_pipeline_from_profile(
                 if not metric.enabled:
                     continue
 
-                selected_metrics.append(metric.name)
+                if metric.name is None:
+                    raise EvaluationConfigValidationError(
+                        "Enabled evaluation metric must have a name."
+                    )
+
+                metric_name = metric.name
+
+                selected_metrics.append(metric_name)
 
                 if metric.threshold is not None:
-                    metric_thresholds.append(metric.threshold)
+                    metric_thresholds[metric_name] = metric.threshold
 
             continue
 
@@ -69,10 +76,7 @@ def create_pipeline_from_profile(
             f"{engine_config.name!r}"
         )
 
-    threshold = _resolve_threshold(
-        profile=profile,
-        metric_thresholds=metric_thresholds,
-    )
+    threshold = profile.quality_gate.minimum_score
 
     verdict_policy = _resolve_verdict_policy(profile)
 
@@ -81,29 +85,30 @@ def create_pipeline_from_profile(
         verdict_policy=verdict_policy,
         default_metrics=tuple(selected_metrics),
         default_threshold=threshold,
+        default_metric_thresholds=metric_thresholds,
     )
 
 
-def _resolve_threshold(
-    *,
-    profile: EvaluationProfile,
-    metric_thresholds: list[float],
-) -> float:
-    """Resolve one threshold for the current pipeline API."""
-
-    if metric_thresholds:
-        unique_thresholds = set(metric_thresholds)
-
-        if len(unique_thresholds) > 1:
-            raise ValueError(
-                "The current evaluation pipeline supports one shared "
-                "metric threshold per run. Configure all enabled metrics "
-                "with the same threshold."
-            )
-
-        return metric_thresholds[0]
-
-    return profile.quality_gate.minimum_score
+# def _resolve_threshold(
+#     *,
+#     profile: EvaluationProfile,
+#     metric_thresholds: list[float],
+# ) -> float:
+#     """Resolve one threshold for the current pipeline API."""
+#
+#     if metric_thresholds:
+#         unique_thresholds = set(metric_thresholds)
+#
+#         if len(unique_thresholds) > 1:
+#             raise ValueError(
+#                 "The current evaluation pipeline supports one shared "
+#                 "metric threshold per run. Configure all enabled metrics "
+#                 "with the same threshold."
+#             )
+#
+#         return metric_thresholds[0]
+#
+#     return profile.quality_gate.minimum_score
 
 
 def _resolve_verdict_policy(

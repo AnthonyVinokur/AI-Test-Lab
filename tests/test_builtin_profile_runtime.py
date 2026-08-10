@@ -72,14 +72,29 @@ def test_enterprise_preserves_metric_configuration() -> None:
     assert pipeline.verdict_policy is VerdictPolicy.ALL_METRICS
 
 
-def test_deep_quality_rejects_multiple_runtime_thresholds() -> None:
+# def test_deep_quality_rejects_multiple_runtime_thresholds() -> None:
+#     profile = load_evaluation_profile("deep-quality")
+#
+#     with pytest.raises(
+#         ValueError,
+#         match="supports one shared metric threshold",
+#     ):
+#         create_pipeline_from_profile(profile)
+
+def test_deep_quality_supports_multiple_runtime_thresholds() -> None:
     profile = load_evaluation_profile("deep-quality")
 
-    with pytest.raises(
-        ValueError,
-        match="supports one shared metric threshold",
-    ):
-        create_pipeline_from_profile(profile)
+    pipeline = create_pipeline_from_profile(profile)
+
+    assert pipeline.default_metrics == (
+        "answer_relevancy",
+        "faithfulness",
+    )
+
+    assert pipeline.default_metric_thresholds == {
+        "answer_relevancy": 0.8,
+        "faithfulness": 0.85,
+    }
 
 
 def test_rag_rejects_unsupported_runtime_engine() -> None:
@@ -90,3 +105,4 @@ def test_rag_rejects_unsupported_runtime_engine() -> None:
         match="Unsupported evaluation engine",
     ):
         create_pipeline_from_profile(profile)
+
