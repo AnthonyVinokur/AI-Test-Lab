@@ -276,7 +276,7 @@ The framework is being developed incrementally. Planned areas include:
 
 ## Project status
 
-**Active development — Sprint 8.1**
+**Active development — Sprint11.6**
 
 The current release is an engineering work in progress, not yet a production compliance platform. APIs, report schemas, dataset formats, and command-line options may evolve as the framework matures.
 
