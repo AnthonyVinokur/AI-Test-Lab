@@ -65,6 +65,57 @@ class EvaluationRequest:
                     "Metric options name must not be empty."
                 )
 
+        normalized_metrics = {
+            metric_name.strip().lower()
+            for metric_name in self.metrics
+        }
+
+        unknown_threshold_metrics = {
+            metric_name
+            for metric_name in self.metric_thresholds
+            if metric_name.strip().lower() not in normalized_metrics
+        }
+        if unknown_threshold_metrics:
+            unknown = ", ".join(sorted(unknown_threshold_metrics))
+            raise ValueError(
+                "Metric threshold override configured for unselected "
+                f"metric(s): {unknown}."
+            )
+
+        unknown_option_metrics = {
+            metric_name
+            for metric_name in self.metric_options
+            if metric_name.strip().lower() not in normalized_metrics
+        }
+        if unknown_option_metrics:
+            unknown = ", ".join(sorted(unknown_option_metrics))
+            raise ValueError(
+                "Metric runtime options configured for unselected "
+                f"metric(s): {unknown}."
+            )
+
+    def threshold_for(self, metric_name: str) -> float:
+        'Return the effective threshold for one selected metric.'
+        normalized_name = metric_name.strip().lower()
+
+        for configured_name, configured_threshold in (
+            self.metric_thresholds.items()
+        ):
+            if configured_name.strip().lower() == normalized_name:
+                return configured_threshold
+
+        return self.threshold
+
+    def options_for(self, metric_name: str) -> dict[str, Any]:
+        'Return a defensive copy of runtime options for one metric.'
+        normalized_name = metric_name.strip().lower()
+
+        for configured_name, options in self.metric_options.items():
+            if configured_name.strip().lower() == normalized_name:
+                return dict(options)
+
+        return {}
+
 @dataclass(frozen=True, slots=True)
 class MetricResult:
     """Normalized result returned by an evaluation metric."""

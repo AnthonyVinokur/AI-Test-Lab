@@ -55,15 +55,6 @@ class EvaluationPipeline:
                     default_metric_options or {}
             ).items()
         }
-        self.external_engines = tuple(external_engines or ())
-        self.verdict_policy = verdict_policy
-        self.default_metrics = default_metrics
-        self.default_threshold = default_threshold
-        self.default_metric_thresholds = dict(
-            default_metric_thresholds or {}
-        )
-
-
     def evaluate(
             self,
             *,

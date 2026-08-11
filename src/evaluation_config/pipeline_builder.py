@@ -57,8 +57,6 @@ def create_pipeline_from_profile(
             )
 
             for metric in engine_config.metrics:
-
-
                 if not metric.enabled:
                     continue
 
@@ -71,8 +69,6 @@ def create_pipeline_from_profile(
                 if metric.options:
                     metric_options[metric_name] = dict(metric.options)
 
-                metric_name = metric.name
-
                 selected_metrics.append(metric_name)
 
                 if metric.threshold is not None:
@@ -84,8 +80,6 @@ def create_pipeline_from_profile(
             f"Unsupported evaluation engine in profile: "
             f"{engine_config.name!r}"
         )
-
-    threshold = profile.quality_gate.minimum_score
 
     verdict_policy = _resolve_verdict_policy(profile)
 
