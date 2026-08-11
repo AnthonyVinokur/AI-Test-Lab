@@ -6,11 +6,6 @@ from typing import Any
 from src.evaluation_engines import EvaluationEngine
 from src.evaluation_models import EvaluationRequest, MetricResult
 
-from deepeval.metrics import (
-    AnswerRelevancyMetric,
-    FaithfulnessMetric,
-)
-
 class DeepEvalEngine(EvaluationEngine):
     """Evaluation engine backed by DeepEval metrics."""
 
@@ -103,9 +98,7 @@ class DeepEvalEngine(EvaluationEngine):
                 requested_metric_name
             )
 
-            metric_options = dict(
-                request.metric_options.get(metric_name, {})
-            )
+            metric_options = request.options_for(metric_name)
 
             self._validate_metric_requirements(
                 metric_name=metric_name,
@@ -117,10 +110,7 @@ class DeepEvalEngine(EvaluationEngine):
                 metric_options=metric_options,
             )
 
-            metric_threshold = request.metric_thresholds.get(
-                metric_name,
-                request.threshold,
-            )
+            metric_threshold = request.threshold_for(metric_name)
 
             metric = self._create_metric(
                 metric_name=metric_name,
@@ -133,11 +123,6 @@ class DeepEvalEngine(EvaluationEngine):
                 metric_name=metric_name,
                 test_case=test_case,
             )
-            self._validate_metric_options(
-                metric_name=metric_name,
-                metric_options=metric_options,
-            )
-
             score = self._normalize_score(
                 getattr(metric, "score", None)
             )
@@ -223,11 +208,6 @@ class DeepEvalEngine(EvaluationEngine):
                 include_reason=include_reason,
                 async_mode=async_mode,
             )
-        from deepeval.metrics import (
-            AnswerRelevancyMetric,
-            FaithfulnessMetric,
-        )
-
         from deepeval.metrics import (
             AnswerRelevancyMetric,
             FaithfulnessMetric,
