@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from dataclasses import replace
 from typing import Any
 
 from src.evaluation_plugins import ExternalEvaluationEngine
@@ -30,6 +31,8 @@ class EvaluationPipeline:
             default_threshold: float = 0.7,
             default_metric_thresholds: dict[str, float] | None = None,
             default_metric_options: dict[str, dict[str, Any]] | None = None,
+            profile_name: str | None = None,
+            profile_version: str | None = None,
     ) -> None:
         if not 0.0 <= default_threshold <= 1.0:
             raise ValueError(
@@ -55,6 +58,8 @@ class EvaluationPipeline:
                     default_metric_options or {}
             ).items()
         }
+        self.profile_name = profile_name
+        self.profile_version = profile_version
     def evaluate(
             self,
             *,
@@ -98,7 +103,10 @@ class EvaluationPipeline:
             actual_response=actual_response,
             assertion=assertion,
         )
-        metric_results = list(assertion_result.evaluation_results)
+        metric_results = [
+            self._attach_profile_provenance(metric)
+            for metric in assertion_result.evaluation_results
+        ]
 
         if selected_metrics:
             request = EvaluationRequest(
@@ -110,6 +118,8 @@ class EvaluationPipeline:
                 metric_options=selected_metric_options,
                 expected_output=expected_output,
                 retrieval_context=retrieval_context,
+                profile_name=self.profile_name,
+                profile_version=self.profile_version,
             )
 
             metric_results.extend(
@@ -130,6 +140,31 @@ class EvaluationPipeline:
             evaluation_results=metric_results,
         )
 
+
+    def _attach_profile_provenance(
+        self,
+        metric_result: MetricResult,
+    ) -> MetricResult:
+        """Attach selected profile identity without rebuilding unnecessarily."""
+        if self.profile_name is None and self.profile_version is None:
+            return metric_result
+
+        if (
+            metric_result.profile_name == self.profile_name
+            and metric_result.profile_version == self.profile_version
+        ):
+            return metric_result
+
+        return replace(
+            metric_result,
+            profile_name=(
+                metric_result.profile_name or self.profile_name
+            ),
+            profile_version=(
+                metric_result.profile_version or self.profile_version
+            ),
+        )
+
     def _evaluate_external_engines(
         self,
         request: EvaluationRequest,
@@ -139,7 +174,10 @@ class EvaluationPipeline:
         results: list[MetricResult] = []
 
         for engine in self.external_engines:
-            results.extend(engine.evaluate(request))
+            results.extend(
+                self._attach_profile_provenance(metric_result)
+                for metric_result in engine.evaluate(request)
+            )
 
         return results
 

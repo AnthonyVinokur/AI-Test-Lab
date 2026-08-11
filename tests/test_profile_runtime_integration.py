@@ -205,3 +205,35 @@ def test_profile_configuration_reaches_runtime() -> None:
     assert result.passed is True
     assert len(result.evaluation_results) == 1
     assert result.evaluation_results[0].engine == "builtin"
+
+def test_profile_identity_is_preserved_on_runtime_evidence() -> None:
+    profile = EvaluationProfile(
+        name="audit-profile",
+        version="2.3",
+        engines=[
+            EngineConfig(
+                name="assertion",
+                enabled=True,
+            )
+        ],
+        quality_gate=QualityGateConfig(
+            enabled=False,
+        ),
+    )
+
+    pipeline = create_pipeline_from_profile(profile)
+
+    runner = RuntimeTestRunner(
+        client=FakeModelClient(
+            "Python is a programming language."
+        ),
+        evaluation_pipeline=pipeline,
+    )
+
+    result = runner.run_test(make_test_case())
+    metric = result.evaluation_results[0]
+
+    assert pipeline.profile_name == "audit-profile"
+    assert pipeline.profile_version == "2.3"
+    assert metric.profile_name == "audit-profile"
+    assert metric.profile_version == "2.3"

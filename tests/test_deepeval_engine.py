@@ -565,3 +565,54 @@ def test_unsupported_metric_runtime_option_raises_value_error() -> None:
         match="Unsupported runtime option",
     ):
         engine.evaluate(request)
+
+def test_metric_result_preserves_effective_runtime_provenance() -> None:
+    engine = DeepEvalEngine(
+        judge_model="test-judge",
+        metric_factory=lambda **_: FakeDeepEvalMetric(
+            score=0.93,
+            reason="The response is relevant.",
+            successful=True,
+        ),
+    )
+
+    request = EvaluationRequest(
+        input="What is Python?",
+        actual_output="Python is a programming language.",
+        metrics=("answer_relevancy",),
+        threshold=0.81,
+        metric_options={
+            "answer_relevancy": {
+                "include_reason": False,
+            },
+        },
+        profile_name="deep-quality",
+        profile_version="1.0",
+    )
+
+    result = engine.evaluate(request)[0]
+
+    assert result.engine == "deepeval"
+    assert result.metric_name == "answer_relevancy"
+    assert result.threshold == pytest.approx(0.81)
+    assert result.reason == "The response is relevant."
+    assert result.runtime_options == {
+        "include_reason": False,
+        "async_mode": False,
+    }
+    assert result.profile_name == "deep-quality"
+    assert result.profile_version == "1.0"
+    assert result.evaluator_model == "test-judge"
+
+
+def test_metric_result_records_default_runtime_options() -> None:
+    engine = DeepEvalEngine(
+        metric_factory=lambda **_: FakeDeepEvalMetric(),
+    )
+
+    result = engine.evaluate(make_request())[0]
+
+    assert result.runtime_options == {
+        "include_reason": True,
+        "async_mode": False,
+    }

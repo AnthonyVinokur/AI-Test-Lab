@@ -90,6 +90,8 @@ def create_pipeline_from_profile(
         default_threshold=profile.quality_gate.minimum_score,
         default_metric_thresholds=metric_thresholds,
         default_metric_options=metric_options,
+        profile_name=profile.name,
+        profile_version=profile.version,
     )
 
 
