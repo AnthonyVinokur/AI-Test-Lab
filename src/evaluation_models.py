@@ -4,6 +4,8 @@ from dataclasses import dataclass, field
 
 from enum import StrEnum
 
+from typing import Any
+
 class VerdictPolicy(StrEnum):
     """Controls how metric results affect the final evaluation verdict."""
 
@@ -19,6 +21,9 @@ class EvaluationRequest:
     metrics: tuple[str, ...] = ("answer_relevancy",)
     threshold: float = 0.7
     metric_thresholds: dict[str, float] = field(
+        default_factory=dict
+    )
+    metric_options: dict[str, dict[str, Any]] = field(
         default_factory=dict
     )
     expected_output: str | None = None
@@ -52,6 +57,12 @@ class EvaluationRequest:
             if not 0.0 <= metric_threshold <= 1.0:
                 raise ValueError(
                     "Metric threshold must be between 0.0 and 1.0."
+                )
+
+        for metric_name in self.metric_options:
+            if not metric_name.strip():
+                raise ValueError(
+                    "Metric options name must not be empty."
                 )
 
 @dataclass(frozen=True, slots=True)
