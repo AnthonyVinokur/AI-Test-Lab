@@ -148,6 +148,8 @@ def test_metric_factory_receives_configuration() -> None:
         "metric_name": "answer_relevancy",
         "threshold": 0.8,
         "model": "test-judge",
+        "include_reason": True,
+        "async_mode": False,
     }
 
 
@@ -499,3 +501,67 @@ def test_metric_uses_shared_threshold_as_fallback() -> None:
     )
 
     assert received_thresholds == [0.82]
+
+def test_metric_uses_per_metric_runtime_options() -> None:
+    received_options: dict[str, object] = {}
+
+    def metric_factory(
+        *,
+        metric_name: str,
+        threshold: float,
+        include_reason: bool,
+        async_mode: bool,
+        **_: Any,
+    ) -> FakeDeepEvalMetric:
+        received_options["metric_name"] = metric_name
+        received_options["threshold"] = threshold
+        received_options["include_reason"] = include_reason
+        received_options["async_mode"] = async_mode
+
+        return FakeDeepEvalMetric(
+            score=0.9,
+            successful=True,
+        )
+
+    engine = DeepEvalEngine(
+        metric_factory=metric_factory,
+    )
+
+    request = EvaluationRequest(
+        input="What is Python?",
+        actual_output="Python is a programming language.",
+        metrics=("answer_relevancy",),
+        threshold=0.7,
+        metric_options={
+            "answer_relevancy": {
+                "include_reason": False,
+            },
+        },
+    )
+
+    engine.evaluate(request)
+
+    assert received_options["metric_name"] == "answer_relevancy"
+    assert received_options["threshold"] == 0.7
+    assert received_options["include_reason"] is False
+    assert received_options["async_mode"] is False
+
+def test_unsupported_metric_runtime_option_raises_value_error() -> None:
+    engine = DeepEvalEngine()
+
+    request = EvaluationRequest(
+        input="What is Python?",
+        actual_output="Python is a programming language.",
+        metrics=("answer_relevancy",),
+        metric_options={
+            "answer_relevancy": {
+                "unknown_option": True,
+            },
+        },
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="Unsupported runtime option",
+    ):
+        engine.evaluate(request)

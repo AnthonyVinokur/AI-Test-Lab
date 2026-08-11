@@ -104,6 +104,8 @@ def test_pipeline_skips_external_engines_without_metrics() -> None:
     assert len(result.evaluation_results) == 1
     assert result.evaluation_results[0].engine == "builtin"
 
+
+
 def test_pipeline_passes_per_metric_thresholds_to_external_engine() -> None:
     captured_requests: list[EvaluationRequest] = []
 
@@ -156,4 +158,58 @@ def test_pipeline_passes_per_metric_thresholds_to_external_engine() -> None:
     assert captured_request.threshold == 0.7
     assert captured_request.metric_thresholds == {
         "answer_relevancy": 0.85,
+    }
+
+def test_pipeline_passes_per_metric_options_to_external_engine() -> None:
+    captured_requests: list[EvaluationRequest] = []
+
+    class CapturingEngine:
+        @property
+        def name(self) -> str:
+            return "fake"
+
+        def evaluate(
+            self,
+            request: EvaluationRequest,
+        ) -> list[MetricResult]:
+            captured_requests.append(request)
+
+            return [
+                MetricResult(
+                    engine=self.name,
+                    metric_name="answer_relevancy",
+                    score=0.9,
+                    threshold=request.threshold,
+                    passed=True,
+                    reason="Passed.",
+                )
+            ]
+
+    pipeline = EvaluationPipeline(
+        external_engines=[CapturingEngine()],
+    )
+
+    pipeline.evaluate(
+        prompt="Explain Python.",
+        actual_response="Python is a programming language.",
+        assertion=Assertion(
+            type=AssertionType.CONTAINS,
+            expected="programming",
+        ),
+        metrics=("answer_relevancy",),
+        metric_options={
+            "answer_relevancy": {
+                "include_reason": False,
+            },
+        },
+    )
+
+    assert len(captured_requests) == 1
+
+    request = captured_requests[0]
+
+    assert request.metric_options == {
+        "answer_relevancy": {
+            "include_reason": False,
+        },
     }

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from src.evaluation.deepeval_engine import DeepEvalEngine
 from src.evaluation_config.models import EvaluationProfile
 from src.evaluation_models import VerdictPolicy
@@ -26,6 +28,7 @@ def create_pipeline_from_profile(
     external_engines = []
     selected_metrics: list[str] = []
     metric_thresholds: dict[str, float] = {}
+    metric_options: dict[str, dict[str, Any]] = {}
 
     for engine_config in profile.engines:
         if not engine_config.enabled:
@@ -54,6 +57,8 @@ def create_pipeline_from_profile(
             )
 
             for metric in engine_config.metrics:
+
+
                 if not metric.enabled:
                     continue
 
@@ -61,6 +66,10 @@ def create_pipeline_from_profile(
                     raise EvaluationConfigValidationError(
                         "Enabled evaluation metric must have a name."
                     )
+                metric_name = metric.name
+
+                if metric.options:
+                    metric_options[metric_name] = dict(metric.options)
 
                 metric_name = metric.name
 
@@ -84,31 +93,10 @@ def create_pipeline_from_profile(
         external_engines=external_engines,
         verdict_policy=verdict_policy,
         default_metrics=tuple(selected_metrics),
-        default_threshold=threshold,
+        default_threshold=profile.quality_gate.minimum_score,
         default_metric_thresholds=metric_thresholds,
+        default_metric_options=metric_options,
     )
-
-
-# def _resolve_threshold(
-#     *,
-#     profile: EvaluationProfile,
-#     metric_thresholds: list[float],
-# ) -> float:
-#     """Resolve one threshold for the current pipeline API."""
-#
-#     if metric_thresholds:
-#         unique_thresholds = set(metric_thresholds)
-#
-#         if len(unique_thresholds) > 1:
-#             raise ValueError(
-#                 "The current evaluation pipeline supports one shared "
-#                 "metric threshold per run. Configure all enabled metrics "
-#                 "with the same threshold."
-#             )
-#
-#         return metric_thresholds[0]
-#
-#     return profile.quality_gate.minimum_score
 
 
 def _resolve_verdict_policy(

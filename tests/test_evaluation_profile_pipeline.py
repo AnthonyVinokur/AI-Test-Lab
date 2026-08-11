@@ -13,6 +13,35 @@ from src.evaluation_config import (
 from src.evaluation_models import VerdictPolicy
 
 
+def test_profile_preserves_metric_runtime_options():
+    profile = EvaluationProfile(
+        name="metric-options",
+        engines=[
+            EngineConfig(
+                name="deepeval",
+                enabled=True,
+                metrics=[
+                    MetricConfig(
+                        name="answer_relevancy",
+                        threshold=0.8,
+                        options={
+                            "include_reason": False,
+                        },
+                    ),
+                ],
+            )
+        ],
+    )
+
+    pipeline = create_pipeline_from_profile(profile)
+
+    assert pipeline.default_metric_options == {
+        "answer_relevancy": {
+            "include_reason": False,
+        },
+    }
+
+
 def test_assertion_only_profile_creates_default_pipeline():
     profile = EvaluationProfile(
         name="assertion-only",

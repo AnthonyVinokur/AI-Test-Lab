@@ -6,11 +6,22 @@ from typing import Any
 from src.evaluation_engines import EvaluationEngine
 from src.evaluation_models import EvaluationRequest, MetricResult
 
+from deepeval.metrics import (
+    AnswerRelevancyMetric,
+    FaithfulnessMetric,
+)
 
 class DeepEvalEngine(EvaluationEngine):
     """Evaluation engine backed by DeepEval metrics."""
 
     ENGINE_NAME = "deepeval"
+
+    SUPPORTED_METRIC_OPTIONS = frozenset(
+        {
+            "include_reason",
+            "async_mode",
+        }
+    )
 
     SUPPORTED_METRICS = frozenset(
         {
@@ -92,9 +103,18 @@ class DeepEvalEngine(EvaluationEngine):
                 requested_metric_name
             )
 
+            metric_options = dict(
+                request.metric_options.get(metric_name, {})
+            )
+
             self._validate_metric_requirements(
                 metric_name=metric_name,
                 request=request,
+            )
+
+            self._validate_metric_options(
+                metric_name=metric_name,
+                metric_options=metric_options,
             )
 
             metric_threshold = request.metric_thresholds.get(
@@ -105,12 +125,17 @@ class DeepEvalEngine(EvaluationEngine):
             metric = self._create_metric(
                 metric_name=metric_name,
                 threshold=metric_threshold,
+                metric_options=metric_options,
             )
 
             self._measure_metric(
                 metric=metric,
                 metric_name=metric_name,
                 test_case=test_case,
+            )
+            self._validate_metric_options(
+                metric_name=metric_name,
+                metric_options=metric_options,
             )
 
             score = self._normalize_score(
@@ -172,18 +197,36 @@ class DeepEvalEngine(EvaluationEngine):
         return LLMTestCase(**kwargs)
 
     def _create_metric(
-        self,
-        *,
-        metric_name: str,
-        threshold: float,
+            self,
+            *,
+            metric_name: str,
+            threshold: float,
+            metric_options: dict[str, Any],
     ) -> Any:
         """Create the configured DeepEval metric."""
+
+        include_reason = metric_options.get(
+            "include_reason",
+            True,
+        )
+
+        async_mode = metric_options.get(
+            "async_mode",
+            False,
+        )
+
         if self._metric_factory is not None:
             return self._metric_factory(
                 metric_name=metric_name,
                 threshold=threshold,
                 model=self._judge_model,
+                include_reason=include_reason,
+                async_mode=async_mode,
             )
+        from deepeval.metrics import (
+            AnswerRelevancyMetric,
+            FaithfulnessMetric,
+        )
 
         from deepeval.metrics import (
             AnswerRelevancyMetric,
@@ -192,8 +235,8 @@ class DeepEvalEngine(EvaluationEngine):
 
         common_options: dict[str, Any] = {
             "threshold": threshold,
-            "include_reason": True,
-            "async_mode": False,
+            "include_reason": include_reason,
+            "async_mode": async_mode,
         }
 
         if self._judge_model is not None:
@@ -235,14 +278,14 @@ class DeepEvalEngine(EvaluationEngine):
 
     @staticmethod
     def _validate_metric_requirements(
-        *,
-        metric_name: str,
-        request: EvaluationRequest,
+            *,
+            metric_name: str,
+            request: EvaluationRequest,
     ) -> None:
         """Validate data required by the selected metric."""
         if (
-            metric_name == "faithfulness"
-            and not request.retrieval_context
+                metric_name == "faithfulness"
+                and not request.retrieval_context
         ):
             raise ValueError(
                 "DeepEval metric 'faithfulness' requires "
@@ -314,3 +357,40 @@ class DeepEvalEngine(EvaluationEngine):
                 return bool(result)
 
         return score >= threshold
+
+    @classmethod
+    def _validate_metric_options(
+            cls,
+            *,
+            metric_name: str,
+            metric_options: dict[str, Any],
+    ) -> None:
+        """Validate runtime options supported by DeepEval metrics."""
+
+        unsupported_options = (
+                set(metric_options)
+                - cls.SUPPORTED_METRIC_OPTIONS
+        )
+
+        if unsupported_options:
+            unsupported = ", ".join(
+                sorted(unsupported_options)
+            )
+
+            raise ValueError(
+                f"Unsupported runtime option(s) for "
+                f"{metric_name!r}: {unsupported}."
+            )
+
+        for option_name in ("include_reason", "async_mode"):
+            if (
+                    option_name in metric_options
+                    and not isinstance(
+                metric_options[option_name],
+                bool,
+            )
+            ):
+                raise ValueError(
+                    f"Runtime option {option_name!r} for "
+                    f"{metric_name!r} must be a boolean."
+                )
