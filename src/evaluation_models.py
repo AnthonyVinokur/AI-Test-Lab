@@ -30,6 +30,8 @@ class EvaluationRequest:
     retrieval_context: tuple[str, ...] = field(
         default_factory=tuple
     )
+    profile_name: str | None = None
+    profile_version: str | None = None
 
 
     def __post_init__(self) -> None:
@@ -126,3 +128,16 @@ class MetricResult:
     threshold: float
     engine: str
     reason: str | None = None
+    runtime_options: dict[str, Any] = field(default_factory=dict)
+    profile_name: str | None = None
+    profile_version: str | None = None
+    evaluator_model: str | None = None
+
+    def __post_init__(self) -> None:
+        # Prevent callers from mutating the dictionary used to construct
+        # this frozen provenance record after evaluation completes.
+        object.__setattr__(
+            self,
+            "runtime_options",
+            dict(self.runtime_options),
+        )

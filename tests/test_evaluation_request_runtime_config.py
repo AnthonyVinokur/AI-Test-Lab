@@ -77,3 +77,13 @@ def test_runtime_options_must_target_selected_metric() -> None:
                 "faithfulness": {"include_reason": True},
             },
         )
+
+
+def test_request_can_carry_profile_provenance() -> None:
+    request = make_request(
+        profile_name="enterprise",
+        profile_version="1.4",
+    )
+
+    assert request.profile_name == "enterprise"
+    assert request.profile_version == "1.4"

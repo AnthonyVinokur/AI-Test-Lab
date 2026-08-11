@@ -98,7 +98,7 @@ class DeepEvalEngine(EvaluationEngine):
                 requested_metric_name
             )
 
-            metric_options = request.options_for(metric_name)
+            requested_metric_options = request.options_for(metric_name)
 
             self._validate_metric_requirements(
                 metric_name=metric_name,
@@ -107,9 +107,12 @@ class DeepEvalEngine(EvaluationEngine):
 
             self._validate_metric_options(
                 metric_name=metric_name,
-                metric_options=metric_options,
+                metric_options=requested_metric_options,
             )
 
+            metric_options = self._effective_metric_options(
+                requested_metric_options
+            )
             metric_threshold = request.threshold_for(metric_name)
 
             metric = self._create_metric(
@@ -141,6 +144,10 @@ class DeepEvalEngine(EvaluationEngine):
                     threshold=metric_threshold,
                     reason=getattr(metric, "reason", None),
                     engine=self.name,
+                    runtime_options=metric_options,
+                    profile_name=request.profile_name,
+                    profile_version=request.profile_version,
+                    evaluator_model=self._describe_judge_model(),
                 )
             )
 
@@ -181,6 +188,30 @@ class DeepEvalEngine(EvaluationEngine):
 
         return LLMTestCase(**kwargs)
 
+    @staticmethod
+    def _effective_metric_options(
+        metric_options: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Return the exact metric options used for evaluation."""
+        return {
+            "include_reason": metric_options.get("include_reason", True),
+            "async_mode": metric_options.get("async_mode", False),
+        }
+
+    def _describe_judge_model(self) -> str | None:
+        """Return a stable provenance label for the configured judge."""
+        if self._judge_model is None:
+            return None
+
+        if isinstance(self._judge_model, str):
+            return self._judge_model
+
+        model_name = getattr(self._judge_model, "model_name", None)
+        if isinstance(model_name, str) and model_name.strip():
+            return model_name
+
+        return type(self._judge_model).__name__
+
     def _create_metric(
             self,
             *,
@@ -190,15 +221,8 @@ class DeepEvalEngine(EvaluationEngine):
     ) -> Any:
         """Create the configured DeepEval metric."""
 
-        include_reason = metric_options.get(
-            "include_reason",
-            True,
-        )
-
-        async_mode = metric_options.get(
-            "async_mode",
-            False,
-        )
+        include_reason = metric_options["include_reason"]
+        async_mode = metric_options["async_mode"]
 
         if self._metric_factory is not None:
             return self._metric_factory(
