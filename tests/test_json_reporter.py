@@ -25,16 +25,6 @@ def test_json_reporter_creates_report(tmp_path) -> None:
             assertion_type=AssertionType.CONTAINS,
             expected="Hello",
             reason="The response contains the expected text.",
-            # evaluation_results=[
-            #     MetricResult(
-            #         engine="builtin",
-            #         metric_name="contains",
-            #         score=1.0,
-            #         threshold=1.0,
-            #         passed=True,
-            #         reason="The response contains the expected text.",
-            #     )
-            # ],
 
             evaluation_results=[
                 MetricResult(
@@ -44,6 +34,12 @@ def test_json_reporter_creates_report(tmp_path) -> None:
                     threshold=1.0,
                     passed=True,
                     reason="The response contains the expected text.",
+                    runtime_options={
+                        "include_reason": True,
+                    },
+                    profile_name="fast-ci",
+                    profile_version="1.0",
+                    evaluator_model="test-judge",
                 )
             ],
             response_time_seconds=0.25,
@@ -62,6 +58,8 @@ def test_json_reporter_creates_report(tmp_path) -> None:
     )
 
     assert "generated_at" in report_data
+
+    assert report_data["schema_version"] == "1.0"
 
     assert report_data["models"] == ["llama3.1"]
 
@@ -109,6 +107,13 @@ def test_json_reporter_creates_report(tmp_path) -> None:
             evaluation["reason"]
             == "The response contains the expected text."
     )
+    assert evaluation["runtime_options"] == {
+        "include_reason": True,
+    }
+    assert evaluation["profile_name"] == "fast-ci"
+    assert evaluation["profile_version"] == "1.0"
+    assert evaluation["evaluator_model"] == "test-judge"
+
     assert report_data["summary"]["total_estimated_cost_usd"] == 0.0
     assert model_summary["provider"] == "ollama"
     assert model_summary["total_estimated_cost_usd"] == 0.0
