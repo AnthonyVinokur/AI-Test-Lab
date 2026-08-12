@@ -59,6 +59,7 @@ class JsonReporter:
         )
 
         report = {
+            "schema_version": "1.0",
             "generated_at": generated_at,
             "models": [
                 summary.model
