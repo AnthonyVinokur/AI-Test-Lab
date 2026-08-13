@@ -141,3 +141,11 @@ class MetricResult:
             "runtime_options",
             dict(self.runtime_options),
         )
+
+@dataclass(frozen=True, slots=True)
+class EngineExecutionResult:
+    """Outcome of running one external evaluation engine."""
+
+    engine: str
+    succeeded: bool
+    error: str | None = None
