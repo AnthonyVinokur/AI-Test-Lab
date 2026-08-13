@@ -36,6 +36,14 @@ class JsonReporter:
             result.status == EvaluationStatus.FAIL
             for result in results
         )
+        expected_failures = sum(
+            result.status == EvaluationStatus.XFAIL
+            for result in results
+        )
+        unexpected_passes = sum(
+            result.status == EvaluationStatus.XPASS
+            for result in results
+        )
         errors = sum(
             result.status == EvaluationStatus.ERROR
             for result in results
@@ -68,6 +76,8 @@ class JsonReporter:
             "summary": {
                 "passed": passed,
                 "failed": failed,
+                "expected_failures": expected_failures,
+                "unexpected_passes": unexpected_passes,
                 "errors": errors,
                 "total": total,
                 "pass_rate_percent": pass_rate_percent,

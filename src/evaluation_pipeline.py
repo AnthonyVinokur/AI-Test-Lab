@@ -149,6 +149,7 @@ class EvaluationPipeline:
             expected=assertion_result.expected,
             reason=reason,
             evaluation_results=metric_results,
+            engine_results=engine_results,
         )
 
 

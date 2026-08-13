@@ -65,6 +65,7 @@ class TestRunner:
 
             provider=model_response.provider,
             model=model_response.model,
+            estimated_cost_usd=model_response.estimated_cost_usd,
             actual_response=model_response.content,
 
             passed=final_status in {
@@ -79,6 +80,7 @@ class TestRunner:
             reason=evaluation.reason,
 
             evaluation_results=evaluation.evaluation_results,
+            engine_results=evaluation.engine_results,
 
             response_time_seconds=response_time_seconds,
 
