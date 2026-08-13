@@ -86,6 +86,12 @@ def create_pipeline_from_profile(
     return EvaluationPipeline(
         external_engines=external_engines,
         verdict_policy=verdict_policy,
+        fail_on_engine_error=(
+            profile.quality_gate.fail_on_engine_error
+        ),
+        require_all_engines=(
+            profile.quality_gate.require_all_engines
+        ),
         default_metrics=tuple(selected_metrics),
         default_threshold=profile.quality_gate.minimum_score,
         default_metric_thresholds=metric_thresholds,
