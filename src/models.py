@@ -4,7 +4,7 @@ from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
-from src.evaluation_models import MetricResult
+from src.evaluation_models import EngineExecutionResult, MetricResult
 
 
 class OllamaMetrics(BaseModel):
@@ -91,6 +91,10 @@ class EvaluationResult(BaseModel):
         default_factory=list
     )
 
+    engine_results: list[EngineExecutionResult] = Field(
+        default_factory=list
+    )
+
 
 class TestResult(BaseModel):
     test_id: str
@@ -103,7 +107,6 @@ class TestResult(BaseModel):
 
     estimated_cost_usd: float = Field(default=0.0, ge=0.0)
 
-    model: str
     actual_response: str
 
     passed: bool
@@ -119,6 +122,9 @@ class TestResult(BaseModel):
         default_factory=list
     )
 
+    engine_results: list[EngineExecutionResult] = Field(
+        default_factory=list
+    )
 
     response_time_seconds: float = Field(default=0.0, ge=0.0)
 
@@ -144,6 +150,7 @@ class ModelSummary(BaseModel):
     passed: int = Field(default=0, ge=0)
     expected_failures: int = Field(default=0, ge=0)
     unexpected_failures: int = Field(default=0, ge=0)
+    unexpected_passes: int = Field(default=0, ge=0)
     errors: int = Field(default=0, ge=0)
     total: int = Field(default=0, ge=0)
 

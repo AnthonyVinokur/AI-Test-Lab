@@ -12,7 +12,8 @@ from src.evaluation_pipeline import EvaluationPipeline
 
 def test_runner_executes_prompt_and_returns_test_result() -> None:
     client = FakeModelClient(
-        response_text="Python is a programming language."
+        response_text="Python is a programming language.",
+        estimated_cost_usd=0.012345,
     )
 
     test_case = PromptTest(
@@ -52,3 +53,4 @@ def test_runner_executes_prompt_and_returns_test_result() -> None:
     assert metric_result.metric_name == "contains"
     assert metric_result.passed is True
     assert metric_result.score == 1.0
+    assert result.estimated_cost_usd == 0.012345

@@ -6,7 +6,10 @@ from src.models import (
     EvaluationStatus,
     TestResult as ResultModel,
 )
-from src.evaluation_models import MetricResult
+from src.evaluation_models import (
+    EngineExecutionResult,
+    MetricResult,
+)
 
 
 def test_json_reporter_creates_report(tmp_path) -> None:
@@ -42,6 +45,13 @@ def test_json_reporter_creates_report(tmp_path) -> None:
                     evaluator_model="test-judge",
                 )
             ],
+            engine_results=[
+                EngineExecutionResult(
+                    engine="deepeval",
+                    succeeded=False,
+                    error="judge unavailable",
+                )
+            ],
             response_time_seconds=0.25,
         )
     ]
@@ -66,6 +76,8 @@ def test_json_reporter_creates_report(tmp_path) -> None:
     assert report_data["summary"] == {
         "passed": 1,
         "failed": 0,
+        "expected_failures": 0,
+        "unexpected_passes": 0,
         "errors": 0,
         "total": 1,
         "pass_rate_percent": 100.0,
@@ -121,3 +133,10 @@ def test_json_reporter_creates_report(tmp_path) -> None:
 
     assert result["provider"] == "ollama"
     assert result["estimated_cost_usd"] == 0.0
+    engine_result = result["engine_results"][0]
+
+    assert engine_result == {
+        "engine": "deepeval",
+        "succeeded": False,
+        "error": "judge unavailable",
+    }
