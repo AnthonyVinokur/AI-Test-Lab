@@ -8,10 +8,16 @@ from src.report_analytics import (
     get_fastest_model,
     get_highest_scoring_model,
 )
+from src.report_mapper import map_model_summary, map_test_result
+from src.report_schema import (
+    ReportHighlightsV1,
+    ReportSummaryV1,
+    ReportV1,
+)
 
 
 class JsonReporter:
-    """Writes AI test results and model comparisons to JSON."""
+    """Writes validated public AI test evidence to JSON."""
 
     def __init__(self, report_path: Path) -> None:
         self.report_path = report_path
@@ -66,47 +72,49 @@ class JsonReporter:
             model_summaries
         )
 
-        report = {
-            "schema_version": "1.0",
-            "generated_at": generated_at,
-            "models": [
-                summary.model
-                for summary in model_summaries
-            ],
-            "summary": {
-                "passed": passed,
-                "failed": failed,
-                "expected_failures": expected_failures,
-                "unexpected_passes": unexpected_passes,
-                "errors": errors,
-                "total": total,
-                "pass_rate_percent": pass_rate_percent,
-                "total_estimated_cost_usd": total_estimated_cost_usd,
-            },
-
-            "highlights": {
-                "highest_scoring_model": (
+        # IP Protection Boundary:
+        # Internal runtime models never serialize directly. Every field that
+        # crosses into the public report contract is explicitly allow-listed
+        # by the ReportV1 DTOs and mapper functions.
+        report = ReportV1(
+            generated_at=generated_at,
+            models=[summary.model for summary in model_summaries],
+            summary=ReportSummaryV1(
+                passed=passed,
+                failed=failed,
+                expected_failures=expected_failures,
+                unexpected_passes=unexpected_passes,
+                errors=errors,
+                total=total,
+                pass_rate_percent=pass_rate_percent,
+                total_estimated_cost_usd=total_estimated_cost_usd,
+            ),
+            highlights=ReportHighlightsV1(
+                highest_scoring_model=(
                     highest_scoring_model.model
                     if highest_scoring_model
                     else None
                 ),
-                "fastest_model": (
+                fastest_model=(
                     fastest_model.model
                     if fastest_model
                     else None
                 ),
-            },
-            "model_comparison": [
-                summary.model_dump(mode="json")
+            ),
+            model_comparison=[
+                map_model_summary(summary)
                 for summary in model_summaries
             ],
-            "results": [
-                result.model_dump(mode="json")
+            results=[
+                map_test_result(result)
                 for result in results
             ],
-        }
+        )
 
         self.report_path.write_text(
-            json.dumps(report, indent=2),
+            json.dumps(
+                report.model_dump(mode="json"),
+                indent=2,
+            ),
             encoding="utf-8",
         )
