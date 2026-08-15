@@ -12,12 +12,33 @@ class ReportContractValidationError(ValueError):
     """Raised when a public report violates its published contract."""
 
 
-@lru_cache(maxsize=1)
-def _get_report_v1_validator() -> Draft202012Validator:
+_REPORT_SCHEMA_FILES = {
+    "1.0": "report-v1.0.schema.json",
+}
+
+
+def supported_report_schema_versions() -> tuple[str, ...]:
+    """Return the report contract versions understood by this runtime."""
+
+    return tuple(_REPORT_SCHEMA_FILES)
+
+
+@lru_cache(maxsize=None)
+def _get_report_validator(
+    schema_version: str,
+) -> Draft202012Validator:
+    schema_filename = _REPORT_SCHEMA_FILES.get(schema_version)
+
+    if schema_filename is None:
+        raise ReportContractValidationError(
+            "Unsupported public report schema version "
+            f"'{schema_version}'."
+        )
+
     schema_path = (
         Path(__file__).resolve().parent.parent
         / "schemas"
-        / "report-v1.0.schema.json"
+        / schema_filename
     )
 
     schema = json.loads(
@@ -29,12 +50,11 @@ def _get_report_v1_validator() -> Draft202012Validator:
     return Draft202012Validator(schema)
 
 
-def validate_report_v1_payload(
+def _validate_payload_against_version(
     payload: Mapping[str, Any],
+    schema_version: str,
 ) -> None:
-    """Validate a serialized public report against schema v1.0."""
-
-    validator = _get_report_v1_validator()
+    validator = _get_report_validator(schema_version)
 
     errors = sorted(
         validator.iter_errors(payload),
@@ -49,12 +69,52 @@ def validate_report_v1_payload(
     error = errors[0]
 
     location = (
-        ".".join(str(part) for part in error.absolute_path)
+        ".".join(
+            str(part)
+            for part in error.absolute_path
+        )
         or "<root>"
     )
 
     raise ReportContractValidationError(
-        "Public report v1.0 contract validation failed "
+        "Public report "
+        f"v{schema_version} contract validation failed "
         f"at {location} "
         f"[{error.validator}]."
+    )
+
+
+def validate_report_payload(
+    payload: Mapping[str, Any],
+) -> None:
+    """Validate a public report using its declared schema version."""
+
+    schema_version = payload.get("schema_version")
+
+    if not isinstance(schema_version, str):
+        raise ReportContractValidationError(
+            "Public report contract validation failed "
+            "at schema_version [required]."
+        )
+
+    if schema_version not in _REPORT_SCHEMA_FILES:
+        raise ReportContractValidationError(
+            "Unsupported public report schema version "
+            f"'{schema_version}'."
+        )
+
+    _validate_payload_against_version(
+        payload,
+        schema_version,
+    )
+
+
+def validate_report_v1_payload(
+    payload: Mapping[str, Any],
+) -> None:
+    """Validate a serialized public report against schema v1.0."""
+
+    _validate_payload_against_version(
+        payload,
+        "1.0",
     )

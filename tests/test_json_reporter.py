@@ -31,7 +31,7 @@ def test_json_reporter_does_not_write_when_contract_validation_fails(
         )
 
     monkeypatch.setattr(
-        "src.json_reporter.validate_report_v1_payload",
+        "src.json_reporter.validate_report_payload",
         reject_report,
     )
 
