@@ -15,7 +15,8 @@ from src.report_schema import (
     ReportV1,
 )
 
-from src.report_contract_validator import validate_report_v1_payload
+
+from src.report_contract_validator import validate_report_payload
 
 class JsonReporter:
     """Writes validated public AI test evidence to JSON."""
@@ -118,7 +119,7 @@ class JsonReporter:
         # The explicit public DTO has already removed internal runtime state.
         # Validate the final serialized representation against the published
         # JSON Schema before allowing the artifact to reach disk.
-        validate_report_v1_payload(report_payload)
+        validate_report_payload(report_payload)
 
         self.report_path.write_text(
             json.dumps(

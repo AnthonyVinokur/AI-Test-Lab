@@ -6,6 +6,8 @@ import pytest
 
 from src.report_contract_validator import (
     ReportContractValidationError,
+    supported_report_schema_versions,
+    validate_report_payload,
     validate_report_v1_payload,
 )
 
@@ -70,3 +72,34 @@ def test_report_v1_validator_rejects_wrong_field_type() -> None:
         match="type",
     ):
         validate_report_v1_payload(report)
+
+def test_supported_report_schema_versions_contains_v1() -> None:
+    assert supported_report_schema_versions() == ("1.0",)
+
+
+def test_version_aware_validator_accepts_canonical_fixture() -> None:
+    report = _load_fixture()
+
+    validate_report_payload(report)
+
+
+def test_version_aware_validator_rejects_unsupported_version() -> None:
+    report = copy.deepcopy(_load_fixture())
+    report["schema_version"] = "2.0"
+
+    with pytest.raises(
+        ReportContractValidationError,
+        match="Unsupported public report schema version",
+    ):
+        validate_report_payload(report)
+
+
+def test_version_aware_validator_rejects_missing_schema_version() -> None:
+    report = copy.deepcopy(_load_fixture())
+    del report["schema_version"]
+
+    with pytest.raises(
+        ReportContractValidationError,
+        match="schema_version",
+    ):
+        validate_report_payload(report)
