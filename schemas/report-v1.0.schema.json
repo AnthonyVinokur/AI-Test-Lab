@@ -1,0 +1,525 @@
+{
+  "$defs": {
+    "ReportEngineExecutionResultV1": {
+      "additionalProperties": false,
+      "properties": {
+        "engine": {
+          "title": "Engine",
+          "type": "string"
+        },
+        "succeeded": {
+          "title": "Succeeded",
+          "type": "boolean"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        }
+      },
+      "required": [
+        "engine",
+        "succeeded"
+      ],
+      "title": "ReportEngineExecutionResultV1",
+      "type": "object"
+    },
+    "ReportHighlightsV1": {
+      "additionalProperties": false,
+      "properties": {
+        "highest_scoring_model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Highest Scoring Model"
+        },
+        "fastest_model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fastest Model"
+        }
+      },
+      "title": "ReportHighlightsV1",
+      "type": "object"
+    },
+    "ReportMetricResultV1": {
+      "additionalProperties": false,
+      "properties": {
+        "engine": {
+          "title": "Engine",
+          "type": "string"
+        },
+        "metric_name": {
+          "title": "Metric Name",
+          "type": "string"
+        },
+        "score": {
+          "title": "Score",
+          "type": "number"
+        },
+        "threshold": {
+          "title": "Threshold",
+          "type": "number"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "runtime_options": {
+          "additionalProperties": true,
+          "title": "Runtime Options",
+          "type": "object"
+        },
+        "profile_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Profile Name"
+        },
+        "profile_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Profile Version"
+        },
+        "evaluator_model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evaluator Model"
+        }
+      },
+      "required": [
+        "engine",
+        "metric_name",
+        "score",
+        "threshold",
+        "passed"
+      ],
+      "title": "ReportMetricResultV1",
+      "type": "object"
+    },
+    "ReportModelSummaryV1": {
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "total_estimated_cost_usd": {
+          "minimum": 0.0,
+          "title": "Total Estimated Cost Usd",
+          "type": "number"
+        },
+        "average_estimated_cost_usd": {
+          "minimum": 0.0,
+          "title": "Average Estimated Cost Usd",
+          "type": "number"
+        },
+        "passed": {
+          "minimum": 0,
+          "title": "Passed",
+          "type": "integer"
+        },
+        "expected_failures": {
+          "minimum": 0,
+          "title": "Expected Failures",
+          "type": "integer"
+        },
+        "unexpected_failures": {
+          "minimum": 0,
+          "title": "Unexpected Failures",
+          "type": "integer"
+        },
+        "unexpected_passes": {
+          "minimum": 0,
+          "title": "Unexpected Passes",
+          "type": "integer"
+        },
+        "errors": {
+          "minimum": 0,
+          "title": "Errors",
+          "type": "integer"
+        },
+        "total": {
+          "minimum": 0,
+          "title": "Total",
+          "type": "integer"
+        },
+        "pass_rate_percent": {
+          "maximum": 100.0,
+          "minimum": 0.0,
+          "title": "Pass Rate Percent",
+          "type": "number"
+        },
+        "average_response_time_seconds": {
+          "minimum": 0.0,
+          "title": "Average Response Time Seconds",
+          "type": "number"
+        },
+        "average_prompt_latency_seconds": {
+          "minimum": 0.0,
+          "title": "Average Prompt Latency Seconds",
+          "type": "number"
+        },
+        "average_generation_latency_seconds": {
+          "minimum": 0.0,
+          "title": "Average Generation Latency Seconds",
+          "type": "number"
+        },
+        "average_model_load_seconds": {
+          "minimum": 0.0,
+          "title": "Average Model Load Seconds",
+          "type": "number"
+        },
+        "average_prompt_tokens": {
+          "minimum": 0.0,
+          "title": "Average Prompt Tokens",
+          "type": "number"
+        },
+        "average_output_tokens": {
+          "minimum": 0.0,
+          "title": "Average Output Tokens",
+          "type": "number"
+        },
+        "average_prompt_tokens_per_second": {
+          "minimum": 0.0,
+          "title": "Average Prompt Tokens Per Second",
+          "type": "number"
+        },
+        "average_generation_tokens_per_second": {
+          "minimum": 0.0,
+          "title": "Average Generation Tokens Per Second",
+          "type": "number"
+        }
+      },
+      "required": [
+        "provider",
+        "model",
+        "total_estimated_cost_usd",
+        "average_estimated_cost_usd",
+        "passed",
+        "expected_failures",
+        "unexpected_failures",
+        "unexpected_passes",
+        "errors",
+        "total",
+        "pass_rate_percent",
+        "average_response_time_seconds",
+        "average_prompt_latency_seconds",
+        "average_generation_latency_seconds",
+        "average_model_load_seconds",
+        "average_prompt_tokens",
+        "average_output_tokens",
+        "average_prompt_tokens_per_second",
+        "average_generation_tokens_per_second"
+      ],
+      "title": "ReportModelSummaryV1",
+      "type": "object"
+    },
+    "ReportSummaryV1": {
+      "additionalProperties": false,
+      "properties": {
+        "passed": {
+          "minimum": 0,
+          "title": "Passed",
+          "type": "integer"
+        },
+        "failed": {
+          "minimum": 0,
+          "title": "Failed",
+          "type": "integer"
+        },
+        "expected_failures": {
+          "minimum": 0,
+          "title": "Expected Failures",
+          "type": "integer"
+        },
+        "unexpected_passes": {
+          "minimum": 0,
+          "title": "Unexpected Passes",
+          "type": "integer"
+        },
+        "errors": {
+          "minimum": 0,
+          "title": "Errors",
+          "type": "integer"
+        },
+        "total": {
+          "minimum": 0,
+          "title": "Total",
+          "type": "integer"
+        },
+        "pass_rate_percent": {
+          "maximum": 100.0,
+          "minimum": 0.0,
+          "title": "Pass Rate Percent",
+          "type": "number"
+        },
+        "total_estimated_cost_usd": {
+          "minimum": 0.0,
+          "title": "Total Estimated Cost Usd",
+          "type": "number"
+        }
+      },
+      "required": [
+        "passed",
+        "failed",
+        "expected_failures",
+        "unexpected_passes",
+        "errors",
+        "total",
+        "pass_rate_percent",
+        "total_estimated_cost_usd"
+      ],
+      "title": "ReportSummaryV1",
+      "type": "object"
+    },
+    "ReportTestResultV1": {
+      "additionalProperties": false,
+      "properties": {
+        "test_id": {
+          "title": "Test Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "category": {
+          "title": "Category",
+          "type": "string"
+        },
+        "prompt": {
+          "title": "Prompt",
+          "type": "string"
+        },
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "estimated_cost_usd": {
+          "minimum": 0.0,
+          "title": "Estimated Cost Usd",
+          "type": "number"
+        },
+        "actual_response": {
+          "title": "Actual Response",
+          "type": "string"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "status": {
+          "title": "Status",
+          "type": "string"
+        },
+        "expected_to_fail": {
+          "title": "Expected To Fail",
+          "type": "boolean"
+        },
+        "assertion_type": {
+          "title": "Assertion Type",
+          "type": "string"
+        },
+        "expected": {
+          "title": "Expected",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "evaluation_results": {
+          "items": {
+            "$ref": "#/$defs/ReportMetricResultV1"
+          },
+          "title": "Evaluation Results",
+          "type": "array"
+        },
+        "engine_results": {
+          "items": {
+            "$ref": "#/$defs/ReportEngineExecutionResultV1"
+          },
+          "title": "Engine Results",
+          "type": "array"
+        },
+        "response_time_seconds": {
+          "minimum": 0.0,
+          "title": "Response Time Seconds",
+          "type": "number"
+        },
+        "prompt_tokens": {
+          "minimum": 0,
+          "title": "Prompt Tokens",
+          "type": "integer"
+        },
+        "output_tokens": {
+          "minimum": 0,
+          "title": "Output Tokens",
+          "type": "integer"
+        },
+        "prompt_latency_seconds": {
+          "minimum": 0.0,
+          "title": "Prompt Latency Seconds",
+          "type": "number"
+        },
+        "generation_latency_seconds": {
+          "minimum": 0.0,
+          "title": "Generation Latency Seconds",
+          "type": "number"
+        },
+        "model_load_seconds": {
+          "minimum": 0.0,
+          "title": "Model Load Seconds",
+          "type": "number"
+        },
+        "prompt_tokens_per_second": {
+          "minimum": 0.0,
+          "title": "Prompt Tokens Per Second",
+          "type": "number"
+        },
+        "generation_tokens_per_second": {
+          "minimum": 0.0,
+          "title": "Generation Tokens Per Second",
+          "type": "number"
+        }
+      },
+      "required": [
+        "test_id",
+        "name",
+        "category",
+        "prompt",
+        "provider",
+        "model",
+        "estimated_cost_usd",
+        "actual_response",
+        "passed",
+        "status",
+        "expected_to_fail",
+        "assertion_type",
+        "expected",
+        "reason",
+        "response_time_seconds",
+        "prompt_tokens",
+        "output_tokens",
+        "prompt_latency_seconds",
+        "generation_latency_seconds",
+        "model_load_seconds",
+        "prompt_tokens_per_second",
+        "generation_tokens_per_second"
+      ],
+      "title": "ReportTestResultV1",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "generated_at": {
+      "title": "Generated At",
+      "type": "string"
+    },
+    "models": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Models",
+      "type": "array"
+    },
+    "summary": {
+      "$ref": "#/$defs/ReportSummaryV1"
+    },
+    "highlights": {
+      "$ref": "#/$defs/ReportHighlightsV1"
+    },
+    "model_comparison": {
+      "items": {
+        "$ref": "#/$defs/ReportModelSummaryV1"
+      },
+      "title": "Model Comparison",
+      "type": "array"
+    },
+    "results": {
+      "items": {
+        "$ref": "#/$defs/ReportTestResultV1"
+      },
+      "title": "Results",
+      "type": "array"
+    }
+  },
+  "required": [
+    "generated_at",
+    "models",
+    "summary",
+    "highlights",
+    "model_comparison",
+    "results"
+  ],
+  "title": "ReportV1",
+  "type": "object"
+}

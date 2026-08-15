@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-08-14T20:00:00-04:00",
+  "models": [
+    "llama3.1"
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 0,
+    "expected_failures": 0,
+    "unexpected_passes": 0,
+    "errors": 0,
+    "total": 1,
+    "pass_rate_percent": 100.0,
+    "total_estimated_cost_usd": 0.0
+  },
+  "highlights": {
+    "highest_scoring_model": "llama3.1",
+    "fastest_model": "llama3.1"
+  },
+  "model_comparison": [
+    {
+      "provider": "ollama",
+      "model": "llama3.1",
+      "total_estimated_cost_usd": 0.0,
+      "average_estimated_cost_usd": 0.0,
+      "passed": 1,
+      "expected_failures": 0,
+      "unexpected_failures": 0,
+      "unexpected_passes": 0,
+      "errors": 0,
+      "total": 1,
+      "pass_rate_percent": 100.0,
+      "average_response_time_seconds": 0.25,
+      "average_prompt_latency_seconds": 0.0,
+      "average_generation_latency_seconds": 0.0,
+      "average_model_load_seconds": 0.0,
+      "average_prompt_tokens": 0.0,
+      "average_output_tokens": 0.0,
+      "average_prompt_tokens_per_second": 0.0,
+      "average_generation_tokens_per_second": 0.0
+    }
+  ],
+  "results": [
+    {
+      "test_id": "greeting-001",
+      "name": "Basic greeting test",
+      "category": "functional",
+      "prompt": "Say hello.",
+      "provider": "ollama",
+      "model": "llama3.1",
+      "estimated_cost_usd": 0.0,
+      "actual_response": "Hello!",
+      "passed": true,
+      "status": "pass",
+      "expected_to_fail": false,
+      "assertion_type": "contains",
+      "expected": "Hello",
+      "reason": "The response contains the expected text.",
+      "evaluation_results": [
+        {
+          "engine": "builtin",
+          "metric_name": "contains",
+          "score": 1.0,
+          "threshold": 1.0,
+          "passed": true,
+          "reason": "The response contains the expected text.",
+          "runtime_options": {
+            "include_reason": true
+          },
+          "profile_name": "fast-ci",
+          "profile_version": "1.0",
+          "evaluator_model": "test-judge"
+        }
+      ],
+      "engine_results": [
+        {
+          "engine": "deepeval",
+          "succeeded": false,
+          "error": "Evaluation engine failed."
+        }
+      ],
+      "response_time_seconds": 0.25,
+      "prompt_tokens": 0,
+      "output_tokens": 0,
+      "prompt_latency_seconds": 0.0,
+      "generation_latency_seconds": 0.0,
+      "model_load_seconds": 0.0,
+      "prompt_tokens_per_second": 0.0,
+      "generation_tokens_per_second": 0.0
+    }
+  ]
+}
