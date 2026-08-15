@@ -11,6 +11,37 @@ from src.evaluation_models import (
     MetricResult,
 )
 
+import pytest
+
+from src.report_contract_validator import (
+    ReportContractValidationError,
+)
+
+
+def test_json_reporter_does_not_write_when_contract_validation_fails(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    report_path = tmp_path / "results.json"
+    reporter = JsonReporter(report_path)
+
+    def reject_report(_payload) -> None:
+        raise ReportContractValidationError(
+            "Public report contract rejected."
+        )
+
+    monkeypatch.setattr(
+        "src.json_reporter.validate_report_v1_payload",
+        reject_report,
+    )
+
+    with pytest.raises(
+        ReportContractValidationError,
+        match="contract rejected",
+    ):
+        reporter.write([])
+
+    assert not report_path.exists()
 
 def test_json_reporter_creates_report(tmp_path) -> None:
     results = [
