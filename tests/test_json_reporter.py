@@ -152,3 +152,115 @@ def test_json_reporter_creates_report(tmp_path) -> None:
         "succeeded": False,
         "error": "Evaluation engine failed.",
     }
+
+def test_json_reporter_filters_private_runtime_options(
+    tmp_path,
+) -> None:
+    result = ResultModel(
+        test_id="boundary-001",
+        name="Public boundary test",
+        category="security",
+        prompt="Test public serialization.",
+        provider="ollama",
+        model="llama3.1",
+        estimated_cost_usd=0.0,
+        actual_response="Safe response.",
+        passed=True,
+        status=EvaluationStatus.PASS,
+        assertion_type=AssertionType.CONTAINS,
+        expected="Safe",
+        reason="Passed.",
+        evaluation_results=[
+            MetricResult(
+                engine="builtin",
+                metric_name="contains",
+                score=1.0,
+                threshold=1.0,
+                passed=True,
+                runtime_options={
+                    "include_reason": True,
+                    "governance_weight": 0.91,
+                    "internal_scoring_strategy": "proprietary-v4",
+                    "private_evidence_id": "EV-99182",
+                },
+            )
+        ],
+        response_time_seconds=0.1,
+    )
+
+    report_path = tmp_path / "results.json"
+
+    JsonReporter(report_path).write([result])
+
+    report_data = json.loads(
+        report_path.read_text(encoding="utf-8")
+    )
+
+    runtime_options = (
+        report_data["results"][0]
+        ["evaluation_results"][0]
+        ["runtime_options"]
+    )
+
+    assert runtime_options == {
+        "include_reason": True,
+    }
+
+    serialized_report = json.dumps(report_data)
+
+    assert "governance_weight" not in serialized_report
+    assert "internal_scoring_strategy" not in serialized_report
+    assert "private_evidence_id" not in serialized_report
+
+
+def test_json_reporter_redacts_internal_engine_error(
+    tmp_path,
+) -> None:
+    result = ResultModel(
+        test_id="boundary-002",
+        name="Engine error boundary test",
+        category="security",
+        prompt="Test engine error redaction.",
+        provider="ollama",
+        model="llama3.1",
+        estimated_cost_usd=0.0,
+        actual_response="Response.",
+        passed=False,
+        status=EvaluationStatus.ERROR,
+        assertion_type=AssertionType.CONTAINS,
+        expected="Safe",
+        reason="Engine failed.",
+        engine_results=[
+            EngineExecutionResult(
+                engine="private-engine",
+                succeeded=False,
+                error=(
+                    "Internal evaluator failed at "
+                    "C:\\private\\governance\\scorer.py"
+                ),
+            )
+        ],
+        response_time_seconds=0.1,
+    )
+
+    report_path = tmp_path / "results.json"
+
+    JsonReporter(report_path).write([result])
+
+    report_data = json.loads(
+        report_path.read_text(encoding="utf-8")
+    )
+
+    engine_result = (
+        report_data["results"][0]
+        ["engine_results"][0]
+    )
+
+    assert engine_result["error"] == (
+        "Evaluation engine failed."
+    )
+
+    serialized_report = json.dumps(report_data)
+
+    assert "scorer.py" not in serialized_report
+    assert "private\\governance" not in serialized_report
