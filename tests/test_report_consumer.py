@@ -1,0 +1,88 @@
+from dataclasses import FrozenInstanceError
+from pathlib import Path
+
+import pytest
+
+from src.report_consumer import ReportConsumption, consume_report
+from src.report_reader import ReportReadError
+from src.report_contract_validator import ReportContractValidationError
+
+import ast
+import inspect
+
+import src.report_consumer as report_consumer_module
+
+
+FIXTURE = Path("tests/fixtures/report-v1.0.json")
+
+
+def test_consume_report_returns_public_consumption():
+    consumption = consume_report(FIXTURE)
+
+    assert isinstance(consumption, ReportConsumption)
+    assert consumption.report.schema_version == "1.0"
+    assert consumption.summary.schema_version == "1.0"
+    assert consumption.decision.schema_version == "1.0"
+    assert consumption.assessment.schema_version == "1.0"
+
+
+def test_consumption_outputs_are_consistent():
+    consumption = consume_report(FIXTURE)
+
+    assert consumption.decision.status == consumption.assessment.status
+    assert consumption.summary.total == consumption.decision.total
+    assert consumption.summary.passed == consumption.decision.passed
+    assert consumption.summary.failed == consumption.decision.failed
+    assert consumption.summary.errors == consumption.decision.errors
+
+
+def test_report_consumption_is_immutable():
+    consumption = consume_report(FIXTURE)
+
+    with pytest.raises(FrozenInstanceError):
+        setattr(consumption, "summary", None)
+
+
+def test_consume_report_rejects_invalid_json(tmp_path):
+    report_path = tmp_path / "invalid.json"
+    report_path.write_text("{not valid json", encoding="utf-8")
+
+    with pytest.raises(ReportReadError):
+        consume_report(report_path)
+
+
+def test_consume_report_rejects_invalid_public_contract(tmp_path):
+    report_path = tmp_path / "invalid-report.json"
+    report_path.write_text(
+        '{"schema_version": "1.0"}',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ReportContractValidationError):
+        consume_report(report_path)
+
+def test_report_consumer_does_not_import_private_runtime_modules():
+    source = inspect.getsource(report_consumer_module)
+    tree = ast.parse(source)
+
+    imported_modules: set[str] = set()
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            imported_modules.update(alias.name for alias in node.names)
+
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            imported_modules.add(node.module)
+
+    forbidden_prefixes = (
+        "src.evaluation",
+        "src.evaluation_config",
+        "src.evaluation_plugins",
+        "src.models",
+        "src.runner",
+    )
+
+    assert not any(
+        module.startswith(forbidden_prefixes)
+        for module in imported_modules
+    )
