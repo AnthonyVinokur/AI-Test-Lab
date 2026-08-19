@@ -22,6 +22,13 @@ def supported_report_schema_versions() -> tuple[str, ...]:
 
     return tuple(_REPORT_SCHEMA_FILES)
 
+def is_report_schema_version_supported(
+    schema_version: str,
+) -> bool:
+    """Return whether this runtime supports a public report schema version."""
+
+    return schema_version in _REPORT_SCHEMA_FILES
+
 
 @lru_cache(maxsize=None)
 def _get_report_validator(
