@@ -4,9 +4,11 @@ from typing import Any
 
 from src.evaluation_models import EngineExecutionResult, MetricResult
 from src.models import ModelSummary, TestResult
+
 from src.report_schema import (
     ReportEngineExecutionResultV1,
     ReportMetricResultV1,
+    ReportMetricRuntimeOptionsV1,
     ReportModelSummaryV1,
     ReportTestResultV1,
 )
@@ -23,13 +25,12 @@ PUBLIC_RUNTIME_OPTION_KEYS = frozenset(
 PUBLIC_ENGINE_ERROR_MESSAGE = "Evaluation engine failed."
 
 
-def map_runtime_options(runtime_options: dict[str, Any]) -> dict[str, Any]:
-    """Return only runtime options approved for the public report contract."""
-    return {
-        key: value
-        for key, value in runtime_options.items()
-        if key in PUBLIC_RUNTIME_OPTION_KEYS
-    }
+def map_runtime_options(
+    runtime_options: dict[str, Any],
+) -> ReportMetricRuntimeOptionsV1:
+    return ReportMetricRuntimeOptionsV1(
+        include_reason=runtime_options.get("include_reason"),
+    )
 
 
 def map_public_engine_error(error: str | None) -> str | None:

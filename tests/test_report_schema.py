@@ -63,9 +63,14 @@ def test_mapper_filters_unapproved_runtime_options() -> None:
 
     public_metric = map_metric_result(internal_metric)
 
-    assert public_metric.runtime_options == {
-        "include_reason": True,
-    }
+    assert public_metric.runtime_options.include_reason is True
+
+    assert public_metric.runtime_options.model_dump(
+        mode="json",
+        exclude_none=True,
+    ) == {
+               "include_reason": True,
+           }
     assert "internal_weighting_algorithm" not in public_metric.runtime_options
     assert "internal_policy_id" not in public_metric.runtime_options
 

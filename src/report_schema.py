@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -15,6 +15,10 @@ class PublicReportModel(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
 
+class ReportMetricRuntimeOptionsV1(PublicReportModel):
+    include_reason: bool | None = None
+
+
 class ReportMetricResultV1(PublicReportModel):
     engine: str
     metric_name: str
@@ -22,7 +26,9 @@ class ReportMetricResultV1(PublicReportModel):
     threshold: float
     passed: bool
     reason: str | None = None
-    runtime_options: dict[str, Any] = Field(default_factory=dict)
+    runtime_options: ReportMetricRuntimeOptionsV1 = Field(
+        default_factory=ReportMetricRuntimeOptionsV1
+    )
     profile_name: str | None = None
     profile_version: str | None = None
     evaluator_model: str | None = None
