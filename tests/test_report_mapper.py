@@ -22,9 +22,14 @@ def test_map_metric_result_allows_only_public_runtime_options() -> None:
 
     public_metric = map_metric_result(metric)
 
-    assert public_metric.runtime_options == {
-        "include_reason": True,
-    }
+    assert public_metric.runtime_options.include_reason is True
+
+    assert public_metric.runtime_options.model_dump(
+        mode="json",
+        exclude_none=True,
+    ) == {
+               "include_reason": True,
+           }
 
 
 def test_map_engine_result_redacts_internal_error_details() -> None:

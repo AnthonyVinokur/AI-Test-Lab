@@ -98,9 +98,7 @@
           "title": "Reason"
         },
         "runtime_options": {
-          "additionalProperties": true,
-          "title": "Runtime Options",
-          "type": "object"
+          "$ref": "#/$defs/ReportMetricRuntimeOptionsV1"
         },
         "profile_name": {
           "anyOf": [
@@ -147,6 +145,25 @@
         "passed"
       ],
       "title": "ReportMetricResultV1",
+      "type": "object"
+    },
+    "ReportMetricRuntimeOptionsV1": {
+      "additionalProperties": false,
+      "properties": {
+        "include_reason": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Include Reason"
+        }
+      },
+      "title": "ReportMetricRuntimeOptionsV1",
       "type": "object"
     },
     "ReportModelSummaryV1": {
