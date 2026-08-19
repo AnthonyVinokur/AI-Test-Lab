@@ -103,3 +103,63 @@ def test_consume_report_rejects_unsupported_schema_version(
             match="Unsupported public report schema version",
     ):
         consume_report(report_path)
+
+@pytest.mark.parametrize(
+    ("mutation", "expected_validator"),
+    [
+        (
+            lambda payload: payload["summary"].__setitem__(
+                "passed",
+                "banana",
+            ),
+            "type",
+        ),
+        (
+            lambda payload: payload["summary"].__setitem__(
+                "passed",
+                -1,
+            ),
+            "minimum",
+        ),
+        (
+            lambda payload: payload["summary"].pop("passed"),
+            "required",
+        ),
+        (
+            lambda payload: payload.__setitem__(
+                "secret_internal_score",
+                99,
+            ),
+            "additionalProperties",
+        ),
+        (
+            lambda payload: payload["results"][0].__setitem__(
+                "prompt_tokens",
+                "many",
+            ),
+            "type",
+        ),
+    ],
+)
+def test_consume_report_rejects_malformed_supported_contract(
+    tmp_path,
+    mutation,
+    expected_validator,
+):
+    payload = json.loads(
+        FIXTURE.read_text(encoding="utf-8")
+    )
+
+    mutation(payload)
+
+    report_path = tmp_path / "malformed-report.json"
+    report_path.write_text(
+        json.dumps(payload),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        ReportContractValidationError,
+        match=rf"\[{expected_validator}\]",
+    ):
+        consume_report(report_path)
