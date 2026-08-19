@@ -1,20 +1,15 @@
-from dataclasses import FrozenInstanceError
-from pathlib import Path
-
-import pytest
-
-from src.report_consumer import ReportConsumption, consume_report
-from src.report_reader import ReportReadError
-from src.report_contract_validator import ReportContractValidationError
-
 import ast
 import inspect
-
+import json
+from dataclasses import FrozenInstanceError
+from pathlib import Path
+import pytest
 import src.report_consumer as report_consumer_module
-
+from src.report_consumer import ReportConsumption, consume_report
+from src.report_contract_validator import ReportContractValidationError
+from src.report_reader import ReportReadError
 
 FIXTURE = Path("tests/fixtures/report-v1.0.json")
-
 
 def test_consume_report_returns_public_consumption():
     consumption = consume_report(FIXTURE)
@@ -61,6 +56,7 @@ def test_consume_report_rejects_invalid_public_contract(tmp_path):
     with pytest.raises(ReportContractValidationError):
         consume_report(report_path)
 
+
 def test_report_consumer_does_not_import_private_runtime_modules():
     source = inspect.getsource(report_consumer_module)
     tree = ast.parse(source)
@@ -86,3 +82,24 @@ def test_report_consumer_does_not_import_private_runtime_modules():
         module.startswith(forbidden_prefixes)
         for module in imported_modules
     )
+
+
+def test_consume_report_rejects_unsupported_schema_version(
+        tmp_path,
+):
+    payload = json.loads(
+        FIXTURE.read_text(encoding="utf-8")
+    )
+    payload["schema_version"] = "9.0"
+
+    report_path = tmp_path / "unsupported-report.json"
+    report_path.write_text(
+        json.dumps(payload),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+            ReportContractValidationError,
+            match="Unsupported public report schema version",
+    ):
+        consume_report(report_path)
