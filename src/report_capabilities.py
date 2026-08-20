@@ -29,3 +29,27 @@ def capability_schema_versions() -> tuple[str, ...]:
     """Return schema versions that publish public capability metadata."""
 
     return tuple(_REPORT_CAPABILITIES)
+
+
+def supports_capability(
+        report: dict[str, object],
+        capability: str,
+) -> bool:
+    """Return whether a public report supports a public capability."""
+
+    schema_version = report.get("schema_version")
+
+    if not isinstance(schema_version, str):
+        raise ValueError(
+            "Public report schema_version must be a string."
+        )
+
+    if not isinstance(capability, str):
+        raise ValueError(
+            "Public report capability must be a string."
+        )
+
+    return report_supports_capability(
+        schema_version,
+        capability,
+    )
