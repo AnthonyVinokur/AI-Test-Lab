@@ -125,3 +125,17 @@ def validate_report_v1_payload(
         payload,
         "1.0",
     )
+
+
+def report_schema_filename(schema_version: str) -> str:
+    """Return the published schema filename for a supported report version."""
+
+    schema_filename = _REPORT_SCHEMA_FILES.get(schema_version)
+
+    if schema_filename is None:
+        raise ReportContractValidationError(
+            "Unsupported public report schema version "
+            f"'{schema_version}'."
+        )
+
+    return schema_filename
