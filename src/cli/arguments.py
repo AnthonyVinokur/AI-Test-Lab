@@ -99,6 +99,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
+        "--regression-result-output",
+        type=Path,
+        default=None,
+        help=(
+            "Optional destination path for the public regression "
+            "result JSON."
+        ),
+    )
+
+    parser.add_argument(
         "--engine",
         choices=["builtin", "deepeval"],
         default="builtin",
