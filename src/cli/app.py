@@ -4,6 +4,14 @@ import sys
 
 from pydantic import ValidationError
 
+from src.evaluation_run_identity import (
+    create_evaluation_run_identity,
+)
+
+from src.evaluation_run_regression_entry_point import (
+    execute_evaluation_run_regression,
+)
+
 from src.cli.arguments import parse_args
 from src.cli.execution import load_test_cases
 from src.cli.output import (
@@ -23,6 +31,14 @@ from src.evaluation_pipeline import EvaluationPipeline
 from src.html_reporter import HtmlReporter
 from src.json_reporter import JsonReporter
 from src.multi_model_runner import MultiModelRunner
+
+from src.cli.regression_output import (
+    write_cli_regression_result,
+)
+
+from src.evaluation_run_regression_result import (
+    build_evaluation_run_regression_result,
+)
 
 INPUT_EXCEPTIONS = (
     DatasetNotFoundError,
@@ -109,6 +125,34 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parse_args(argv)
 
+    regression_requested = (
+        args.regression_result_output is not None
+    )
+
+    if regression_requested:
+        if args.dataset is None:
+            print(
+                "Input error: regression execution requires "
+                "a managed --dataset.",
+                file=sys.stderr,
+            )
+            return 2
+
+        if args.dataset_version is None:
+            print(
+                "Input error: regression execution requires "
+                "an explicit --dataset-version.",
+                file=sys.stderr,
+            )
+            return 2
+
+        if len(args.models) != 1:
+            print(
+                "Input error: regression execution requires "
+                "exactly one model.",
+                file=sys.stderr,
+            )
+            return 2
     try:
         if args.validate_dataset:
             return print_dataset_validation(args)
@@ -159,6 +203,36 @@ def main(argv: list[str] | None = None) -> int:
     JsonReporter(args.report).write(results)
     HtmlReporter(args.html_report).write(results)
 
+    regression_result = None
+
+    if regression_requested:
+        candidate_identity = create_evaluation_run_identity(
+            model=args.models[0],
+            evaluation_profile=(
+                args.evaluation_profile
+                if args.evaluation_profile is not None
+                else "default"
+            ),
+            dataset=args.dataset,
+        )
+
+        regression_execution = execute_evaluation_run_regression(
+            candidate_results=results,
+            baseline_report_path=args.regression_baseline_report,
+            baseline_provenance_path=args.regression_baseline_provenance,
+            candidate_identity=candidate_identity,
+            candidate_dataset_version=str(args.dataset_version),
+            report_schema_version="1.0",
+        )
+
+        regression_result = build_evaluation_run_regression_result(
+            regression_execution.enforcement
+        )
+
+        write_cli_regression_result(
+            regression_result,
+            args.regression_result_output,
+        )
     (
         _,
         _,
@@ -168,6 +242,9 @@ def main(argv: list[str] | None = None) -> int:
 
     print(f"\nJSON report: {args.report}")
     print(f"HTML report: {args.html_report}")
+
+    if regression_result is not None:
+        return regression_result.exit_code.code
 
     if unexpected_failures > 0 or errors > 0:
         return 1
