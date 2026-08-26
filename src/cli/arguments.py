@@ -99,6 +99,20 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
+        "--regression-baseline-report",
+        type=Path,
+        default=None,
+        help="Path to the baseline public evaluation report.",
+    )
+
+    parser.add_argument(
+        "--regression-baseline-provenance",
+        type=Path,
+        default=None,
+        help="Path to the stored baseline evaluation-run provenance.",
+    )
+
+    parser.add_argument(
         "--regression-result-output",
         type=Path,
         default=None,
@@ -138,5 +152,20 @@ def parse_args(
 
     if args.dataset_version is not None and args.dataset_version < 1:
         parser.error("--dataset-version must be 1 or greater")
+
+    regression_arguments = (
+        args.regression_baseline_report,
+        args.regression_baseline_provenance,
+        args.regression_result_output,
+    )
+
+    if any(value is not None for value in regression_arguments) and not all(
+            value is not None for value in regression_arguments
+    ):
+        parser.error(
+            "--regression-baseline-report, "
+            "--regression-baseline-provenance, and "
+            "--regression-result-output must be supplied together"
+        )
 
     return args

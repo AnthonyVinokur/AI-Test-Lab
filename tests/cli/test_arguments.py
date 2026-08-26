@@ -15,22 +15,87 @@ def test_default_arguments() -> None:
     assert args.dataset_version is None
     assert args.report == Path("results/latest_results.json")
     assert args.html_report == Path("results/latest_report.html")
+    assert args.regression_baseline_report is None
+    assert args.regression_baseline_provenance is None
     assert args.regression_result_output is None
     assert args.evaluation_profile is None
     assert args.list_evaluation_profiles is False
 
 
-def test_regression_result_output_argument() -> None:
+def test_regression_arguments_default_to_none() -> None:
+    args = parse_args([])
+
+    assert args.regression_baseline_report is None
+    assert args.regression_baseline_provenance is None
+    assert args.regression_result_output is None
+
+
+def test_complete_regression_arguments() -> None:
     args = parse_args(
         [
+            "--regression-baseline-report",
+            "results/baseline.json",
+            "--regression-baseline-provenance",
+            "results/baseline-provenance.json",
             "--regression-result-output",
             "results/regression-result.json",
         ]
     )
 
+    assert args.regression_baseline_report == Path(
+        "results/baseline.json"
+    )
+    assert args.regression_baseline_provenance == Path(
+        "results/baseline-provenance.json"
+    )
     assert args.regression_result_output == Path(
         "results/regression-result.json"
     )
+
+
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        [
+            "--regression-baseline-report",
+            "results/baseline.json",
+        ],
+        [
+            "--regression-baseline-provenance",
+            "results/baseline-provenance.json",
+        ],
+        [
+            "--regression-result-output",
+            "results/regression-result.json",
+        ],
+        [
+            "--regression-baseline-report",
+            "results/baseline.json",
+            "--regression-baseline-provenance",
+            "results/baseline-provenance.json",
+        ],
+        [
+            "--regression-baseline-report",
+            "results/baseline.json",
+            "--regression-result-output",
+            "results/regression-result.json",
+        ],
+        [
+            "--regression-baseline-provenance",
+            "results/baseline-provenance.json",
+            "--regression-result-output",
+            "results/regression-result.json",
+        ],
+    ],
+)
+
+def test_incomplete_regression_arguments_are_rejected(
+        arguments: list[str],
+) -> None:
+    with pytest.raises(SystemExit) as error:
+        parse_args(arguments)
+
+    assert error.value.code == 2
 
 
 def test_multiple_models() -> None:
