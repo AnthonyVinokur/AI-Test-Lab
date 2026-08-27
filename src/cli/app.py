@@ -125,10 +125,10 @@ def print_dataset_validation(args) -> int:
 
     if result.is_valid:
         print("\nDataset validation passed.")
-        return 0
+        return CliExitCode.SUCCESS
 
     print("\nDataset validation failed.")
-    return 1
+    return CliExitCode.FAILURE
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -165,7 +165,7 @@ def main(argv: list[str] | None = None) -> int:
 
         if args.list_evaluation_profiles:
             print_evaluation_profiles(list_profiles())
-            return 0
+            return CliExitCode.SUCCESS
 
         if args.evaluation_profile is not None:
             profile = load_evaluation_profile(
