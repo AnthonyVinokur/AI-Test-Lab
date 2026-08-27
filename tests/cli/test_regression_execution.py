@@ -3,6 +3,9 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from src.cli.app import main
+from src.evaluation_run_regression_result_writer import (
+    EvaluationRunRegressionResultWriteError,
+)
 
 
 def test_cli_does_not_execute_regression_without_regression_arguments(
@@ -277,6 +280,7 @@ def test_cli_returns_regression_block_exit_code(
 
     assert exit_code == 1
 
+
 def test_cli_rejects_regression_with_multiple_models(
     tmp_path,
 ) -> None:
@@ -387,3 +391,144 @@ def test_cli_regression_exit_code_takes_precedence_over_normal_failures(
         )
 
     assert exit_code == 0
+
+
+def test_cli_returns_artifact_failure_exit_code(
+    tmp_path,
+    capsys,
+) -> None:
+    report_path = tmp_path / "report.json"
+    html_report_path = tmp_path / "report.html"
+    baseline_report_path = tmp_path / "baseline.json"
+    baseline_provenance_path = (
+        tmp_path / "baseline-provenance.json"
+    )
+    regression_output_path = (
+        tmp_path / "regression-result.json"
+    )
+
+    with (
+        patch(
+            "src.cli.app.load_test_cases",
+            return_value=[],
+        ),
+        patch(
+            "src.cli.app.MultiModelRunner.run_tests",
+            return_value=[],
+        ),
+        patch(
+            "src.cli.app.execute_evaluation_run_regression"
+        ) as execute_regression,
+        patch(
+            "src.cli.app.build_evaluation_run_regression_result"
+        ) as build_regression_result,
+        patch(
+            "src.cli.app.write_cli_regression_result",
+            side_effect=EvaluationRunRegressionResultWriteError(
+                "failed to write regression result artifact"
+            ),
+        ),
+    ):
+        execute_regression.return_value = SimpleNamespace(
+            enforcement="fake-enforcement",
+        )
+
+        build_regression_result.return_value = SimpleNamespace(
+            exit_code=SimpleNamespace(code=0),
+        )
+
+        exit_code = main(
+            [
+                "--dataset",
+                "candidate-suite",
+                "--dataset-version",
+                "3",
+                "--report",
+                str(report_path),
+                "--html-report",
+                str(html_report_path),
+                "--regression-baseline-report",
+                str(baseline_report_path),
+                "--regression-baseline-provenance",
+                str(baseline_provenance_path),
+                "--regression-result-output",
+                str(regression_output_path),
+            ]
+        )
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 3
+    assert (
+        "Regression artifact error:"
+        in captured.err
+    )
+    assert (
+        "failed to write regression result artifact"
+        in captured.err
+    )
+
+
+def test_cli_artifact_failure_takes_precedence_over_block_exit_code(
+    tmp_path,
+) -> None:
+    report_path = tmp_path / "report.json"
+    html_report_path = tmp_path / "report.html"
+    baseline_report_path = tmp_path / "baseline.json"
+    baseline_provenance_path = (
+        tmp_path / "baseline-provenance.json"
+    )
+    regression_output_path = (
+        tmp_path / "regression-result.json"
+    )
+
+    with (
+        patch(
+            "src.cli.app.load_test_cases",
+            return_value=[],
+        ),
+        patch(
+            "src.cli.app.MultiModelRunner.run_tests",
+            return_value=[],
+        ),
+        patch(
+            "src.cli.app.execute_evaluation_run_regression"
+        ) as execute_regression,
+        patch(
+            "src.cli.app.build_evaluation_run_regression_result"
+        ) as build_regression_result,
+        patch(
+            "src.cli.app.write_cli_regression_result",
+            side_effect=EvaluationRunRegressionResultWriteError(
+                "disk unavailable"
+            ),
+        ),
+    ):
+        execute_regression.return_value = SimpleNamespace(
+            enforcement="fake-enforcement",
+        )
+
+        build_regression_result.return_value = SimpleNamespace(
+            exit_code=SimpleNamespace(code=1),
+        )
+
+        exit_code = main(
+            [
+                "--dataset",
+                "candidate-suite",
+                "--dataset-version",
+                "3",
+                "--report",
+                str(report_path),
+                "--html-report",
+                str(html_report_path),
+                "--regression-baseline-report",
+                str(baseline_report_path),
+                "--regression-baseline-provenance",
+                str(baseline_provenance_path),
+                "--regression-result-output",
+                str(regression_output_path),
+            ]
+        )
+
+    assert exit_code == 3
