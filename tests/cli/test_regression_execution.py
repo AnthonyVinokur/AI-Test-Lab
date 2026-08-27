@@ -62,7 +62,8 @@ def test_cli_does_not_execute_regression_without_regression_arguments(
 
 
 def test_cli_rejects_regression_for_prompt_file_input(
-        tmp_path,
+    tmp_path,
+    capsys,
 ) -> None:
     prompts_path = tmp_path / "prompts.json"
     report_path = tmp_path / "report.json"
@@ -283,6 +284,7 @@ def test_cli_returns_regression_block_exit_code(
 
 def test_cli_rejects_regression_with_multiple_models(
     tmp_path,
+    capsys,
 ) -> None:
     report_path = tmp_path / "report.json"
     html_report_path = tmp_path / "report.html"
@@ -325,9 +327,17 @@ def test_cli_rejects_regression_with_multiple_models(
             ]
         )
 
+    captured = capsys.readouterr()
+
     run_tests.assert_not_called()
     execute_regression.assert_not_called()
 
+    assert captured.out == ""
+    assert (
+        captured.err
+        == "Input error: regression execution requires "
+        "exactly one model.\n"
+    )
     assert exit_code == 2
 
 

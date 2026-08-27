@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import sys
-
 from pydantic import ValidationError
 
 from src.evaluation_run_identity import (
@@ -142,26 +140,21 @@ def main(argv: list[str] | None = None) -> int:
 
     if regression_requested:
         if args.dataset is None:
-            print(
-                "Input error: regression execution requires "
-                "a managed --dataset.",
-                file=sys.stderr,
+            print_input_error(
+                "regression execution requires a managed --dataset."
             )
             return 2
 
         if args.dataset_version is None:
-            print(
-                "Input error: regression execution requires "
-                "an explicit --dataset-version.",
-                file=sys.stderr,
+            print_input_error(
+                "regression execution requires an explicit "
+                "--dataset-version."
             )
             return 2
 
         if len(args.models) != 1:
-            print(
-                "Input error: regression execution requires "
-                "exactly one model.",
-                file=sys.stderr,
+            print_input_error(
+                "regression execution requires exactly one model."
             )
             return 2
     try:
