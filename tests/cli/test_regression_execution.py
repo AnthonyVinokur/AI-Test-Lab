@@ -321,3 +321,65 @@ def test_cli_rejects_regression_with_multiple_models(
     execute_regression.assert_not_called()
 
     assert exit_code == 2
+
+
+def test_cli_regression_exit_code_takes_precedence_over_normal_failures(
+    tmp_path,
+) -> None:
+    report_path = tmp_path / "report.json"
+    html_report_path = tmp_path / "report.html"
+    baseline_report_path = tmp_path / "baseline.json"
+    baseline_provenance_path = tmp_path / "baseline-provenance.json"
+    regression_output_path = tmp_path / "regression-result.json"
+
+    with (
+        patch(
+            "src.cli.app.load_test_cases",
+            return_value=[],
+        ),
+        patch(
+            "src.cli.app.MultiModelRunner.run_tests",
+            return_value=[],
+        ),
+        patch(
+            "src.cli.app.execute_evaluation_run_regression"
+        ) as execute_regression,
+        patch(
+            "src.cli.app.build_evaluation_run_regression_result"
+        ) as build_regression_result,
+        patch(
+            "src.cli.app.write_cli_regression_result",
+        ),
+        patch(
+            "src.cli.app.print_results",
+            return_value=(0, 0, 1, 0),
+        ),
+    ):
+        execute_regression.return_value = SimpleNamespace(
+            enforcement="fake-enforcement",
+        )
+
+        build_regression_result.return_value = SimpleNamespace(
+            exit_code=SimpleNamespace(code=0),
+        )
+
+        exit_code = main(
+            [
+                "--dataset",
+                "candidate-suite",
+                "--dataset-version",
+                "3",
+                "--report",
+                str(report_path),
+                "--html-report",
+                str(html_report_path),
+                "--regression-baseline-report",
+                str(baseline_report_path),
+                "--regression-baseline-provenance",
+                str(baseline_provenance_path),
+                "--regression-result-output",
+                str(regression_output_path),
+            ]
+        )
+
+    assert exit_code == 0
