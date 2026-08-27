@@ -48,6 +48,8 @@ from src.cli.diagnostics import (
     print_regression_execution_error,
 )
 
+from src.cli.exit_codes import CliExitCode
+
 
 INPUT_EXCEPTIONS = (
     DatasetNotFoundError,
@@ -143,20 +145,20 @@ def main(argv: list[str] | None = None) -> int:
             print_input_error(
                 "regression execution requires a managed --dataset."
             )
-            return 2
+            return CliExitCode.INPUT_ERROR
 
         if args.dataset_version is None:
             print_input_error(
                 "regression execution requires an explicit "
                 "--dataset-version."
             )
-            return 2
+            return CliExitCode.INPUT_ERROR
 
         if len(args.models) != 1:
             print_input_error(
                 "regression execution requires exactly one model."
             )
-            return 2
+            return CliExitCode.INPUT_ERROR
     try:
         if args.validate_dataset:
             return print_dataset_validation(args)
@@ -193,11 +195,12 @@ def main(argv: list[str] | None = None) -> int:
         test_cases = load_test_cases(args)
 
 
+
     except INPUT_EXCEPTIONS as error:
 
         print_input_error(error)
 
-        return 2
+        return CliExitCode.INPUT_ERROR
 
     # This block must be outside the profile if/else.
     runner = MultiModelRunner(
@@ -233,9 +236,10 @@ def main(argv: list[str] | None = None) -> int:
                 report_schema_version="1.0",
             )
 
+
         except Exception as error:
             print_regression_execution_error(error)
-            return 3
+            return CliExitCode.INFRASTRUCTURE_ERROR
 
         regression_result = build_evaluation_run_regression_result(
             regression_execution.enforcement
@@ -248,7 +252,7 @@ def main(argv: list[str] | None = None) -> int:
             )
         except EvaluationRunRegressionResultWriteError as error:
             print_regression_artifact_error(error)
-            return 3
+            return CliExitCode.INFRASTRUCTURE_ERROR
 
     (
         _,
@@ -264,9 +268,9 @@ def main(argv: list[str] | None = None) -> int:
         return regression_result.exit_code.code
 
     if unexpected_failures > 0 or errors > 0:
-        return 1
+        return CliExitCode.FAILURE
 
-    return 0
+    return CliExitCode.SUCCESS
 
 if __name__ == "__main__":
     raise SystemExit(main())
