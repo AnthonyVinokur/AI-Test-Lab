@@ -532,3 +532,125 @@ def test_cli_artifact_failure_takes_precedence_over_block_exit_code(
         )
 
     assert exit_code == 3
+
+def test_cli_returns_regression_execution_failure_exit_code(
+    tmp_path,
+    capsys,
+) -> None:
+    report_path = tmp_path / "report.json"
+    html_report_path = tmp_path / "report.html"
+    baseline_report_path = tmp_path / "baseline.json"
+    baseline_provenance_path = (
+        tmp_path / "baseline-provenance.json"
+    )
+    regression_output_path = (
+        tmp_path / "regression-result.json"
+    )
+
+    with (
+        patch(
+            "src.cli.app.load_test_cases",
+            return_value=[],
+        ),
+        patch(
+            "src.cli.app.MultiModelRunner.run_tests",
+            return_value=[],
+        ),
+        patch(
+            "src.cli.app.execute_evaluation_run_regression",
+            side_effect=RuntimeError(
+                "baseline regression execution failed"
+            ),
+        ),
+        patch(
+            "src.cli.app.build_evaluation_run_regression_result"
+        ) as build_regression_result,
+        patch(
+            "src.cli.app.write_cli_regression_result"
+        ) as write_regression_result,
+    ):
+        exit_code = main(
+            [
+                "--dataset",
+                "candidate-suite",
+                "--dataset-version",
+                "3",
+                "--report",
+                str(report_path),
+                "--html-report",
+                str(html_report_path),
+                "--regression-baseline-report",
+                str(baseline_report_path),
+                "--regression-baseline-provenance",
+                str(baseline_provenance_path),
+                "--regression-result-output",
+                str(regression_output_path),
+            ]
+        )
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 3
+    assert "Regression execution error:" in captured.err
+    assert (
+        "baseline regression execution failed"
+        in captured.err
+    )
+
+    build_regression_result.assert_not_called()
+    write_regression_result.assert_not_called()
+
+def test_cli_regression_execution_failure_takes_precedence_over_normal_failures(
+    tmp_path,
+) -> None:
+    report_path = tmp_path / "report.json"
+    html_report_path = tmp_path / "report.html"
+    baseline_report_path = tmp_path / "baseline.json"
+    baseline_provenance_path = (
+        tmp_path / "baseline-provenance.json"
+    )
+    regression_output_path = (
+        tmp_path / "regression-result.json"
+    )
+
+    with (
+        patch(
+            "src.cli.app.load_test_cases",
+            return_value=[],
+        ),
+        patch(
+            "src.cli.app.MultiModelRunner.run_tests",
+            return_value=[],
+        ),
+        patch(
+            "src.cli.app.execute_evaluation_run_regression",
+            side_effect=RuntimeError(
+                "regression runtime unavailable"
+            ),
+        ),
+        patch(
+            "src.cli.app.print_results",
+            return_value=(0, 0, 1, 1),
+        ) as print_results,
+    ):
+        exit_code = main(
+            [
+                "--dataset",
+                "candidate-suite",
+                "--dataset-version",
+                "3",
+                "--report",
+                str(report_path),
+                "--html-report",
+                str(html_report_path),
+                "--regression-baseline-report",
+                str(baseline_report_path),
+                "--regression-baseline-provenance",
+                str(baseline_provenance_path),
+                "--regression-result-output",
+                str(regression_output_path),
+            ]
+        )
+
+    assert exit_code == 3
+    print_results.assert_not_called()

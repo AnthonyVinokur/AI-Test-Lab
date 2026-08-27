@@ -220,14 +220,21 @@ def main(argv: list[str] | None = None) -> int:
             dataset=args.dataset,
         )
 
-        regression_execution = execute_evaluation_run_regression(
-            candidate_results=results,
-            baseline_report_path=args.regression_baseline_report,
-            baseline_provenance_path=args.regression_baseline_provenance,
-            candidate_identity=candidate_identity,
-            candidate_dataset_version=str(args.dataset_version),
-            report_schema_version="1.0",
-        )
+        try:
+            regression_execution = execute_evaluation_run_regression(
+                candidate_results=results,
+                baseline_report_path=args.regression_baseline_report,
+                baseline_provenance_path=args.regression_baseline_provenance,
+                candidate_identity=candidate_identity,
+                candidate_dataset_version=str(args.dataset_version),
+                report_schema_version="1.0",
+            )
+        except Exception as error:
+            print(
+                f"Regression execution error: {error}",
+                file=sys.stderr,
+            )
+            return 3
 
         regression_result = build_evaluation_run_regression_result(
             regression_execution.enforcement
