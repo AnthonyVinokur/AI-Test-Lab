@@ -38,6 +38,9 @@ def test_cli_does_not_execute_regression_without_regression_arguments(
         patch(
             "src.cli.app.execute_evaluation_run_regression"
         ) as execute_regression,
+        patch(
+            "src.cli.app.write_cli_regression_result"
+        ) as write_regression_result,
     ):
         exit_code = main(
             [
@@ -50,6 +53,7 @@ def test_cli_does_not_execute_regression_without_regression_arguments(
             ]
         )
     execute_regression.assert_not_called()
+    write_regression_result.assert_not_called()
 
     assert exit_code == 0
 
