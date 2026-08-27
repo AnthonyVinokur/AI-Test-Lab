@@ -44,6 +44,13 @@ from src.evaluation_run_regression_result_writer import (
     EvaluationRunRegressionResultWriteError,
 )
 
+from src.cli.diagnostics import (
+    print_input_error,
+    print_regression_artifact_error,
+    print_regression_execution_error,
+)
+
+
 INPUT_EXCEPTIONS = (
     DatasetNotFoundError,
     DatasetVersionNotFoundError,
@@ -192,8 +199,11 @@ def main(argv: list[str] | None = None) -> int:
 
         test_cases = load_test_cases(args)
 
+
     except INPUT_EXCEPTIONS as error:
-        print(f"Input error: {error}", file=sys.stderr)
+
+        print_input_error(error)
+
         return 2
 
     # This block must be outside the profile if/else.
@@ -229,11 +239,9 @@ def main(argv: list[str] | None = None) -> int:
                 candidate_dataset_version=str(args.dataset_version),
                 report_schema_version="1.0",
             )
+
         except Exception as error:
-            print(
-                f"Regression execution error: {error}",
-                file=sys.stderr,
-            )
+            print_regression_execution_error(error)
             return 3
 
         regression_result = build_evaluation_run_regression_result(
@@ -246,10 +254,7 @@ def main(argv: list[str] | None = None) -> int:
                 args.regression_result_output,
             )
         except EvaluationRunRegressionResultWriteError as error:
-            print(
-                f"Regression artifact error: {error}",
-                file=sys.stderr,
-            )
+            print_regression_artifact_error(error)
             return 3
 
     (
