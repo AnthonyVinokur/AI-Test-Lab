@@ -40,6 +40,10 @@ from src.evaluation_run_regression_result import (
     build_evaluation_run_regression_result,
 )
 
+from src.evaluation_run_regression_result_writer import (
+    EvaluationRunRegressionResultWriteError,
+)
+
 INPUT_EXCEPTIONS = (
     DatasetNotFoundError,
     DatasetVersionNotFoundError,
@@ -229,10 +233,18 @@ def main(argv: list[str] | None = None) -> int:
             regression_execution.enforcement
         )
 
-        write_cli_regression_result(
-            regression_result,
-            args.regression_result_output,
-        )
+        try:
+            write_cli_regression_result(
+                regression_result,
+                args.regression_result_output,
+            )
+        except EvaluationRunRegressionResultWriteError as error:
+            print(
+                f"Regression artifact error: {error}",
+                file=sys.stderr,
+            )
+            return 3
+
     (
         _,
         _,
