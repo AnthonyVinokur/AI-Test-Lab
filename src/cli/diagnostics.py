@@ -19,3 +19,10 @@ def print_regression_artifact_error(error: object) -> None:
         f"Regression artifact error: {error}",
         file=sys.stderr,
     )
+
+
+def print_infrastructure_error(error: object) -> None:
+    print(
+        f"Infrastructure error: {error}",
+        file=sys.stderr,
+    )
