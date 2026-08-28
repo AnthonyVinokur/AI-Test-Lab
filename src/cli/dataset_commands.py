@@ -7,6 +7,8 @@ from src.datasets.models import DatasetStatus
 from src.datasets.repository import JsonDatasetRepository
 from src.datasets.service import DatasetService
 
+from src.cli.exit_codes import CliExitCode
+
 
 def list_available_datasets(storage_dir: Path) -> int:
     """Print all managed datasets stored in the configured directory."""
@@ -19,7 +21,7 @@ def list_available_datasets(storage_dir: Path) -> int:
 
     if not datasets:
         print("No datasets found.")
-        return 0
+        return CliExitCode.SUCCESS
 
     for dataset in datasets:
         status_marker = {
@@ -41,7 +43,7 @@ def list_available_datasets(storage_dir: Path) -> int:
             print(f"{'':12} Tags: {', '.join(dataset.tags)}")
 
     print(f"\nTotal datasets: {len(datasets)}")
-    return 0
+    return CliExitCode.SUCCESS
 
 def print_dataset_info(
     dataset_id: str,
@@ -123,4 +125,4 @@ def print_dataset_info(
     print("--------")
     print(selected.checksum)
 
-    return 0
+    return CliExitCode.SUCCESS
