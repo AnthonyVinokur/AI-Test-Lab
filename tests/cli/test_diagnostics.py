@@ -1,6 +1,7 @@
 
 
 from src.cli.diagnostics import (
+    print_infrastructure_error,
     print_input_error,
     print_regression_artifact_error,
     print_regression_execution_error,
@@ -38,3 +39,14 @@ def test_print_regression_artifact_error_writes_stable_message_to_stderr(capsys)
         captured.err
         == "Regression artifact error: cannot write result\n"
     )
+
+
+def test_print_infrastructure_error_writes_stable_message_to_stderr(
+    capsys,
+) -> None:
+    print_infrastructure_error("disk unavailable")
+
+    captured = capsys.readouterr()
+
+    assert captured.out == ""
+    assert captured.err == "Infrastructure error: disk unavailable\n"
