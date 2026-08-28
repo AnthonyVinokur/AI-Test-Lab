@@ -135,3 +135,5 @@ def test_real_cli_report_write_failure_returns_infrastructure_error(
     assert completed.returncode == CliExitCode.INFRASTRUCTURE_ERROR
     assert "Infrastructure error:" in completed.stderr
     assert "Traceback" not in completed.stderr
+    assert "JSON report:" not in completed.stdout
+    assert "HTML report:" not in completed.stdout
