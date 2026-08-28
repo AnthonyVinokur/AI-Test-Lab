@@ -20,6 +20,9 @@ def test_real_cli_success_returns_success_exit_code() -> None:
     )
 
     assert completed.returncode == CliExitCode.SUCCESS
+    assert "Available evaluation profiles:" in completed.stdout
+    assert "default" in completed.stdout
+    assert completed.stderr == ""
 
 def test_real_cli_invalid_regression_invocation_returns_input_error() -> None:
     completed = subprocess.run(
