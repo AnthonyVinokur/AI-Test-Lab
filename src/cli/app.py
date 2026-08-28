@@ -43,6 +43,7 @@ from src.evaluation_run_regression_result_writer import (
 )
 
 from src.cli.diagnostics import (
+    print_infrastructure_error,
     print_input_error,
     print_regression_artifact_error,
     print_regression_execution_error,
@@ -210,8 +211,12 @@ def main(argv: list[str] | None = None) -> int:
 
     results = runner.run_tests(test_cases)
 
-    JsonReporter(args.report).write(results)
-    HtmlReporter(args.html_report).write(results)
+    try:
+        JsonReporter(args.report).write(results)
+        HtmlReporter(args.html_report).write(results)
+    except OSError as error:
+        print_infrastructure_error(error)
+        return CliExitCode.INFRASTRUCTURE_ERROR
 
     regression_result = None
 

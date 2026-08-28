@@ -101,3 +101,37 @@ def test_real_cli_dataset_validation_failure_returns_failure_exit_code(
     assert "Dataset validation failed." in completed.stdout
     assert completed.stderr == ""
 
+
+def test_real_cli_report_write_failure_returns_infrastructure_error(
+    tmp_path,
+) -> None:
+    prompts_path = tmp_path / "empty-prompts.json"
+    prompts_path.write_text("[]", encoding="utf-8")
+
+    # Deliberately use an existing directory as the JSON report path.
+    # Opening a directory as a writable file must fail.
+    invalid_report_path = tmp_path / "report-target"
+    invalid_report_path.mkdir()
+
+    html_report_path = tmp_path / "report.html"
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "src.cli.app",
+            "--prompts",
+            str(prompts_path),
+            "--report",
+            str(invalid_report_path),
+            "--html-report",
+            str(html_report_path),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == CliExitCode.INFRASTRUCTURE_ERROR
+    assert "Infrastructure error:" in completed.stderr
+    assert "Traceback" not in completed.stderr
