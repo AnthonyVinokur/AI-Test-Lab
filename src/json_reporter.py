@@ -18,6 +18,8 @@ from src.report_schema import (
 
 from src.report_contract_validator import validate_report_payload
 
+from src.public_contract import serialize_public_contract
+
 class JsonReporter:
     """Writes validated public AI test evidence to JSON."""
 
@@ -113,7 +115,7 @@ class JsonReporter:
             ],
         )
 
-        report_payload = report.model_dump(mode="json")
+        report_payload = serialize_public_contract(report)
 
         # Runtime public-contract boundary:
         # The explicit public DTO has already removed internal runtime state.
