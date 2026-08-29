@@ -2,15 +2,13 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import Field, BaseModel, ConfigDict
+
+from src.public_contract import PublicContractModel
 
 
-class PublicReportModel(BaseModel):
-    """Base model for the public report contract.
-
-    Public schemas are allow-lists. Unknown fields are rejected so internal
-    implementation state cannot silently cross the reporting boundary.
-    """
+class PublicReportModel(PublicContractModel):
+    """Base model for the public report contract."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
