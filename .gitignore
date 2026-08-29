@@ -3,6 +3,22 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .venv/
+.env.*
+!.env.example
+
+# Secrets and credentials
+secrets/
+credentials/
+private/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Proprietary/local-only implementation
+proprietary/
+enterprise-private/
+internal-private/
 venv/
 
 # PyCharm
