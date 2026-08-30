@@ -8,6 +8,7 @@ from threading import RLock
 
 from .models import Dataset
 
+from src.internal_serialization import serialize_internal_model
 
 class DatasetNotFoundError(KeyError):
     pass
@@ -32,7 +33,10 @@ class JsonDatasetRepository:
             if path.exists() and not overwrite:
                 raise DatasetAlreadyExistsError(dataset.manifest.id)
 
-            payload = dataset.model_dump(mode="json")
+            payload = serialize_internal_model(
+                dataset,
+                mode="json",
+            )
             self._atomic_write(path, payload)
 
     def get(self, dataset_id: str) -> Dataset:

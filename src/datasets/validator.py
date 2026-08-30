@@ -8,6 +8,7 @@ from enum import StrEnum
 
 from .models import Dataset, DatasetEntry, DatasetStatus
 
+from src.internal_serialization import serialize_internal_model
 
 class ValidationSeverity(StrEnum):
     ERROR = "error"
@@ -190,11 +191,18 @@ def validate_dataset(dataset: Dataset) -> DatasetValidationResult:
 
 def _checksum(entries: list[DatasetEntry]) -> str:
     canonical_json = json.dumps(
-        [entry.model_dump(mode="json") for entry in entries],
+        [
+            serialize_internal_model(
+                entry,
+                mode="json",
+            )
+            for entry in entries
+        ],
         sort_keys=True,
         separators=(",", ":"),
         ensure_ascii=False,
     ).encode("utf-8")
+
     return hashlib.sha256(canonical_json).hexdigest()
 
 

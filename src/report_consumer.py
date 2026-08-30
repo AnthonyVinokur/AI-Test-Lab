@@ -7,6 +7,7 @@ from src.report_assessment import ReportAssessment, assess_report
 from src.report_decision import ReportDecision, decide_report
 from src.report_reader import PublicReport, load_report
 from src.report_summary import ReportSummary, summarize_report
+from src.public_contract import serialize_public_contract
 
 
 @dataclass(frozen=True, slots=True)
@@ -25,7 +26,7 @@ def consume_report(path: str | Path) -> ReportConsumption:
     report = load_report(path)
 
     summary = summarize_report(
-        report.model_dump(mode="json")
+        serialize_public_contract(report)
     )
 
     decision = decide_report(summary)

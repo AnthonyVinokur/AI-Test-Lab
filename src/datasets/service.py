@@ -15,6 +15,10 @@ from .models import (
 )
 from .repository import JsonDatasetRepository
 
+from src.internal_serialization import serialize_internal_model
+
+from src.datasets.public_mapper import map_dataset_export
+from src.public_contract import serialize_public_contract
 
 class DuplicateEntryError(ValueError):
     pass
@@ -120,7 +124,9 @@ class DatasetService:
         for index, entry in enumerate(entries):
             if entry.id == entry_id:
                 candidate = entry.model_copy(update=changes)
-                entries[index] = DatasetEntry.model_validate(candidate.model_dump())
+                entries[index] = DatasetEntry.model_validate(
+                    serialize_internal_model(candidate)
+                )
 
                 return self._append_version(
                     dataset,
@@ -176,17 +182,25 @@ class DatasetService:
             change_summary=f"Rolled back to version {source_version}",
         )
 
-    def export_version(self, dataset_id: str, version: int | None = None) -> dict:
+    def export_version(
+            self,
+            dataset_id: str,
+            version: int | None = None,
+    ) -> dict[str, object]:
         dataset = self.repository.get(dataset_id)
-        selected = dataset.latest() if version is None else self._find_version(dataset, version)
+        selected = (
+            dataset.latest()
+            if version is None
+            else self._find_version(dataset, version)
+        )
 
-        return {
-            "dataset_id": dataset.manifest.id,
-            "dataset_name": dataset.manifest.name,
-            "version": selected.version,
-            "checksum": selected.checksum,
-            "entries": [entry.model_dump(mode="json") for entry in selected.entries],
-        }
+        public_export = map_dataset_export(
+            dataset,
+            selected,
+        )
+
+        return serialize_public_contract(public_export)
+
 
     def import_entries(
         self,
@@ -256,7 +270,13 @@ class DatasetService:
     @staticmethod
     def _checksum(entries: list[DatasetEntry]) -> str:
         canonical_json = json.dumps(
-            [entry.model_dump(mode="json") for entry in entries],
+            [
+                serialize_internal_model(
+                    entry,
+                    mode="json",
+                )
+                for entry in entries
+            ],
             sort_keys=True,
             separators=(",", ":"),
             ensure_ascii=False,
