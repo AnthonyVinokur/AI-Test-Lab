@@ -2,7 +2,7 @@
 
 ## Status
 
-**In progress.**
+**Complete.**
 
 IP.05 is the final planned foundational IP-protection sprint for AI Test Lab.
 
@@ -495,7 +495,7 @@ Private dependency boundary check
 Python tests
 ```
 
-The private repository should maintain independent CI appropriate to proprietary development:
+The private repository maintains independent CI appropriate to proprietary development:
 
 ```text
 Checkout
@@ -508,6 +508,18 @@ Private package tests
 ```
 
 ---
+
+### Private repository closure verification
+
+```text
+Private CI workflow:                    established
+Private repository main:                synchronized with origin/main
+Private test suite:                     1 passed in 0.01s
+Private git diff --check:               PASS
+Private working tree:                   clean
+Private feature branches:               removed/pruned
+Private main merge checkpoint:          2c681db
+```
 
 ## Pull-Request Review Policy
 
@@ -592,14 +604,14 @@ IP.05 is complete when:
 - [x] The public repository mechanically rejects imports of `aitestlab_private`.
 - [x] Boundary enforcement has positive and negative tests.
 - [x] Public repository CI runs the private-dependency boundary check.
-- [ ] Private repository CI/test policy is established.
+- [x] Private repository CI/test policy is established.
 - [x] Public consumer rules are recorded in final sprint evidence.
 - [x] Final public repository regression suite passes.
-- [ ] Final private repository test suite passes.
-- [ ] `git diff --check` is clean in both repositories.
-- [ ] Final staged changes are reviewed for accidental proprietary exposure.
-- [ ] IP.05 PR(s) are merged.
-- [ ] Both working trees are clean after merge.
+- [x] Final private repository test suite passes.
+- [x] `git diff --check` is clean in both repositories.
+- [x] Final staged changes are reviewed for accidental proprietary exposure.
+- [x] All substantive IP.05 implementation PRs are merged.
+- [x] Both repositories were verified clean before closure documentation.
 
 ---
 
@@ -624,7 +636,7 @@ Additional IP-specific sprints should be created only when a concrete new risk o
 
 ## Final Intended Result
 
-IP.05 completes the foundational IP-protection architecture for AI Test Lab.
+IP.05 completes the foundational IP-protection architecture for AI Test Lab. The foundational IP-protection program is now closed, and these controls become standing architectural invariants for future development.
 
 The project moves from:
 
