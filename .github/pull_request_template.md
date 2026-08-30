@@ -26,6 +26,8 @@ Select the classification that applies to this change.
 - [ ] Logs, reports, fixtures, examples, and test data contain no protected information.
 - [ ] Public-facing or website code does not duplicate protected core logic.
 - [ ] Repository boundary scanner passes.
+- - [ ] Public export boundary scanner passes.
+- [ ] No direct model serialization bypasses an approved serialization gateway.
 
 ## Notes
 

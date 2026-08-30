@@ -4,7 +4,21 @@ import argparse
 import json
 from pathlib import Path
 
-from src.datasets import DatasetEntry, DatasetService, DatasetStatus, JsonDatasetRepository
+from src.datasets import (
+    Dataset,
+    DatasetEntry,
+    DatasetService,
+    DatasetStatus,
+    DatasetVersion,
+    JsonDatasetRepository,
+)
+
+from src.datasets.public_mapper import (
+    map_dataset,
+    map_dataset_manifest,
+    map_dataset_version,
+)
+from src.public_contract import serialize_public_contract
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -71,11 +85,43 @@ def main() -> None:
     elif args.command == "list":
         selected_status = DatasetStatus(args.status) if args.status else None
         manifests = service.list_datasets(status=selected_status, tag=args.tag)
-        print(json.dumps([item.model_dump(mode="json") for item in manifests], indent=2))
+
+        payload = [
+            serialize_public_contract(
+                map_dataset_manifest(item)
+            )
+            for item in manifests
+        ]
+
+        print(
+            json.dumps(
+                payload,
+                indent=2,
+            )
+        )
 
     elif args.command == "show":
-        result = service.get_dataset(args.dataset_id, args.version)
-        print(result.model_dump_json(indent=2))
+
+        result = service.get_dataset(
+            args.dataset_id,
+            args.version,
+        )
+
+        if isinstance(result, Dataset):
+            public_result = map_dataset(result)
+        elif isinstance(result, DatasetVersion):
+            public_result = map_dataset_version(result)
+        else:
+            raise TypeError(
+                "Unexpected dataset result type."
+            )
+
+        print(
+            json.dumps(
+                serialize_public_contract(public_result),
+                indent=2,
+            )
+        )
 
     elif args.command == "add-entry":
         entry = DatasetEntry(
