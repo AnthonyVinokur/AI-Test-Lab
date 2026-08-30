@@ -26,8 +26,11 @@ Select the classification that applies to this change.
 - [ ] Logs, reports, fixtures, examples, and test data contain no protected information.
 - [ ] Public-facing or website code does not duplicate protected core logic.
 - [ ] Repository boundary scanner passes.
-- - [ ] Public export boundary scanner passes.
+- [ ] Public export boundary scanner passes.
+- [ ] Private dependency boundary scanner passes.
 - [ ] No direct model serialization bypasses an approved serialization gateway.
+- [ ] Public code does not import or depend on `aitestlab_private`.
+- [ ] PROPRIETARY implementation is placed in `AI-Test-Lab-Private`, not this public repository.
 
 ## Notes
 

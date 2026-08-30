@@ -30,8 +30,11 @@ jobs:
       - name: Enforce repository boundary
         run: python scripts/check_repository_boundary.py
 
-      - name: Enforce repository boundary
-        run: python scripts/check_repository_boundary.py
+      - name: Enforce public export boundary
+        run: python scripts/check_public_export_boundary.py
+
+      - name: Enforce private dependency boundary
+        run: python scripts/check_private_dependency_boundary.py
 
       - name: Run unit tests
         run: python -m pytest -m "not integration" -v
