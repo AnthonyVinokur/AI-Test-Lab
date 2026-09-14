@@ -27,8 +27,12 @@ implementation.
    evidence artifact only from a completed, correlated A.01 result and accepts
    it only after frozen transport, document, integrity, and exact-compatibility
    verification.
-6. **ATL-A.02.06+ — Normalization, public outcome, serialization, and closure:**
-   define stable failures and a minimal public result before freezing A.02.
+6. **ATL-A.02.06 — Evidence Binding Failure Normalization:** implemented;
+   converts every ordinary A.02.05 rejection into an immutable, redacted public
+   failure with a stable stage, code, message, retryability, and safe response
+   identifiers.
+7. **ATL-A.02.07+ — Public outcome, serialization, and closure:** define a
+   minimal public result and wire format before freezing A.02.
 
 Every later slice requires its own narrow contract and tests. The planned
 sequence does not pre-approve new public fields or proprietary behavior.
