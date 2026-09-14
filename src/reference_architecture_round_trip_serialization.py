@@ -30,7 +30,7 @@ def _validated_outcome(
     try:
         # Revalidation protects the serializer from runtime-altered model state.
         return ReferenceArchitectureRoundTripOutcomeV1.model_validate(
-            outcome.model_dump(mode="python", round_trip=True)
+            serialize_public_contract(outcome)
         )
     except (TypeError, ValueError, ValidationError) as exc:
         raise ReferenceArchitectureRoundTripSerializationError(
