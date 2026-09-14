@@ -23,8 +23,10 @@ implementation.
 4. **ATL-A.02.04 — Evidence Compatibility Verification:** implemented; applies
    the A.01 exact-version policy to the evidence targets and fails closed for
    every undeclared architecture or conformance-contract version.
-5. **ATL-A.02.05 — Round-Trip Evidence Binding:** bind accepted evidence to the
-   successful A.01 response carrying it without weakening correlation rules.
+5. **ATL-A.02.05 — Round-Trip Evidence Binding:** implemented; extracts the
+   evidence artifact only from a completed, correlated A.01 result and accepts
+   it only after frozen transport, document, integrity, and exact-compatibility
+   verification.
 6. **ATL-A.02.06+ — Normalization, public outcome, serialization, and closure:**
    define stable failures and a minimal public result before freezing A.02.
 
