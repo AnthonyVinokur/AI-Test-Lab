@@ -31,8 +31,12 @@ implementation.
    converts every ordinary A.02.05 rejection into an immutable, redacted public
    failure with a stable stage, code, message, retryability, and safe response
    identifiers.
-7. **ATL-A.02.07+ — Public outcome, serialization, and closure:** define a
-   minimal public result and wire format before freezing A.02.
+7. **ATL-A.02.07 — Public Evidence-Binding Outcome:** implemented; projects the
+   normalized result into a frozen success-or-failure public envelope. Success
+   exposes only safe response identifiers and the verified A.02.01 evidence;
+   failure exposes only the redacted A.02.06 DTO.
+8. **ATL-A.02.08+ — Serialization and closure:** define the canonical wire
+   format, complete regression and threat review, then freeze A.02.
 
 Every later slice requires its own narrow contract and tests. The planned
 sequence does not pre-approve new public fields or proprietary behavior.
