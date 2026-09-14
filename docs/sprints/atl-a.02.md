@@ -17,8 +17,9 @@ implementation.
 2. **ATL-A.02.02 — Untrusted Evidence Document Translation:** implemented;
    strict UTF-8 JSON decoding rejects ambiguous input and fail-closed validates
    untrusted evidence bytes into the A.02.01 contract.
-3. **ATL-A.02.03 — Evidence Integrity Verification:** recompute and verify the
-   published evaluation and evidence SHA-256 identities.
+3. **ATL-A.02.03 — Evidence Integrity Verification:** implemented; reproduces
+   Aquagear's canonical JSON inputs and requires both published evaluation and
+   evidence SHA-256 identities to match.
 4. **ATL-A.02.04 — Evidence Compatibility Verification:** verify that the
    evidence targets the supported frozen architecture and conformance contract.
 5. **ATL-A.02.05 — Round-Trip Evidence Binding:** bind accepted evidence to the
