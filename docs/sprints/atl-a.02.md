@@ -35,8 +35,11 @@ implementation.
    normalized result into a frozen success-or-failure public envelope. Success
    exposes only safe response identifiers and the verified A.02.01 evidence;
    failure exposes only the redacted A.02.06 DTO.
-8. **ATL-A.02.08+ — Serialization and closure:** define the canonical wire
-   format, complete regression and threat review, then freeze A.02.
+8. **ATL-A.02.08 — Public Evidence-Binding Serialization Boundary:**
+   implemented; revalidates the A.02.07 DTO, emits deterministic compact UTF-8
+   JSON, and fail-closed decodes only the frozen public schema.
+9. **ATL-A.02.09+ — Regression, threat review, and closure:** complete
+   end-to-end verification and freeze A.02.
 
 Every later slice requires its own narrow contract and tests. The planned
 sequence does not pre-approve new public fields or proprietary behavior.
