@@ -238,7 +238,9 @@ def test_public_failure_is_frozen_minimal_and_redacted() -> None:
         "integration_id",
         "correlation_id",
     }
-    assert "artifact" not in str(serialized)
+    assert "payload" not in serialized
+    assert "evidence" not in serialized
+    assert "response" not in serialized
     with pytest.raises((TypeError, ValueError)):
         failure.message = "changed"  # type: ignore[misc]
 
