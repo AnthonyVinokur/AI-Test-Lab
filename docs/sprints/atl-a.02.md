@@ -20,8 +20,9 @@ implementation.
 3. **ATL-A.02.03 — Evidence Integrity Verification:** implemented; reproduces
    Aquagear's canonical JSON inputs and requires both published evaluation and
    evidence SHA-256 identities to match.
-4. **ATL-A.02.04 — Evidence Compatibility Verification:** verify that the
-   evidence targets the supported frozen architecture and conformance contract.
+4. **ATL-A.02.04 — Evidence Compatibility Verification:** implemented; applies
+   the A.01 exact-version policy to the evidence targets and fails closed for
+   every undeclared architecture or conformance-contract version.
 5. **ATL-A.02.05 — Round-Trip Evidence Binding:** bind accepted evidence to the
    successful A.01 response carrying it without weakening correlation rules.
 6. **ATL-A.02.06+ — Normalization, public outcome, serialization, and closure:**
