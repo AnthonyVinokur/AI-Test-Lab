@@ -14,8 +14,9 @@ implementation.
 
 1. **ATL-A.02.01 — Conformance Evidence Intake Contract:** freeze the exact
    public envelope and evidence shape accepted from Aquagear A.43.4.
-2. **ATL-A.02.02 — Untrusted Evidence Document Translation:** decode and
-   fail-closed validate untrusted evidence bytes into the A.02.01 contract.
+2. **ATL-A.02.02 — Untrusted Evidence Document Translation:** implemented;
+   strict UTF-8 JSON decoding rejects ambiguous input and fail-closed validates
+   untrusted evidence bytes into the A.02.01 contract.
 3. **ATL-A.02.03 — Evidence Integrity Verification:** recompute and verify the
    published evaluation and evidence SHA-256 identities.
 4. **ATL-A.02.04 — Evidence Compatibility Verification:** verify that the
@@ -27,4 +28,3 @@ implementation.
 
 Every later slice requires its own narrow contract and tests. The planned
 sequence does not pre-approve new public fields or proprietary behavior.
-
