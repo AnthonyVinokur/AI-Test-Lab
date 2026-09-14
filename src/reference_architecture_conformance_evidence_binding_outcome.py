@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import model_validator
 
-from src.public_contract import PublicContractModel
+from src.public_contract import PublicContractModel, serialize_public_contract
 from src.reference_architecture_conformance_evidence_binding_failure_normalization import (
     ReferenceArchitectureConformanceEvidenceBindingFailureV1,
     ReferenceArchitectureNormalizedConformanceEvidenceBindingV1,
@@ -70,12 +70,15 @@ def project_reference_architecture_conformance_evidence_binding_outcome(
 
     if normalized.binding is not None:
         response = normalized.binding.response
+        evidence = ReferenceArchitectureConformanceEvidenceIntakeV1.model_validate(
+            serialize_public_contract(normalized.binding.evidence)
+        )
         return ReferenceArchitectureConformanceEvidenceBindingOutcomeV1(
             succeeded=True,
             binding=ReferenceArchitectureConformanceEvidenceBindingSuccessV1(
                 integration_id=response.integration_id,
                 correlation_id=response.correlation_id,
-                evidence=normalized.binding.evidence.model_copy(deep=True),
+                evidence=evidence,
             ),
         )
 
@@ -89,7 +92,7 @@ def project_reference_architecture_conformance_evidence_binding_outcome(
 
 
 def bind_public_reference_architecture_conformance_evidence(
-    round_trip: ReferenceArchitectureRoundTripResultV1[object] | object,
+    round_trip: ReferenceArchitectureRoundTripResultV1[Any] | object,
 ) -> ReferenceArchitectureConformanceEvidenceBindingOutcomeV1:
     """Bind one A.01 result and return only the stable public A.02.07 outcome."""
 
