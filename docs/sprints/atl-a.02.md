@@ -38,8 +38,12 @@ implementation.
 8. **ATL-A.02.08 — Public Evidence-Binding Serialization Boundary:**
    implemented; revalidates the A.02.07 DTO, emits deterministic compact UTF-8
    JSON, and fail-closed decodes only the frozen public schema.
-9. **ATL-A.02.09+ — Regression, threat review, and closure:** complete
-   end-to-end verification and freeze A.02.
+9. **ATL-A.02.09 — End-to-End Evidence-Binding Regression Verification:**
+   implemented; exercises the complete provider-neutral round trip through
+   evidence binding, failure normalization, public projection, and canonical
+   wire decoding across success, rejection, tampering, and IP-boundary cases.
+10. **ATL-A.02.10+ — Threat review and closure:** review the integrated boundary
+    and freeze A.02.
 
 Every later slice requires its own narrow contract and tests. The planned
 sequence does not pre-approve new public fields or proprietary behavior.
