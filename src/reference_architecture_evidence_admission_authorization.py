@@ -26,7 +26,7 @@ def enforce_reference_architecture_evidence_authorization(
         raise ReferenceArchitectureAdmissionRejection(
             ReferenceArchitectureAdmissionReasonCode.PRODUCER_NOT_AUTHORIZED
         )
-    if request.contract_version not in policy.acceptable_contract_versions:
+    if request.evidence_contract_version not in policy.acceptable_contract_versions:
         raise ReferenceArchitectureAdmissionRejection(
             ReferenceArchitectureAdmissionReasonCode.CONTRACT_VERSION_NOT_SUPPORTED
         )

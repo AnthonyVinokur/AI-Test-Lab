@@ -119,6 +119,7 @@ class ReferenceArchitectureEvidenceAdmissionRequestV1:
     evidence_type: str
     producer_id: str
     contract_version: str
+    evidence_contract_version: str
     purpose: str
     target_environment: str
     workflow_id: str
@@ -139,6 +140,7 @@ class ReferenceArchitectureEvidenceAdmissionRequestV1:
             (self.evidence_type, "evidence_type"),
             (self.producer_id, "producer_id"),
             (self.contract_version, "contract_version"),
+            (self.evidence_contract_version, "evidence_contract_version"),
             (self.purpose, "purpose"),
             (self.target_environment, "target_environment"),
             (self.workflow_id, "workflow_id"),

@@ -30,6 +30,7 @@ def enforce_reference_architecture_evidence_provenance_binding(
         and request.producer_id == authentication.producer_id
         and request.evidence_id == authentication.attestation_id
         and request.run_id == integrity.correlation_id
+        and request.evidence_contract_version == integrity.evidence.evidence.schema_version
         and request.created_at == issued_at
     )
     if not binding_facts_agree:

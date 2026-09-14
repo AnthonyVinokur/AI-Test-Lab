@@ -28,7 +28,7 @@ class ReferenceArchitectureEvidenceAdmissionTranslationError(ValueError):
 
 _REQUEST_FIELDS = {
     "contract_name", "contract_version", "evidence_id", "evidence_sha256",
-    "evidence_type", "producer_id", "purpose", "target_environment",
+    "evidence_type", "producer_id", "evidence_contract_version", "purpose", "target_environment",
     "workflow_id", "run_id", "created_at", "not_before", "expires_at",
     "evaluated_at", "replay_status",
 }
@@ -139,6 +139,7 @@ def translate_untrusted_reference_architecture_evidence_admission_request(
             evidence_id=root["evidence_id"], evidence_sha256=root["evidence_sha256"],
             evidence_type=root["evidence_type"], producer_id=root["producer_id"],
             contract_version=root["contract_version"], purpose=root["purpose"],
+            evidence_contract_version=root["evidence_contract_version"],
             target_environment=root["target_environment"], workflow_id=root["workflow_id"],
             run_id=root["run_id"], created_at=_timestamp(root["created_at"], "created_at"),
             not_before=_timestamp(root["not_before"], "not_before"),
