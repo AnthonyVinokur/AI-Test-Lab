@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import binascii
 from dataclasses import dataclass
+from enum import Enum
 from typing import Any
 
 from src.reference_architecture_compatibility_contract import (
@@ -42,8 +43,29 @@ _CONFORMANCE_EVIDENCE_CONTENT_TYPE = "application/json"
 _CONFORMANCE_EVIDENCE_ARTIFACT_SCHEMA_VERSION = "1.0"
 
 
+class ReferenceArchitectureConformanceEvidenceBindingFailureReason(str, Enum):
+    """Stable internal reason consumed by the A.02.06 normalization boundary."""
+
+    UNCORRELATED_RESPONSE = "uncorrelated_response"
+    RESPONSE_NOT_COMPLETED = "response_not_completed"
+    MISSING_EVIDENCE_ARTIFACT = "missing_evidence_artifact"
+    INVALID_EVIDENCE_TRANSPORT = "invalid_evidence_transport"
+    INVALID_EVIDENCE_BASE64 = "invalid_evidence_base64"
+    INVALID_EVIDENCE_DOCUMENT = "invalid_evidence_document"
+    EVIDENCE_INTEGRITY_FAILED = "evidence_integrity_failed"
+    INCOMPATIBLE_EVIDENCE = "incompatible_evidence"
+
+
 class ReferenceArchitectureConformanceEvidenceBindingError(ValueError):
     """Raised when evidence cannot be bound to its correlated A.01 response."""
+
+    def __init__(
+        self,
+        reason: ReferenceArchitectureConformanceEvidenceBindingFailureReason,
+        message: str,
+    ) -> None:
+        super().__init__(message)
+        self.reason = reason
 
 
 @dataclass(frozen=True, slots=True)
@@ -68,19 +90,22 @@ def bind_reference_architecture_conformance_evidence(
         raise TypeError("round_trip must be an A.01 correlated round-trip result.")
     if not round_trip.correlation.correlated:
         raise ReferenceArchitectureConformanceEvidenceBindingError(
-            "Evidence cannot be bound to an uncorrelated response."
+            ReferenceArchitectureConformanceEvidenceBindingFailureReason.UNCORRELATED_RESPONSE,
+            "Evidence cannot be bound to an uncorrelated response.",
         )
 
     response = round_trip.response
     if response.status is not ProviderNeutralIntegrationStatusV1.COMPLETED:
         raise ReferenceArchitectureConformanceEvidenceBindingError(
-            "Evidence requires a completed A.01 response."
+            ReferenceArchitectureConformanceEvidenceBindingFailureReason.RESPONSE_NOT_COMPLETED,
+            "Evidence requires a completed A.01 response.",
         )
 
     artifact = response.artifact
     if artifact is None:
         raise ReferenceArchitectureConformanceEvidenceBindingError(
-            "The completed A.01 response does not carry an evidence artifact."
+            ReferenceArchitectureConformanceEvidenceBindingFailureReason.MISSING_EVIDENCE_ARTIFACT,
+            "The completed A.01 response does not carry an evidence artifact.",
         )
     if (
         artifact.artifact_type != _CONFORMANCE_EVIDENCE_ARTIFACT_TYPE
@@ -88,14 +113,16 @@ def bind_reference_architecture_conformance_evidence(
         or artifact.schema_version != _CONFORMANCE_EVIDENCE_ARTIFACT_SCHEMA_VERSION
     ):
         raise ReferenceArchitectureConformanceEvidenceBindingError(
-            "The response artifact does not match the frozen conformance-evidence transport."
+            ReferenceArchitectureConformanceEvidenceBindingFailureReason.INVALID_EVIDENCE_TRANSPORT,
+            "The response artifact does not match the frozen conformance-evidence transport.",
         )
 
     try:
         document = base64.b64decode(artifact.payload_base64, validate=True)
     except (ValueError, binascii.Error) as exc:
         raise ReferenceArchitectureConformanceEvidenceBindingError(
-            "The response evidence artifact is not valid base64."
+            ReferenceArchitectureConformanceEvidenceBindingFailureReason.INVALID_EVIDENCE_BASE64,
+            "The response evidence artifact is not valid base64.",
         ) from exc
 
     try:
@@ -106,19 +133,22 @@ def bind_reference_architecture_conformance_evidence(
         )
     except ReferenceArchitectureConformanceEvidenceDocumentTranslationError as exc:
         raise ReferenceArchitectureConformanceEvidenceBindingError(
-            "The response artifact is not a valid conformance-evidence document."
+            ReferenceArchitectureConformanceEvidenceBindingFailureReason.INVALID_EVIDENCE_DOCUMENT,
+            "The response artifact is not a valid conformance-evidence document.",
         ) from exc
 
     if not verify_reference_architecture_conformance_evidence_integrity(evidence):
         raise ReferenceArchitectureConformanceEvidenceBindingError(
-            "The response evidence failed integrity verification."
+            ReferenceArchitectureConformanceEvidenceBindingFailureReason.EVIDENCE_INTEGRITY_FAILED,
+            "The response evidence failed integrity verification.",
         )
     compatibility = (
         verify_reference_architecture_conformance_evidence_compatibility(evidence)
     )
     if compatibility is not ReferenceArchitectureCompatibility.EXACT:
         raise ReferenceArchitectureConformanceEvidenceBindingError(
-            "The response evidence is incompatible with the supported contract."
+            ReferenceArchitectureConformanceEvidenceBindingFailureReason.INCOMPATIBLE_EVIDENCE,
+            "The response evidence is incompatible with the supported contract.",
         )
 
     return ReferenceArchitectureConformanceEvidenceBindingV1(
@@ -131,6 +161,7 @@ __all__ = [
     "REFERENCE_ARCHITECTURE_CONFORMANCE_EVIDENCE_ROUND_TRIP_BINDING_CONTRACT_NAME",
     "REFERENCE_ARCHITECTURE_CONFORMANCE_EVIDENCE_ROUND_TRIP_BINDING_CONTRACT_VERSION",
     "ReferenceArchitectureConformanceEvidenceBindingError",
+    "ReferenceArchitectureConformanceEvidenceBindingFailureReason",
     "ReferenceArchitectureConformanceEvidenceBindingV1",
     "bind_reference_architecture_conformance_evidence",
 ]
