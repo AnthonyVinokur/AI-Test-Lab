@@ -21,6 +21,27 @@ class ReferenceArchitectureConformanceEvidenceBindingSerializationError(ValueErr
     """Raised when a value cannot cross the frozen A.02.08 wire boundary."""
 
 
+class _DuplicateObjectKeyError(ValueError):
+    """Internal signal for an ambiguous public JSON document."""
+
+
+def _object_without_duplicate_keys(
+    pairs: list[tuple[str, Any]],
+) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise _DuplicateObjectKeyError(
+                "Duplicate JSON object keys are not accepted."
+            )
+        result[key] = value
+    return result
+
+
+def _reject_non_standard_number(value: str) -> None:
+    raise ValueError(f"Non-standard JSON number {value!r} is not accepted.")
+
+
 def _validated_outcome(
     outcome: ReferenceArchitectureConformanceEvidenceBindingOutcomeV1,
 ) -> ReferenceArchitectureConformanceEvidenceBindingOutcomeV1:
@@ -85,10 +106,14 @@ def decode_reference_architecture_conformance_evidence_binding_outcome(
     if type(document) is not bytes:
         raise TypeError("document must be UTF-8 JSON bytes.")
     try:
-        payload = json.loads(document.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        payload = json.loads(
+            document.decode("utf-8"),
+            object_pairs_hook=_object_without_duplicate_keys,
+            parse_constant=_reject_non_standard_number,
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError, RecursionError) as exc:
         raise ReferenceArchitectureConformanceEvidenceBindingSerializationError(
-            "The public evidence-binding document is not valid UTF-8 JSON."
+            "The public evidence-binding document is not valid unambiguous UTF-8 JSON."
         ) from exc
     if not isinstance(payload, dict):
         raise ReferenceArchitectureConformanceEvidenceBindingSerializationError(
