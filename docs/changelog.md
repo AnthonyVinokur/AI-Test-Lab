@@ -189,6 +189,23 @@ Add this **directly below `# Changelog` and above Sprint 11.1**:
 ### Validation
 
 - 89 pytest tests passing
+# ATL-A.16 — Trusted Deployment Execution and Outcome Attestation
+
+### Added
+
+- Frozen provider-neutral execution contracts and strict canonical input translation.
+- Narrow ATL-A.15 receipt verification, exact admission binding, and command identity.
+- Versioned execution policy and registered-adapter capability admission.
+- Atomic claims, idempotent replay, conflict protection, and concurrency-safe execution.
+- Normalized provider outcomes and immutable digest-verifiable execution attestations.
+- Explicit safe public projection and backward-compatible ATL-A.15 executor adapter.
+
+### Security
+
+- Only an internally verified permitted receipt can reach a registered adapter.
+- Ambiguous provider results remain `outcome_unknown` and are not retried.
+- Public output excludes credentials, raw provider data, internal state, and proprietary policy logic.
+
 # ATL-A.15 — Trusted Deployment Admission Enforcement
 
 ### Added
