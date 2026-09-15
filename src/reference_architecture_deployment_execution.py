@@ -201,7 +201,7 @@ def _attestation(command: ExecutionCommand, provider: ProviderExecutionResult,
     req = command.request
     values = {"adapter_identity": req.requested_adapter, "adapter_version": req.adapter_contract_version,
         "admission_receipt_id": req.admission_receipt_id, "artifact_digest": req.artifact_digest,
-        "authorization_id": req.authorization_id, "completed_at": _time(provider.completed_at) if provider.completed_at else None,
+        "authorization_id": req.authorization_id, "configuration_digest": req.configuration_digest, "completed_at": _time(provider.completed_at) if provider.completed_at else None,
         "contract_version": ATTESTATION_CONTRACT_VERSION, "environment": req.target_environment,
         "execution_attempt_id": req.execution_attempt_id, "execution_command_digest": command.execution_command_digest,
         "execution_policy": asdict(req.execution_policy), "operation": req.operation,
@@ -232,6 +232,9 @@ def verify_execution_attestation(attestation: DeploymentExecutionAttestation) ->
         "provider_response_digest": attestation.provider_response_digest, "reason_code": attestation.reason_code,
         "release_id": attestation.release_id, "started_at": _time(attestation.started_at),
         "tenant_id": attestation.tenant_id, "trace_reference": attestation.trace_reference}
+    # v1 attestations issued before ATL-A.18 did not bind a configuration digest.
+    if attestation.configuration_digest is not None:
+        values["configuration_digest"] = attestation.configuration_digest
     expected_digest = sha256(_canonical(values)).hexdigest()
     expected_id = sha256(_canonical({**values, "attestation_digest": expected_digest})).hexdigest()
     return expected_digest == attestation.attestation_digest and expected_id == attestation.attestation_id

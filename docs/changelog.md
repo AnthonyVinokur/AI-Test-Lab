@@ -195,6 +195,14 @@ Add this **directly below `# Changelog` and above Sprint 11.1**:
 ### Validation
 
 - 89 pytest tests passing
+# ATL-A.18 — Trusted Deployment Continuous Integrity Monitoring and Trust Revocation
+
+### Added
+
+- Immutable A.17-derived trusted deployment baselines and configuration-binding retention.
+- Deterministic continuous integrity observations, drift classes, trust statuses, and safe remediation signals.
+- Fail-closed authorization lifecycle handling, revocation records, and tamper-verifiable results.
+
 # ATL-A.16 — Trusted Deployment Execution and Outcome Attestation
 
 ### Added

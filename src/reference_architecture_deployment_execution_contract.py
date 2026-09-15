@@ -253,6 +253,9 @@ class DeploymentExecutionAttestation:
     trace_reference: str
     attestation_digest: str
     contract_version: str = ATTESTATION_CONTRACT_VERSION
+    # Optional for attestations minted before ATL-A.18.  New attestations retain
+    # the approved configuration binding for continuous integrity monitoring.
+    configuration_digest: str | None = None
 
     def __post_init__(self) -> None:
         for value, name in ((self.attestation_id, "attestation_id"),
@@ -263,6 +266,8 @@ class DeploymentExecutionAttestation:
             (self.previous_state_reference, "previous_state_reference"),
             (self.attestation_digest, "attestation_digest")):
             digest(value, name)
+        if self.configuration_digest is not None:
+            digest(self.configuration_digest, "configuration_digest")
         for value, name in ((self.execution_attempt_id, "execution_attempt_id"),
             (self.tenant_id, "tenant_id"), (self.environment, "environment"),
             (self.release_id, "release_id"), (self.operation, "operation"),

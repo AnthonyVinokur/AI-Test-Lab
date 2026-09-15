@@ -56,6 +56,8 @@ class ExpectedDeploymentState:
     release_id: str
     required_health: ObservedHealthState
     expected_state_fingerprint: str
+    tenant_id: str | None = None
+    configuration_digest: str | None = None
 
     def __post_init__(self) -> None:
         for value, name in ((self.execution_attestation_id, "execution_attestation_id"),
@@ -66,6 +68,8 @@ class ExpectedDeploymentState:
         for value, name in ((self.provider_identity, "provider_identity"), (self.environment, "environment"),
                             (self.release_id, "release_id")):
             identifier(value, name)
+        if self.tenant_id is not None: identifier(self.tenant_id, "tenant_id")
+        if self.configuration_digest is not None: digest(self.configuration_digest, "configuration_digest")
         if self.required_health is not ObservedHealthState.HEALTHY:
             raise ValueError("required_health is unsupported.")
 

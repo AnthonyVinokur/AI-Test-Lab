@@ -4,7 +4,7 @@
 
 The reference architecture carries trust through explicit, independently verifiable boundaries:
 
-`provider-neutral evaluation → evidence integrity → authenticated provenance → signer/key trust → evidence admission → append-only evidence ledger → policy decision → deployment approval → deployment authorization → deployment admission enforcement → trusted deployment execution → execution outcome attestation → independent outcome verification`
+`provider-neutral evaluation → evidence integrity → authenticated provenance → signer/key trust → evidence admission → append-only evidence ledger → policy decision → deployment approval → deployment authorization → deployment admission enforcement → trusted deployment execution → execution outcome attestation → independent outcome verification → continuous integrity monitoring and trust revocation`
 
 ATL-A.06 consumes only factory-minted successful admission authorizations, binds each
 entry to the exact evidence, provenance, producer, evaluation run, policy, and contract
@@ -40,6 +40,12 @@ provider-neutral deployed state through an explicitly registered observer and re
 expected state derived from the attestation. It is strictly observation-only: fresh exact identity and
 health matches are `verified`; contradictions are `mismatch`; inconclusive facts are `indeterminate`;
 and invalid evidence or bindings are `invalid`.
+
+ATL-A.18 retains the tenant and approved configuration digest alongside the verified A.16/A.17
+identity evidence, creates an immutable trusted baseline, and compares later safe observations
+against it. Exact active bindings are `trusted`; nonproof is fail-closed as `indeterminate` or
+`invalid`; confirmed binding or authorization lifecycle failures are `untrusted` and issue only
+safe remediation signals. It records evidence and trust transitions but never operates a workload.
 | Metadata              | Value |
 |-----------------------|-------|
 | **Status**            | Approved Architecture |
