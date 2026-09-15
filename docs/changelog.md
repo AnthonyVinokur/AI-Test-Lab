@@ -203,6 +203,14 @@ Add this **directly below `# Changelog` and above Sprint 11.1**:
 - Versioned deterministic severity rules, evidence preservation, safe containment requests, and idempotent incident storage.
 - Verified-only containment and resolution transition contract; no remediation is silently executed.
 
+# ATL-A.21 — Trusted Deployment Post-Incident Closure and Preventive Assurance
+
+### Added
+
+- Immutable, versioned closure records bound to resolved incidents, reconciliation, and passed ATL-A.20 remediation verification.
+- Structured root-cause and impact classifications plus immutable preventive-action records and dispositions.
+- Safe public closure attestations and fail-closed lifecycle, tamper, authorization-binding, and incomplete-evidence coverage.
+
 # ATL-A.18 — Trusted Deployment Continuous Integrity Monitoring and Trust Revocation
 
 ### Added
