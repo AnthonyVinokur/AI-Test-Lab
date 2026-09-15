@@ -1,4 +1,16 @@
 # AI Test Lab Architecture Overview
+
+## Trusted evidence chain
+
+The reference architecture carries trust through six explicit boundaries:
+
+`provider-neutral evaluation → evidence integrity → authenticated provenance → signer/key trust → evidence admission → append-only evidence ledger`
+
+ATL-A.06 consumes only factory-minted successful admission authorizations, binds each
+entry to the exact evidence, provenance, producer, evaluation run, policy, and contract
+versions, then records it in a deterministic tamper-evident chain. Storage remains an
+adapter concern, and public outcomes are explicit projections rather than direct
+serialization of internal entries.
 | Metadata              | Value |
 |-----------------------|-------|
 | **Status**            | Approved Architecture |

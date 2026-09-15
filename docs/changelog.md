@@ -1,5 +1,13 @@
 # Changelog
 
+## ATL-A.06 — Trusted Evidence Ledger and Chain of Custody
+
+- Added a provider-neutral, append-only trusted evidence ledger reference boundary.
+- Added strict append translation and factory-minted ATL-A.05 admission authorization.
+- Added exact evidence/admission/provenance/run binding and trusted timestamp assignment.
+- Added deterministic identities, supersession chains, replay/conflict handling,
+  structured verification, and safe deterministic public outcomes.
+
 
 ---
 
