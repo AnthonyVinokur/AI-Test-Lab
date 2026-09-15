@@ -195,6 +195,14 @@ Add this **directly below `# Changelog` and above Sprint 11.1**:
 ### Validation
 
 - 89 pytest tests passing
+# ATL-A.19 — Trusted Deployment Integrity Incident Management
+
+### Added
+
+- Immutable digest-verifiable incident attestations bound to verified deployment integrity findings.
+- Versioned deterministic severity rules, evidence preservation, safe containment requests, and idempotent incident storage.
+- Verified-only containment and resolution transition contract; no remediation is silently executed.
+
 # ATL-A.18 — Trusted Deployment Continuous Integrity Monitoring and Trust Revocation
 
 ### Added
