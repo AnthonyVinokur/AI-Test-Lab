@@ -1,5 +1,11 @@
 # Changelog
 
+## ATL-A.17 — Trusted Deployment Outcome Verification and Reconciliation
+
+- Added verified ATL-A.16 attestation intake, derived expected-state projection, and an observer-only provider-neutral port.
+- Added allowlisted observer resolution, evidence freshness, normalized observations, deterministic reconciliation, and atomic replay-safe verification claims.
+- Added immutable digest-verifiable verification attestations and a minimal public outcome projection.
+
 ## ATL-A.14 — Trusted Deployment Authorization
 
 - Added strict deployment-authorization requests and separately digested versioned authorization policy.
