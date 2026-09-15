@@ -189,3 +189,22 @@ Add this **directly below `# Changelog` and above Sprint 11.1**:
 ### Validation
 
 - 89 pytest tests passing
+# ATL-A.15 — Trusted Deployment Admission Enforcement
+
+### Added
+
+- Strict immutable deployment-admission contracts and untrusted-input translation.
+- Deterministic canonical request identity and exact ATL-A.14 authorization binding.
+- Narrow integration with ATL-A.14's approved safe verifier.
+- Versioned enforcement policy for operations, environment classifications, lifetime,
+  clock skew, and single-use or reusable authorization consumption.
+- Thread-safe atomic replay and idempotency state with immutable enforcement receipts.
+- Provider-neutral mandatory gateway that invokes an executor only after permission.
+- Sanitized public admission projection and threat, replay, concurrency, and boundary tests.
+
+### Security
+
+- Admission has one success state: `permitted`; all other outcomes block execution.
+- Verifier, lifecycle-store, adapter, unsupported-input, and executor failures fail closed.
+- Public results expose no proprietary policy, authorization reasoning, signatures,
+  consumption internals, raw exceptions, or provider details.

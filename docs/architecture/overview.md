@@ -4,7 +4,7 @@
 
 The reference architecture carries trust through explicit, independently verifiable boundaries:
 
-`provider-neutral evaluation → evidence integrity → authenticated provenance → signer/key trust → evidence admission → append-only evidence ledger → policy decision → deployment approval → deployment authorization`
+`provider-neutral evaluation → evidence integrity → authenticated provenance → signer/key trust → evidence admission → append-only evidence ledger → policy decision → deployment approval → deployment authorization → deployment admission enforcement`
 
 ATL-A.06 consumes only factory-minted successful admission authorizations, binds each
 entry to the exact evidence, provenance, producer, evaluation run, policy, and contract
@@ -18,6 +18,15 @@ the attestations only when their artifact, tenant, environment, release, scope, 
 version, freshness, lifecycle, and authorization-policy bindings agree. The resulting
 signed authorization is independently verifiable by a later enforcement point without
 access to proprietary policy or approval internals; ATL-A.14 itself performs no deployment.
+
+ATL-A.15 is that mandatory enforcement point. It accepts an untrusted exact deployment
+attempt only through strict translation, canonicalizes every security-relevant field, and
+uses ATL-A.14 exclusively through its safe verifier. Exact authorization binding, explicit
+evaluation time, enforcement policy, lifecycle state, and atomic replay consumption must
+all succeed before the provider-neutral executor port is reachable. Only `permitted`
+invokes an executor; every invalid, blocked, indeterminate, exceptional, or unavailable
+state fails closed. Immutable receipts prove admission, not actual deployment, and public
+projection excludes policy, authorization, storage, signing, and provider internals.
 | Metadata              | Value |
 |-----------------------|-------|
 | **Status**            | Approved Architecture |
