@@ -6,6 +6,7 @@ from datetime import datetime
 from src.reference_architecture_evidence_lifecycle_contract import (
     LifecycleEvent,
     LifecycleEventType,
+    lifecycle_digest,
     lifecycle_identifier,
     lifecycle_utc,
 )
@@ -33,6 +34,8 @@ class LifecycleAuthorityGrant:
             (self.environment, "environment"),
         ):
             lifecycle_identifier(value, name)
+        lifecycle_digest(self.receipt_id, "receipt_id")
+        lifecycle_digest(self.evidence_package_id, "evidence_package_id")
         if not self.permitted_event_types or any(
             not isinstance(item, LifecycleEventType) for item in self.permitted_event_types
         ):
@@ -67,4 +70,3 @@ def verify_lifecycle_authority(event: LifecycleEvent, grant: LifecycleAuthorityG
     )
     if not allowed:
         raise LifecycleAuthorityError("Lifecycle authority could not be verified.")
-

@@ -111,3 +111,9 @@ class InMemoryLifecycleStore:
             raise LifecycleChainError("Lifecycle event cannot be appended.")
         self._histories[event.receipt_id] = (*existing, value)
 
+
+def histories_are_consistent(left: Sequence[LifecycleEvent], right: Sequence[LifecycleEvent]) -> bool:
+    """Two histories are consistent only when their shared portion is identical."""
+
+    shared = min(len(left), len(right))
+    return all(left[index].event_digest == right[index].event_digest for index in range(shared))
