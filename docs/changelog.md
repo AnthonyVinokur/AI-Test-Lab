@@ -1,5 +1,12 @@
 # Changelog
 
+## ATL-A.07 — Verifiable Evidence Packages and Audit Export
+
+- Added deterministic, portable public evidence-package contracts and canonical JSON.
+- Added strict untrusted request translation and authorized verified-ledger selection.
+- Added allowlisted record projection, chain inclusion proofs, and offline verification.
+- Added normalized safe failures plus tampering, completeness, and stability coverage.
+
 ## ATL-A.06 — Trusted Evidence Ledger and Chain of Custody
 
 - Added a provider-neutral, append-only trusted evidence ledger reference boundary.

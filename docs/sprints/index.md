@@ -8,3 +8,4 @@
 | 10.3 | ✅ | Placeholder Removal |
 | 10.4 | ✅ | Evaluation Result Normalization |
 | 10.5 | ✅ | Engine-Agnostic Reporting |
+| ATL-A.07 | ✅ | Verifiable Evidence Packages and Audit Export |
