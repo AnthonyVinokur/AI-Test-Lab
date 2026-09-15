@@ -1,5 +1,13 @@
 # Changelog
 
+## ATL-A.13 — Authorized Deployment Approval and Release Attestation
+
+- Added exact artifact-and-target approval contracts, strict translation, scoped authority, separation of duties, role quorum, signed attestations, append-only lifecycle verification, and safe public deployment authorization.
+
+## ATL-A.12 — Evidence-Based Policy Decision and Quality-Gate Attestation
+
+- Added strict policy/request contracts, verified-evidence admission, canonical policy identity, deterministic requirement evaluation, fail-closed aggregation, signed decision attestations, and minimal public outcomes.
+
 ## ATL-A.07 — Verifiable Evidence Packages and Audit Export
 
 - Added deterministic, portable public evidence-package contracts and canonical JSON.
