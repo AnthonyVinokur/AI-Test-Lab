@@ -75,13 +75,16 @@ def create_integrity_incident(source: VerifiedIncidentInput, finding: IntegrityR
     return replace(provisional, attestation_digest=attestation_digest, incident_id=_hash({**document,"attestation_digest":attestation_digest}))
 
 class InMemoryIntegrityIncidentStore:
-    def __init__(self) -> None: self._lock = Lock(); self._by_key: dict[str, IntegrityIncidentAttestation] = {}
+    def __init__(self) -> None:
+        self._lock = Lock(); self._by_key: dict[str, IntegrityIncidentAttestation] = {}; self._history: dict[str, list[IntegrityIncidentAttestation]] = {}
     def get(self, incident_key: str) -> IntegrityIncidentAttestation | None:
         with self._lock: return self._by_key.get(incident_key)
     def put_if_absent(self, attestation: IntegrityIncidentAttestation) -> IntegrityIncidentAttestation:
         if not verify_integrity_incident_attestation(attestation): raise IntegrityIncidentError("incident attestation is invalid.")
         with self._lock:
-            self._by_key.setdefault(attestation.incident_key, attestation); return self._by_key[attestation.incident_key]
+            if attestation.incident_key not in self._by_key:
+                self._by_key[attestation.incident_key] = attestation; self._history[attestation.incident_key] = [attestation]
+            return self._by_key[attestation.incident_key]
     def append_transition(self, incident_id: str, transition: IncidentTransitionEvidence) -> IntegrityIncidentAttestation:
         with self._lock:
             current = next((item for item in self._by_key.values() if item.incident_id == incident_id), None)
@@ -91,7 +94,9 @@ class InMemoryIntegrityIncidentStore:
             updated = replace(current, state=transition.target_state)
             # State changes are represented as a new attestation, never mutation of historical evidence.
             document = _incident_doc(updated); digest = _hash(document); updated = replace(updated, attestation_digest=digest, incident_id=_hash({**document,"attestation_digest":digest}))
-            self._by_key[updated.incident_key] = updated; return updated
+            self._by_key[updated.incident_key] = updated; self._history[updated.incident_key].append(updated); return updated
+    def history(self, incident_key: str) -> tuple[IntegrityIncidentAttestation, ...]:
+        with self._lock: return tuple(self._history.get(incident_key, ()))
 
 def record_integrity_incident(source: VerifiedIncidentInput, finding: IntegrityResult, rules: SeverityRules, *, created_at: datetime,
                               store: IntegrityIncidentStorePort, evidence: IncidentEvidencePort | None = None,

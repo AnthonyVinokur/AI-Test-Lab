@@ -40,3 +40,4 @@ def test_duplicate_is_idempotent_and_verified_transition_preserves_history():
     assert not replay and replay2 and first == second
     contained=store.append_transition(first.incident_id,IncidentTransitionEvidence(first.incident_id,IncidentState.CONTAINED,"verifier","2"*64,NOW))
     assert contained.state is IncidentState.CONTAINED and first.state is IncidentState.OPEN
+    assert store.history(first.incident_key) == (first, contained)
