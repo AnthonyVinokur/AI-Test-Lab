@@ -37,7 +37,8 @@ def expected_deployment_state(attestation: DeploymentExecutionAttestation,
     values = {"artifact_digest": attestation.artifact_digest, "environment": attestation.environment,
         "execution_attestation_fingerprint": attestation.attestation_digest,
         "execution_attestation_id": attestation.attestation_id, "provider_identity": attestation.adapter_identity,
-        "release_id": attestation.release_id}
+        "release_id": attestation.release_id, "tenant_id": attestation.tenant_id,
+        "configuration_digest": attestation.configuration_digest}
     fingerprint = sha256(_canonical({**values, "required_health": policy.required_health.value})).hexdigest()
     return ExpectedDeploymentState(**values, required_health=policy.required_health, expected_state_fingerprint=fingerprint)
 
