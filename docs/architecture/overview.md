@@ -4,7 +4,7 @@
 
 The reference architecture carries trust through explicit, independently verifiable boundaries:
 
-`provider-neutral evaluation → evidence integrity → authenticated provenance → signer/key trust → evidence admission → append-only evidence ledger → policy decision → deployment approval → deployment authorization → deployment admission enforcement`
+`provider-neutral evaluation → evidence integrity → authenticated provenance → signer/key trust → evidence admission → append-only evidence ledger → policy decision → deployment approval → deployment authorization → deployment admission enforcement → trusted deployment execution → execution outcome attestation`
 
 ATL-A.06 consumes only factory-minted successful admission authorizations, binds each
 entry to the exact evidence, provenance, producer, evaluation run, policy, and contract
@@ -27,6 +27,13 @@ all succeed before the provider-neutral executor port is reachable. Only `permit
 invokes an executor; every invalid, blocked, indeterminate, exceptional, or unavailable
 state fails closed. Immutable receipts prove admission, not actual deployment, and public
 projection excludes policy, authorization, storage, signing, and provider internals.
+
+ATL-A.16 consumes only a verified ATL-A.15 permitted receipt. It binds that receipt to an
+exact canonical execution command, admits an internally registered provider-neutral adapter
+under a separately versioned execution policy, and atomically claims the command before one
+invocation. Definite and uncertain provider outcomes are normalized and preserved in immutable,
+digest-verifiable attestations. Public results are allowlisted projections and never claim
+runtime health, application correctness, traffic migration, rollback, or continued compliance.
 | Metadata              | Value |
 |-----------------------|-------|
 | **Status**            | Approved Architecture |
