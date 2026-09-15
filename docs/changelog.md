@@ -1,5 +1,12 @@
 # Changelog
 
+## ATL-A.14 — Trusted Deployment Authorization
+
+- Added strict deployment-authorization requests and separately digested versioned authorization policy.
+- Added narrow verified ATL-A.12 and ATL-A.13 references with exact cross-attestation and deployment-context binding.
+- Added deterministic fail-closed authorization outcomes and immutable canonical signed authorization attestations.
+- Added hash-linked revocation and supersession lifecycle records, independent safe verification, sanitized public projection, and threat/regression coverage.
+
 ## ATL-A.13 — Authorized Deployment Approval and Release Attestation
 
 - Added exact artifact-and-target approval contracts, strict translation, scoped authority, separation of duties, role quorum, signed attestations, append-only lifecycle verification, and safe public deployment authorization.

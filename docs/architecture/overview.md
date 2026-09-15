@@ -2,15 +2,22 @@
 
 ## Trusted evidence chain
 
-The reference architecture carries trust through six explicit boundaries:
+The reference architecture carries trust through explicit, independently verifiable boundaries:
 
-`provider-neutral evaluation → evidence integrity → authenticated provenance → signer/key trust → evidence admission → append-only evidence ledger`
+`provider-neutral evaluation → evidence integrity → authenticated provenance → signer/key trust → evidence admission → append-only evidence ledger → policy decision → deployment approval → deployment authorization`
 
 ATL-A.06 consumes only factory-minted successful admission authorizations, binds each
 entry to the exact evidence, provenance, producer, evaluation run, policy, and contract
 versions, then records it in a deterministic tamper-evident chain. Storage remains an
 adapter concern, and public outcomes are explicit projections rather than direct
 serialization of internal entries.
+
+ATL-A.14 consumes only the safe verified outputs of ATL-A.12 and ATL-A.13. It does not
+recompute evidence requirements, authority, quorum, or separation of duties. It joins
+the attestations only when their artifact, tenant, environment, release, scope, conditions,
+version, freshness, lifecycle, and authorization-policy bindings agree. The resulting
+signed authorization is independently verifiable by a later enforcement point without
+access to proprietary policy or approval internals; ATL-A.14 itself performs no deployment.
 | Metadata              | Value |
 |-----------------------|-------|
 | **Status**            | Approved Architecture |
