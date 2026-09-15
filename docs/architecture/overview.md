@@ -6,6 +6,11 @@ The reference architecture carries trust through explicit, independently verifia
 
 `provider-neutral evaluation → evidence integrity → authenticated provenance → signer/key trust → evidence admission → append-only evidence ledger → policy decision → deployment approval → deployment authorization → deployment admission enforcement → trusted deployment execution → execution outcome attestation → independent outcome verification → continuous integrity monitoring and trust revocation`
 
+ATL-A.19 converts a verified A.18 integrity finding into an immutable incident attestation. It consumes only
+allowlisted prior-stage bindings, applies an explicit versioned severity policy, preserves a digest-bound evidence
+bundle, and deduplicates the same deployment finding. Containment is a request only; only independently verified
+evidence can create a later `contained` or `resolved` attestation. Indeterminate evidence is never health.
+
 ATL-A.06 consumes only factory-minted successful admission authorizations, binds each
 entry to the exact evidence, provenance, producer, evaluation run, policy, and contract
 versions, then records it in a deterministic tamper-evident chain. Storage remains an
