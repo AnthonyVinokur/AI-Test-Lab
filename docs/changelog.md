@@ -1,5 +1,35 @@
 # Changelog
 
+## ATL-A.31 — Authorized-Response Outcome Reconciliation and Closure Handoff
+
+### Added
+
+- Immutable reconciliation requests, policies, authoritative A.30/A.20 record
+  wrappers, normalized outcomes and reasons, signed evidence, atomic commits,
+  A.21 closure handoffs, repository ports, and an allowlisted public DTO.
+- Repository-only authorization, remediation-decision, execution-attestation,
+  and post-remediation-verification admission with canonical integrity checks.
+- Exact incident, operation, settlement, authorization, decision, execution,
+  capability, scope, constraint, manifest, attempt, target, and time binding.
+- Deterministic verified-recovery, failed, indeterminate, expired-unexecuted,
+  and rejected outcomes that never equate execution with recovery.
+- Thread-safe and SQLite atomic persistence with exact replay, changed-reuse
+  conflict, concurrency protection, restart recovery, and atomic handoff commit.
+- Independently validated ATL-A.21 handoffs that reload authoritative A.31
+  evidence and verify signature, lineage, outcome, policy, scope, and expiry.
+
+### Security
+
+- Only committed, authentic, independently verified recovery can create a
+  closure handoff; failure, uncertainty, expiry, and rejection keep incidents
+  open.
+- Caller evidence copies and outcome claims are not accepted. Capability or
+  scope expansion, weakened constraints, manifest substitution, excessive
+  attempts, cross-target verification, and execution after expiry fail closed.
+- Public output excludes signatures, signers, evidence digests, remediation
+  parameters, manifests, constraints, state digests, repository keys, raw
+  security evidence, and exception text.
+
 ## ATL-A.30 — Settled-Outcome Response Authorization and Incident Handoff
 
 ### Added
