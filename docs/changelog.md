@@ -1,5 +1,27 @@
 # Changelog
 
+## ATL-A.28 — Protected-Operation Outcome Verification and Reconciliation
+
+### Added
+
+- Authoritative committed ATL-A.27 evidence intake with exact A.26 lineage,
+  execution-command, manifest, adapter, operation, target, and parameter binding.
+- Deterministic manifest-derived expected postconditions and provider-neutral,
+  exact-match, versioned, read-only observer registration.
+- Fresh observation acquisition, deterministic normalization, and fail-closed
+  `verified`, `mismatch`, `indeterminate`, and `invalid` reconciliation.
+- Thread-safe and SQLite append-only evidence stores with exact retry, conflict,
+  concurrent-claim, later-round, and unknown-commit behavior.
+- Digest-verifiable immutable attestations and an allowlisted public projection.
+
+### Security
+
+- Execution success claims never substitute for independently observed provider
+  state, and uncertainty never defaults to verification.
+- A.28 cannot invoke, retry, repair, compensate, roll back, or consume authorization.
+- Public evidence excludes raw observations, provider payloads, authorization
+  artifacts, credentials, policy mechanics, canonical parameters, and exceptions.
+
 ## ATL-A.25 — Trusted Deployment Continued-Operation Authorization
 
 ### Added
