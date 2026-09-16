@@ -10,7 +10,7 @@ from src.reference_architecture_deployment_integrity_contract import IntegrityRe
 from src.reference_architecture_deployment_integrity_incident_contract import IncidentState, IntegrityIncidentAttestation
 from src.reference_architecture_deployment_recovery import authorize_recovery
 from src.reference_architecture_deployment_recovery_contract import (
-    PostRemediationVerification, RecoveryDecision, RecoveryExecutionAttestation,
+    PostRemediationVerification, RecoveryDecision, RecoveryError, RecoveryExecutionAttestation,
     RecoveryExecutionStatus, RecoveryVerificationStatus,
 )
 from src.reference_architecture_deployment_readiness_contract import *
@@ -61,7 +61,10 @@ def attest_deployment_readiness(*, deployment_id: str, integrity: IntegrityResul
         reasons.append(ReadinessReasonCode.INCIDENT_EVIDENCE_UNAVAILABLE)
     elif incident is not None and incident.state is IncidentState.RESOLVED:
         execution_is_bound = recovery_execution is not None and recovery_execution.request.incident_id == incident.incident_id and recovery_execution.request.deployment_id == deployment_id
-        authorization_is_valid = execution_is_bound and recovery_decision is not None and authorize_recovery(recovery_execution.request, recovery_decision, attested_at)
+        try:
+            authorization_is_valid = execution_is_bound and recovery_decision is not None and authorize_recovery(recovery_execution.request, recovery_decision, attested_at)
+        except RecoveryError:
+            authorization_is_valid = False
         if not authorization_is_valid:
             reasons.append(ReadinessReasonCode.RECOVERY_AUTHORIZATION_INVALID)
         verification_is_valid = execution_is_bound and recovery_verification is not None and recovery_execution.status is RecoveryExecutionStatus.EXECUTED and recovery_verification.execution == recovery_execution and recovery_verification.status is RecoveryVerificationStatus.PASSED
@@ -71,6 +74,11 @@ def attest_deployment_readiness(*, deployment_id: str, integrity: IntegrityResul
         if not closure_is_valid:
             reasons.append(ReadinessReasonCode.POST_INCIDENT_CLOSURE_INCOMPLETE)
     unique_reasons = tuple(dict.fromkeys(reasons))
+    return _attestation_from_reasons(deployment_id, unique_reasons, attested_at)
+
+
+def _attestation_from_reasons(deployment_id: str, unique_reasons: tuple[ReadinessReasonCode, ...],
+                             attested_at: datetime) -> DeploymentReadinessAttestation:
     status = _status_for(unique_reasons)
     return DeploymentReadinessAttestation(deployment_id, status, unique_reasons, attested_at,
         _digest(deployment_id=deployment_id, status=status, reasons=unique_reasons, attested_at=attested_at))
