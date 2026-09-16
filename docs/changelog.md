@@ -296,3 +296,26 @@ Add this **directly below `# Changelog` and above Sprint 11.1**:
 - Permission is issued only after successful atomic authorization consumption.
 - Concurrent distinct requests have one winner; storage failure and unknown commit state fail closed.
 - Consumed authorizations remain terminal and cannot be restored after protected-operation failure.
+
+# ATL-A.27 — Trusted Continued-Operation Execution and Outcome Attestation
+
+### Added
+
+- Strict immutable execution, trusted-permit, operation-manifest, claim, adapter-result,
+  attestation, storage-port, and public projection contracts.
+- Authoritative ATL-A.26 consumption resolution with exact evidence and protected-operation
+  binding plus domain-separated execution-command identity.
+- Registered operation and adapter admission with manifest, policy, version, capability,
+  deployment, and execution-window enforcement.
+- Four-key atomic at-most-once execution claims with thread-safe and durable SQLite stores.
+- Explicit provider success, failure, rejection, timeout, and unknown-outcome handling with
+  deterministic digest-verifiable attestations and persisted-result recovery.
+
+### Security
+
+- Callers cannot inject trusted permits, raw commands, unrestricted parameters, credentials,
+  provider responses, or trust-bypass flags.
+- A consumed authorization produces at most one execution claim and one framework-controlled
+  adapter invocation; exact retries never reinvoke it.
+- Adapter exceptions, malformed responses, and post-invocation persistence failures remain
+  `outcome_unknown`; protected-operation failure never restores ATL-A.26 consumption.
