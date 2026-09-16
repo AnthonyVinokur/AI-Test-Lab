@@ -1,5 +1,21 @@
 # Changelog
 
+## ATL-A.25 — Trusted Deployment Continued-Operation Authorization
+
+### Added
+
+- Strict A.24-authenticated, fail-closed authorization for one exact continued-operation proposition.
+- Immutable policy, grant, authority, resolved-key, signed-artifact, verification, outcome, and public contracts.
+- Deterministic domain-separated proposition identity and Ed25519 authorization signatures with no retained private keys.
+- Independent A.26-ready verifier and strict canonical request/artifact serialization boundaries.
+- Security, expiry, mutation, substitution, lifecycle, protected-data, and A.22–A.24 compatibility coverage.
+
+### Security
+
+- Only internally verified `verified + ready` A.24 results can authorize; caller-created trusted references are insufficient.
+- Authorized validity cannot exceed readiness, policy, signer, or resolved-key validity.
+- Public output excludes signatures, digests, fingerprints, authority identities, policy mechanics, trusted references, and internal diagnostics.
+
 ## ATL-A.24 — Trusted Deployment Readiness Authentication and Provenance Verification
 
 - Added strict ATL-A.23 result adaptation and deterministic, domain-separated binding fingerprints and signing payloads.
