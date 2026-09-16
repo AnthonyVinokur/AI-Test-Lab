@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-09-16T16:18:40+09:00",
+  "models": [
+    "aquagear-controlled-ci"
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 0,
+    "expected_failures": 0,
+    "unexpected_passes": 0,
+    "errors": 0,
+    "total": 1,
+    "pass_rate_percent": 100.0,
+    "total_estimated_cost_usd": 0.0
+  },
+  "highlights": {
+    "highest_scoring_model": "aquagear-controlled-ci",
+    "fastest_model": "aquagear-controlled-ci"
+  },
+  "model_comparison": [
+    {
+      "provider": "aquagear",
+      "model": "aquagear-controlled-ci",
+      "total_estimated_cost_usd": 0.0,
+      "average_estimated_cost_usd": 0.0,
+      "passed": 1,
+      "expected_failures": 0,
+      "unexpected_failures": 0,
+      "unexpected_passes": 0,
+      "errors": 0,
+      "total": 1,
+      "pass_rate_percent": 100.0,
+      "average_response_time_seconds": 0.0,
+      "average_prompt_latency_seconds": 0.0,
+      "average_generation_latency_seconds": 0.0,
+      "average_model_load_seconds": 0.0,
+      "average_prompt_tokens": 0.0,
+      "average_output_tokens": 0.0,
+      "average_prompt_tokens_per_second": 0.0,
+      "average_generation_tokens_per_second": 0.0
+    }
+  ],
+  "results": [
+    {
+      "test_id": "aquagear-snorkel-care-001",
+      "name": "Aquagear RAG answer reaches AI Test Lab",
+      "category": "application-integration-smoke",
+      "prompt": "How should I clean my snorkel?",
+      "provider": "aquagear",
+      "model": "aquagear-controlled-ci",
+      "estimated_cost_usd": 0.0,
+      "actual_response": "Rinse the snorkel with fresh water after use.",
+      "passed": true,
+      "status": "PASS",
+      "expected_to_fail": false,
+      "assertion_type": "icontains",
+      "expected": "fresh water",
+      "reason": "Response contains expected text ignoring case: 'fresh water'",
+      "evaluation_results": [
+        {
+          "engine": "builtin",
+          "metric_name": "icontains",
+          "score": 1.0,
+          "threshold": 1.0,
+          "passed": true,
+          "reason": "Response contains expected text ignoring case: 'fresh water'",
+          "runtime_options": {
+            "include_reason": null
+          },
+          "profile_name": null,
+          "profile_version": null,
+          "evaluator_model": null
+        }
+      ],
+      "engine_results": [],
+      "response_time_seconds": 0.00021805000005770125,
+      "prompt_tokens": 0,
+      "output_tokens": 0,
+      "prompt_latency_seconds": 0.0,
+      "generation_latency_seconds": 0.0,
+      "model_load_seconds": 0.0,
+      "prompt_tokens_per_second": 0.0,
+      "generation_tokens_per_second": 0.0
+    }
+  ]
+}

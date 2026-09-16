@@ -1,0 +1,24 @@
+{
+  "schema_version": "aquagear-rehearsal-1",
+  "mode": "controlled",
+  "application_revision": null,
+  "ai_test_lab_revision": null,
+  "model": "aquagear-controlled-ci",
+  "top_k": 1,
+  "metrics_note": "Token/cost fields are unavailable from this application interface; report zeros are defaults, not measurements.",
+  "receipts": [
+    {
+      "execution_id": "atl-201911c9-5d3c-485a-bb09-4daaa97e0ed6",
+      "question": "How should I clean my snorkel?",
+      "application_received": true,
+      "status": "completed",
+      "response": "Rinse the snorkel with fresh water after use.",
+      "retrieved_document_ids": [
+        "snorkel-care-001"
+      ],
+      "failure_mode": "none",
+      "duration_seconds": 0.00011347100007697009,
+      "test_id": "aquagear-snorkel-care-001"
+    }
+  ]
+}

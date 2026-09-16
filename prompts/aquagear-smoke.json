@@ -1,0 +1,9 @@
+[
+  {
+    "id": "aquagear-snorkel-care-001",
+    "name": "Aquagear RAG answer reaches AI Test Lab",
+    "category": "application-integration-smoke",
+    "prompt": "How should I clean my snorkel?",
+    "assertion": {"type": "icontains", "expected": "fresh water"}
+  }
+]
