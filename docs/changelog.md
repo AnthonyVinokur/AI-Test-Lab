@@ -1,5 +1,14 @@
 # Changelog
 
+## ATL-A.24 — Trusted Deployment Readiness Authentication and Provenance Verification
+
+- Added strict ATL-A.23 result adaptation and deterministic, domain-separated binding fingerprints and signing payloads.
+- Added immutable readiness-authentication envelope, issuer/key authorization policy, resolved-key lifecycle, verification outcome, and trusted-reference contracts.
+- Added independent Ed25519 signature, authority, lifecycle, policy, exact-binding, and freshness verification without recomputing ATL-A.22.
+- Added fail-closed `verified`, `rejected`, and `review_required` outcomes; only authenticated `ready` results mint an internal trusted reference.
+- Added a minimal public projection with normalized non-oracular reasons and no signatures, keys, evidence, revisions, or internal diagnostics.
+- Added tampering, substitution, expiry, missing-material, authorization, determinism, immutability, serialization, compatibility, and protected-boundary coverage.
+
 ## ATL-A.17 — Trusted Deployment Outcome Verification and Reconciliation
 
 - Added verified ATL-A.16 attestation intake, derived expected-state projection, and an observer-only provider-neutral port.
