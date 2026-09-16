@@ -1,5 +1,30 @@
 # Changelog
 
+## ATL-A.29 — Protected-Operation Outcome Settlement and Lifecycle Finalization
+
+### Added
+
+- Strict immutable settlement requests, versioned policies, authoritative lineage
+  inputs, statuses, stable reasons, evidence, results, repository ports, signer
+  port, and allowlisted public DTO.
+- Complete A.26 consumption, A.27 execution, and A.28 reconciliation admission
+  with digest, freshness, policy, and exact lifecycle-binding verification.
+- Deterministic fail-closed lifecycle mapping to `settled_success`,
+  `settled_failure`, `suspended`, or `rejected` without external-state mutation.
+- Thread-safe and SQLite single-winner repositories with exact replay, conflict
+  rejection, immutable commits, pending-record recovery, and unknown-commit safety.
+- Canonical domain-separated evidence identity, signature verification, stable
+  timestamps, and protected-field exclusion from public output.
+
+### Security
+
+- Only an authentic, fresh, exactly bound A.28 `verified` attestation can produce
+  `settled_success`; A.27 completion alone has no settlement authority.
+- Mismatch, uncertainty, invalidity, staleness, storage ambiguity, and concurrent
+  conflict cannot be promoted to success.
+- ATL-A.29 cannot execute, observe, retry, remediate, compensate, roll back, or
+  restore authorization, and public output exposes no evidence digests or secrets.
+
 ## ATL-A.28 — Protected-Operation Outcome Verification and Reconciliation
 
 ### Added
