@@ -1,5 +1,32 @@
 # Changelog
 
+## ATL-A.30 — Settled-Outcome Response Authorization and Incident Handoff
+
+### Added
+
+- Strict immutable response requests, policies, registered manifests,
+  authoritative settlement records, normalized outcomes and reasons, signed
+  authorization evidence, A.20 handoffs, repository ports, and safe public DTOs.
+- Repository-only committed ATL-A.29 admission with signature, digest, identity,
+  status, schema, and A.26–A.29 lineage validation.
+- Deterministic failure-response authorization, uncertainty-preserving suspended
+  handling, success ineligibility, rejected-evidence rejection, role checks, and
+  intersection-based original/policy/manifest scope enforcement.
+- Thread-safe and SQLite lifecycle/request/idempotency claims with exact replay,
+  changed-reuse conflicts, concurrency safety, immutable commits, crash recovery,
+  commit-ambiguity handling, and expired-replay refusal.
+- Independent A.20 handoff verification and translation for one exact registered
+  capability without executing remediation or mutating external state.
+
+### Security
+
+- Callers cannot inject settlement evidence, policy, manifests, commands,
+  incident identity, trusted outcomes, provider data, or unrestricted scope.
+- Suspended outcomes cannot become failure-assuming remediation; manual-review
+  authority cannot become an executable A.20 handoff.
+- Public output excludes signatures, evidence and manifest digests, policy
+  mechanics, constraints, commands, credentials, provider payloads, and secrets.
+
 ## ATL-A.29 — Protected-Operation Outcome Settlement and Lifecycle Finalization
 
 ### Added
