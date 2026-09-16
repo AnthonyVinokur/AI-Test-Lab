@@ -280,3 +280,19 @@ Add this **directly below `# Changelog` and above Sprint 11.1**:
 - Verifier, lifecycle-store, adapter, unsupported-input, and executor failures fail closed.
 - Public results expose no proprietary policy, authorization reasoning, signatures,
   consumption internals, raw exceptions, or provider details.
+
+# ATL-A.26 — Continued-Operation Enforcement and Atomic Authorization Consumption
+
+### Added
+
+- Strict immutable continued-operation enforcement contracts and canonical request binding.
+- Exact ATL-A.25 artifact, digest, lifecycle, validity, policy, gateway, and operation checks.
+- Storage-neutral atomic consumption contract with in-memory and durable SQLite adapters.
+- Storage-level single-use and request-ID uniqueness, idempotent recovery, and replay blocking.
+- Deterministic immutable enforcement evidence and an allowlisted public result projection.
+
+### Security
+
+- Permission is issued only after successful atomic authorization consumption.
+- Concurrent distinct requests have one winner; storage failure and unknown commit state fail closed.
+- Consumed authorizations remain terminal and cannot be restored after protected-operation failure.
