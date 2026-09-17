@@ -42,8 +42,14 @@ def test_real_aquagear_round_trip_and_both_reports(aquagear_root, tmp_path):
     assert receipt["application_received"] is True
     assert receipt["retrieved_document_ids"] == ["snorkel-care-001"]
     assert receipt["question"] == "How should I clean my snorkel?"
-    assert receipt["response"] == "Rinse the snorkel with fresh water after use."
+
+    assert receipt["response"] == (
+        "Rinse the snorkel with fresh water after use "
+        "and allow it to air dry before storage."
+    )
+
     assert receipt["response"] in html
+
     assert receipt["response"] in json.dumps(report)
     assert receipt["test_id"] == report["results"][0]["test_id"]
     assert report["results"][0]["provider"] == "aquagear"
